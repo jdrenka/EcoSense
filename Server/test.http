@@ -1,0 +1,8 @@
+POST http://localhost:3000/dataBay HTTP/1.1
+Content-Type: application/json
+
+{
+    "timestamp": 1609459200000,
+    "temperature": 22.5,
+    "humidity": 48
+}
