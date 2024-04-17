@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/dataBay', async (req, res) => {
-
+  console.log();
   console.log('/dataBay Post Request Initialized ------');
 
   const {time, temp, hum} = req.body; 
@@ -29,7 +29,7 @@ app.post('/dataBay', async (req, res) => {
 
     try {
         // Execute the SQL query with the data received from the ESP32
-        const [result] = await db.execute(query, [timestamp, temperature, humidity]);
+        const [result] = await db.execute(query, [time, temp, hum]);
 
         // Respond to the client with success message and the ID of the inserted record
         res.status(201).json({ message: 'Data inserted successfully', id: result.insertId });
