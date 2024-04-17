@@ -18,6 +18,27 @@ app.get('/', (req, res) => {
   res.render('index.ejs');
 });
 
+app.get('/recentData', async (req, res) => {
+  try {
+    // Query to get the latest sensor data
+    const query = 'SELECT timestamp, temperature, humidity FROM readings ORDER BY timestamp DESC LIMIT 1';
+    const [rows] = await db.query(query);
+    if (rows.length > 0) {
+      res.json(rows[0]); // Send the latest row of sensor data
+    } else {
+      res.status(404).json({ message: "No data available" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error fetching data');
+  }
+});
+
+app.get('/sensorDash', (req,res) => {
+
+    res.render('sensorDash.ejs');
+});
+
 app.post('/dataBay', async (req, res) => {
   console.log();
   console.log('/dataBay Post Request Initialized ------');

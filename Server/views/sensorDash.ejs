@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>IOTDashboard</title>
+    <link rel='stylesheet' href='/styles.css'>
+</head>
+
+<body>
+
+    <div class='navbar'>
+        <h1 class='text'>Sensor Dashboard</h1>
+        <h1 class='text'>Welcome User!</h1>
+    </div>
+
+    <h1 class='text'>Greenhouse Sensor (GH4124):</h1>
+
+    <div class='currentReadingsPanel'>
+        <div class='topsection'>
+            <h1 id='currentsensordisplay'>Current Sensor Data</h1>
+            <p id='timecontainer'>Time: <span id="time">--</span></p>
+        </div>
+        
+        <div class='bodysection'>
+            <p>Temperature: <span id="temperature">--</span>°C</p>
+            <p>Humidity: <span id="humidity">--</span>%</p>
+            <p>Next update in: <span id="countdown">10</span> seconds</p>
+        </div>
+    </div>
+
+    <script>
+        const UPDATE_TIME = 10; // seconds
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let countdownElement = document.getElementById('countdown');
+            let temperatureElement = document.getElementById('temperature');
+            let humidityElement = document.getElementById('humidity');
+            let timeElement = document.getElementById('time');
+            let interval;
+
+            async function fetchData() {
+                try {
+                    const response = await fetch('/recentData');
+                    if (!response.ok) { 
+                        throw new Error('Network response was not ok.');
+                    }
+                    const data = await response.json();
+                    temperatureElement.textContent = data.temperature + '°C';
+                    humidityElement.textContent = data.humidity + '%';
+                    let datetime = new Date(data.timestamp);
+                    timeElement.textContent = datetime.toLocaleDateString() + " " + datetime.toLocaleTimeString();
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                    countdownElement.textContent = 'Paused'; // Show paused state in UI
+                    clearInterval(interval); // Stop the countdown interval
+                }
+            }
+
+            function startCountdown() {
+                let counter = UPDATE_TIME;
+                countdownElement.textContent = counter + ' seconds';
+                interval = setInterval(() => {
+                    counter--;
+                    countdownElement.textContent = counter + ' seconds';
+                    if (counter <= 0) {
+                        clearInterval(interval);
+                        fetchData();
+                        startCountdown(); // Restart countdown after data fetch
+                    }
+                }, 1000);
+            }
+
+            fetchData(); // Initial data fetch
+            startCountdown(); // Start the countdown
+        });
+    </script>
+
+</body>
+</html>

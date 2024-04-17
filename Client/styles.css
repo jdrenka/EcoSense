@@ -2,7 +2,7 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-image: url('/images/background.jpg');
+    background-color: #181934;
   }
 
 .navbar{
@@ -77,4 +77,58 @@ html, body {
 .card:hover {
     transform: scale(1.05); /* Slightly increase size */
     box-shadow: 0 6px 20px rgba(0,0,0,0.2); /* Increase shadow for lifting effect */
+}
+
+.currentReadingsPanel{
+
+    width: 30%;
+    height: 40%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: rgb(58, 53, 53);
+    color: white;
+    margin-top: 30px;
+    margin-left: 3%;
+    border-radius: 5px;
+    border: 2.5px solid #030303;
+    padding-left: 15px;
+    
+}
+
+.topsection{
+    margin-right: 10px;
+    border-bottom: 2.5px solid #030303;
+    padding: 10px;
+}
+
+.panelandgraph {
+    display: flex;  /* Use flexbox to align items */
+    width: 100% ;
+}
+
+.bodysection{
+    padding: 10px;
+    font-weight: bold;
+}
+
+#time{
+    margin: 0;
+    padding: 0;
+    font-weight: 100;
+}
+
+#currentsensordisplay{
+    margin: 0;
+    padding: 0;
+}
+
+#timecontainer{
+    margin: 0;
+    padding: 0; 
+}
+
+#sensorChart {
+    margin-left: 60px;
+    flex: 0 0 55%; /* Take up 45% of the available space */
+    max-width: 55%; /* Ensure the chart doesn't exceed 45% width */
+    border: 1px solid #ffffff;
 }
