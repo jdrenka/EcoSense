@@ -126,9 +126,13 @@ html, body {
     padding: 0; 
 }
 
+
+.sensordisplay{
+    width: 100%;    
+    display: flex;
+}
 #sensorChart {
-    margin-left: 60px;
-    flex: 0 0 55%; /* Take up 45% of the available space */
-    max-width: 55%; /* Ensure the chart doesn't exceed 45% width */
-    border: 1px solid #ffffff;
+    flex: 2; /* Takes twice the space of the readings panel, adjust as necessary */
+    max-width: 800px; /* Optional: Sets a max-width for the chart */
+    height: 400px; /* Sets a fixed height for the chart */
 }

@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>IOTDashboard</title>
+    <title>IOT Dashboard</title>
     <link rel='stylesheet' href='/styles.css'>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
-
     <div class='navbar'>
         <h1 class='text'>Sensor Dashboard</h1>
         <h1 class='text'>Welcome User!</h1>
     </div>
 
     <h1 class='text'>Greenhouse Sensor (GH4124):</h1>
-
+<div class = 'sensordisplay'>
     <div class='currentReadingsPanel'>
         <div class='topsection'>
             <h1 id='currentsensordisplay'>Current Sensor Data</h1>
@@ -27,16 +25,59 @@
             <p>Next update in: <span id="countdown">10</span> seconds</p>
         </div>
     </div>
+    <canvas id="sensorChart" width="800" height="400"></canvas>
+</div>
+    
+    <!-- Canvas for Chart.js -->
+    
 
     <script>
         const UPDATE_TIME = 10; // seconds
+        let sensorData = { timestamps: [], temperatures: [], humidities: [] };
+        let sensorChart;
 
         document.addEventListener('DOMContentLoaded', function () {
-            let countdownElement = document.getElementById('countdown');
-            let temperatureElement = document.getElementById('temperature');
-            let humidityElement = document.getElementById('humidity');
-            let timeElement = document.getElementById('time');
+            const countdownElement = document.getElementById('countdown');
+            const temperatureElement = document.getElementById('temperature');
+            const humidityElement = document.getElementById('humidity');
+            const timeElement = document.getElementById('time');
             let interval;
+
+            function initChart() {
+                const ctx = document.getElementById('sensorChart').getContext('2d');
+                sensorChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: sensorData.timestamps,
+        datasets: [{
+            label: 'Temperature (°C)',
+            data: sensorData.temperatures,
+            borderColor: 'rgb(255, 99, 132)',
+            fill: false
+        }, {
+            label: 'Humidity (%)',
+            data: sensorData.humidities,
+            borderColor: 'rgb(54, 162, 235)',
+            fill: false
+        }]
+    },
+    options: {
+        responsive: true, // Ensure the chart is responsive
+        maintainAspectRatio: false, // Allows the chart to scale in height independently from width
+        scales: {
+            x: { display: true },
+            y: { display: true }
+        }
+    }
+});
+            }
+
+            function updateChart(data) {
+                sensorChart.data.labels = data.timestamps;
+                sensorChart.data.datasets[0].data = data.temperatures;
+                sensorChart.data.datasets[1].data = data.humidities;
+                sensorChart.update();
+            }
 
             async function fetchData() {
                 try {
@@ -45,10 +86,29 @@
                         throw new Error('Network response was not ok.');
                     }
                     const data = await response.json();
+                    let datetime = new Date(data.timestamp);
+                    let formattedTime = datetime.toLocaleDateString() + " " + datetime.toLocaleTimeString();
+
+                    // Update sensor data for chart
+                    sensorData.timestamps.push(formattedTime);
+                    sensorData.temperatures.push(data.temperature);
+                    sensorData.humidities.push(data.humidity);
+
+                    // Limit the data to prevent memory issues
+                    if (sensorData.timestamps.length > 20) {
+                        sensorData.timestamps.shift();
+                        sensorData.temperatures.shift();
+                        sensorData.humidities.shift();
+                    }
+
+                    // Update HTML elements
                     temperatureElement.textContent = data.temperature + '°C';
                     humidityElement.textContent = data.humidity + '%';
-                    let datetime = new Date(data.timestamp);
-                    timeElement.textContent = datetime.toLocaleDateString() + " " + datetime.toLocaleTimeString();
+                    timeElement.textContent = formattedTime;
+
+                    // Update Chart
+                    updateChart(sensorData);
+
                 } catch (error) {
                     console.error('Error fetching data:', error);
                     countdownElement.textContent = 'Paused'; // Show paused state in UI
@@ -58,10 +118,10 @@
 
             function startCountdown() {
                 let counter = UPDATE_TIME;
-                countdownElement.textContent = counter + ' seconds';
+                countdownElement.textContent = counter; //update countdown
                 interval = setInterval(() => {
                     counter--;
-                    countdownElement.textContent = counter + ' seconds';
+                    countdownElement.textContent = counter;
                     if (counter <= 0) {
                         clearInterval(interval);
                         fetchData();
@@ -70,6 +130,7 @@
                 }, 1000);
             }
 
+            initChart();
             fetchData(); // Initial data fetch
             startCountdown(); // Start the countdown
         });
