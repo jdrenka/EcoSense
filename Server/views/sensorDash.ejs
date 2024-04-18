@@ -16,20 +16,19 @@
             <div class='topsection'>
                 <div class='headerwithcountdown'>
                     <h1 id='currentsensordisplay'>Current Sensor Data</h1>
-                    <span id="countdown">10</span>
+                    <span id='statusicon'><img id = 'statusicon' src="images/bolt.png" alt="Active"></span>
                 </div>
-
-                <div class = 'timeandbolt'>
+                <div class='timeandbolt'>
                     <p id='timecontainer'>Time at reading: <span id="time">--</span></p>
-                    <img src = 'images/bolt.png' id = 'statusicon'>
+                    <span id="countdown">10</span> 
                 </div>
-                
             </div>
             
             <div class='bodysection'>
-                <p>Temperature: <span id="temperature">--</span></p>
-                <p>Humidity: <span id="humidity">--</span></p>
+                <p>Temperature: <span id="temperature">--</span>°C</p>
+                <p>Humidity: <span id="humidity">--</span>%</p>
                 <button id="switchChartType">Switch to Bar Chart</button>
+                <button id="pauseButton">Pause</button>
                 <div id="displayVariable">Total Readings: <span id="variableValue">--</span></div>
             </div>
         </div>
@@ -41,9 +40,9 @@
         let sensorData = { timestamps: [], temperatures: [], humidities: [] };
         let currentChartType = 'line'; // Initially set the chart type to 'line'
         let chart; // This will be our chart instance
-        let maxDataPoints = 20; // Default maximum data points
-        let readingCount = 0; 
-
+        let maxDataPoints = 100; // Default maximum data points
+        let isPaused = false; // Toggle for pause/play functionality
+        let totalReadings = 0;
 
         document.addEventListener('DOMContentLoaded', function () {
             const ctx = document.getElementById('sensorChart').getContext('2d');
@@ -51,64 +50,63 @@
             const temperatureElement = document.getElementById('temperature');
             const humidityElement = document.getElementById('humidity');
             const timeElement = document.getElementById('time');
+            const statusIcon = document.getElementById('statusicon');
+            const pauseButton = document.getElementById('pauseButton');
+            const readingCount = document.getElementById('variableValue');
+
             let interval;
 
             function initChart() {
                 chart = new Chart(ctx, {
-        type: currentChartType,
-        data: {
-            labels: sensorData.timestamps,
-            datasets: [{
-                label: 'Temperature (°C)',
-                data: sensorData.temperatures,
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                fill: false
-            }, {
-                label: 'Humidity (%)',
-                data: sensorData.humidities,
-                borderColor: 'rgb(54, 162, 235)',
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                fill: false
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    display: true,
-                    ticks: {
-                                           
-                        color: 'white'  // Sets the color of the x-axis labels to white
+                    type: currentChartType,
+                    data: {
+                        labels: sensorData.timestamps,
+                        datasets: [{
+                            label: 'Temperature (°C)',
+                            data: sensorData.temperatures,
+                            borderColor: 'rgb(255, 99, 132)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                            fill: false
+                        }, {
+                            label: 'Humidity (%)',
+                            data: sensorData.humidities,
+                            borderColor: 'rgb(54, 162, 235)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { display: true, ticks: { color: 'white' } },
+                            y: { display: true, ticks: { color: 'white' } }
+                        },
+                        plugins: {
+                            legend: { labels: { color: 'white' } }
+                        }
                     }
-                },
-                y: {
-                    display: true,
-                    ticks: {
-                        
-                        color: 'white'  // Sets the color of the y-axis labels to white
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        weight: 'bold',
-                        color: 'white',
-                        
-                    }
-                }
-            }
-        }
-    });
+                });
             }
 
+            pauseButton.addEventListener('click', function() {
+                isPaused = !isPaused; // Toggle the pause state
+                if (isPaused) {
+                    clearInterval(interval);
+                    this.textContent = "Restart sensor";
+                    statusIcon.innerHTML = '💤'; // Set inner HTML to sleeping emoji when paused
+                } else {
+                    startCountdown();
+                    this.textContent = "Pause";
+                    statusIcon.innerHTML = '<img id="statusicon" src="images/bolt.png" alt="Active">'; // Set inner HTML back to bolt image when active
+                }
+            });
+
             document.getElementById('switchChartType').addEventListener('click', function() {
-                currentChartType = (currentChartType === 'line') ? 'bar' : 'line'; // Toggle chart type
-                chart.destroy(); // Destroy the current chart
-                initChart(); // Re-initialize the chart with the new type
-                this.textContent = `Switch to ${currentChartType === 'line' ? 'Bar' : 'Line'} Chart`; // Update button text dynamically
+                currentChartType = (currentChartType === 'line') ? 'bar' : 'line';
+                chart.destroy();
+                initChart();
+                this.textContent = `Switch to ${currentChartType === 'line' ? 'Bar' : 'Line'} Chart`;
             });
 
             function addData(chart, label, temperature, humidity) {
@@ -125,25 +123,25 @@
             }
 
             async function fetchData() {
-                try {
-                    const response = await fetch('/recentData');
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok.');
+                if (!isPaused) {
+                    try {
+                        const response = await fetch('/recentData');
+                        if (!response.ok) throw new Error('Network response was not ok.');
+                        const data = await response.json();
+                        let datetime = new Date(data.timestamp);
+                        let formattedTime = datetime.toLocaleDateString() + " " + datetime.toLocaleTimeString();
+                        addData(chart, formattedTime, data.temperature, data.humidity);
+                        temperatureElement.textContent = data.temperature;
+                        humidityElement.textContent = data.humidity;
+                        timeElement.textContent = formattedTime;
+
+                        totalReadings++;
+                        readingCount.textContent = totalReadings;
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                        countdownElement.textContent = 'Paused';
+                        clearInterval(interval);
                     }
-                    const data = await response.json();
-                    let datetime = new Date(data.timestamp);
-                    let formattedTime = datetime.toLocaleDateString() + " " + datetime.toLocaleTimeString();
-
-                    addData(chart, formattedTime, data.temperature, data.humidity);
-
-                    temperatureElement.textContent = data.temperature + '°C';
-                    humidityElement.textContent = data.humidity + '%';
-                    timeElement.textContent = formattedTime;
-
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                    countdownElement.textContent = 'Paused';
-                    clearInterval(interval);
                 }
             }
 
@@ -154,17 +152,10 @@
                     counter--;
                     countdownElement.textContent = '(' + counter + ')';
                     if (counter <= 0) {
-                        clearInterval(interval);
                         fetchData();
-                        readingCount++; // Increment total reading count
-                        updateCount();
-                        startCountdown(); // Restart countdown after data fetch
+                        counter = UPDATE_TIME;
                     }
                 }, 1000);
-            }
-
-            function updateCount() {
-                document.getElementById('variableValue').textContent = readingCount;
             }
 
             initChart();

@@ -5,6 +5,10 @@ html, body {
     background-color: #181934;
   }
 
+p{
+   margin: 0;
+}
+
 .navbar{
     display: flex;
     gap: 750px;
@@ -109,7 +113,8 @@ html, body {
 
 .bodysection{
     padding: 10px;
-    
+    display: flex;
+    flex-direction: column;
     font-weight: bold;
 }
 
@@ -124,7 +129,8 @@ html, body {
 }
 
 #timecontainer{
-    margin-bottom: 10px;
+    margin:0;
+    margin-bottom: 0px;
     padding: 0; 
 }
 
@@ -143,31 +149,45 @@ html, body {
     font-size: 52px;
 }
 #statusicon{
-    margin-left: 25px;  
+    margin-right: 0px;
     margin-bottom: -5px;
-    margin-top: -10px;
+    margin-top: 0px;
     border-radius: 60px;
-    width: 90x;
+    font-size: 55px;
+    width: 90px;
     height: 65px;
+    vertical-align: middle;
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    opacity: 1; /* Start fully visible */
+    transition: opacity 0.3s ease-in-out;
 }
 
-#pausebutton{
-    font-size: 45px;
-    margin-top: 20px;
-    margin-left: -10px;
-    transition: transform 0.3s ease-in-out
+#pauseButton {
+    background-color: #4a4746; /* Green background for a fresh look */
+    width: 150px;
+    height: 35px;   
+    border: none; /* Remove default border */
+    color: white; /* White text color */
+    margin-top: 10px;
+    border: 2px solid #030303;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    font-size: 12px; /* Larger font size for readability */
+    cursor: pointer; /* Cursor indicates clickable item */
+    border-radius: 5px; /* Rounded corners for a modern look */
+    transition: background-color 0.6s, transform 0.6s; /* Smooth transitions for hover effects */
 }
-#pausebutton:hover{
-   cursor: pointer;
-   transform: scale(1.08);
+
+#pauseButton:hover {
+    background-color: #605f5b; /* Darker shade of green when hovered */ /* Slightly increase size on hover */
 }
 
 #countdown{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
-    font-size: 25px;
-    margin-top: 5px;
+    font-size: 20px;
+    margin-top: -5px;
+    margin-left: 15px;
 }
 .pauseplay{
     margin-top: 10px;
@@ -198,19 +218,22 @@ html, body {
 }
 
 #switchChartType{
-    height: 30px;
-    width: 160px;
-    margin-top: 2px;
-    margin-left: -5px;
+    background-color: #3e4cb7; /* Green background for a fresh look */
+    width: 150px;
+    height: 35px;   
+    border: none; /* Remove default border */
+    color: white; /* White text color */
+    margin-top: 10px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
-    border-radius: 20px;
-    cursor: pointer;
-    box-shadow: 0 5px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19); /* Shadow effects */
-    transition: all 0.2s;
+    font-size: 12px; /* Larger font size for readability */
+    cursor: pointer; /* Cursor indicates clickable item */
+    border-radius: 5px; /* Rounded corners for a modern look */
+    transition: background-color 0.6s, transform 0.6s; /* Smooth transitions for hover effects */
+    border: 2px solid #030303;
 }
 
 #switchChartType:hover {
-    background-color: #45a049; /* Darker shade of green when hovered */
+    background-color: #4959d3; /* Darker shade of green when hovered */
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19); /* Larger shadow on hover */
 }
