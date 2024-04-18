@@ -38,7 +38,7 @@ app.get('/daily-report', async (req, res) => {
   try {
       const today = new Date();
       const todayString = today.toISOString().split('T')[0];
-      console.log("TodayString :", todayString);
+      
       const query = `
           SELECT timestamp, temperature, humidity
           FROM readings
@@ -47,7 +47,7 @@ app.get('/daily-report', async (req, res) => {
       const values = [todayString];
 
       const [rows, fields] = await db.query(query, values);
-      console.log('TESTY :', rows);
+      
       res.json(rows);
   } catch (err) {
       console.error('Error fetching daily report data', err);

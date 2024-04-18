@@ -6,11 +6,14 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+
+    <div id="top-of-page"></div>
+
     <div class='navbar'>
-        <h1 class='text'>Sensor Dashboard</h1>
+        
     </div>
 
-    <h1 class='text'>Greenhouse Sensor (GH4124):</h1>
+    <h1 class='text' id = 'sensorheader'>Greenhouse Sensor (GH4124):</h1>
     <div class='sensordisplay'>
         <div class='currentReadingsPanel'>
             <div class='topsection'>
@@ -25,12 +28,13 @@
             </div>
             
             <div class='bodysection'>
-                <p>Temperature: <span id="temperature">--</span>°C</p>
-                <p>Humidity: <span id="humidity">--</span>%</p>
+                <p>Temperature: <span id="temperature">--</span></p>
+                <br>
+                <p>Humidity: <span id="humidity">--</span></p>
                 <div id="displayVariable">Total Readings: <span id="variableValue">--</span></div>
-                <button id="switchChartType">Switch to Bar Chart</button>
+                <button id="switchChartType">Line/Bar</button>
                 <button id="pauseButton">Pause</button>
-                <button id="toggleDailyReport">Toggle Daily Report</button>
+                <button id="toggleDailyReport">Get Daily Report</button>
             </div>
         </div>
         <canvas id="sensorChart" width="800" height="400"></canvas>
@@ -38,6 +42,13 @@
 
     <div class='dailyReportSection'>
         <div id="dailyReportContainer" style="display: none;">
+
+            <div class = 'reportheaderbunch'>
+                <h1 class = 'text' id = 'dailyreportheader'> Daily Report:</h1>
+                <h1 class = 'text' id = 'currentDate'></h1>
+                <button id="returnTopButton">Return to Top</button>
+
+            </div>
             <canvas id="dailyReportChart"></canvas>
         </div>
     </div>
@@ -61,6 +72,17 @@
         });
 
         function initCharts(ctx, dailyReportChartCtx) {
+
+            if (window.myLineChart && window.myLineChart instanceof Chart) {
+        window.myLineChart.destroy();
+    }
+
+    // Check if the daily report chart exists and is a Chart instance before destroying it
+    if (window.dailyReportChart && window.dailyReportChart instanceof Chart) {
+        window.dailyReportChart.destroy();
+    }
+
+
             chart = new Chart(ctx, {
                 type: currentChartType,
                 data: getChartData(),
@@ -92,6 +114,16 @@
             };
         }
 
+        const currentDateElement = document.getElementById('currentDate');
+        const today = new Date(); // Get the current date and time
+        const dateString = today.toLocaleDateString('en-US', {
+            weekday: 'long', // "Monday"
+            year: 'numeric', // "2021"
+            month: 'long', // "July"
+            day: 'numeric' // "20"
+        });
+        currentDateElement.textContent = dateString;
+
         function getChartOptions() {
     return {
         responsive: true,
@@ -99,6 +131,7 @@
         scales: {
             x: {
                 ticks: {
+                    maxTicksLimit: 10,
                     color: 'white',
                     font: {
                         weight: 'bold'
@@ -147,18 +180,37 @@
 }
 
         function setupEventListeners() {
+
+
+            
             const toggleButton = document.getElementById('toggleDailyReport');
             const dailyReportContainer = document.getElementById('dailyReportContainer');
             toggleButton.addEventListener('click', function() {
+            const isVisible = dailyReportContainer.style.display !== 'none';
+
+                if (!isVisible) {
+                // Delay the scroll slightly to ensure the DOM has updated
+                setTimeout(() => {
+                    dailyReportContainer.scrollIntoView({ behavior: 'smooth' });
+                }, 10);
+                }
+
                 if (dailyReportContainer.style.display === 'none') {
                     dailyReportContainer.style.display = 'block';
                     toggleButton.textContent = 'Hide Daily Report';
                     fetchDailyDataAndUpdateChart();
                 } else {
                     dailyReportContainer.style.display = 'none';
-                    toggleButton.textContent = 'Show Daily Report';
+                    toggleButton.textContent = 'Get Daily Report';
                 }
             });
+
+
+            returnTopButton.addEventListener('click', function() {
+    document.getElementById('top-of-page').scrollIntoView({ behavior: 'smooth' });
+    toggleButton.textContent = 'Get Daily Report';
+    dailyReportContainer.style.display = 'none';
+});
 
             const pauseButton = document.getElementById('pauseButton');
             pauseButton.addEventListener('click', function() {
@@ -181,7 +233,11 @@
                 initCharts(document.getElementById('sensorChart').getContext('2d'), document.getElementById('dailyReportChart').getContext('2d'));
                 switchChartTypeButton.textContent = `Switch to ${currentChartType === 'line' ? 'Bar' : 'Line'} Chart`;
             });
+
+
         }
+
+        
 
         function fetchDailyDataAndUpdateChart() {
             fetch('/daily-report')
@@ -247,6 +303,7 @@
                     });
             }
         }
+
     </script>
 </body>
 </html>
