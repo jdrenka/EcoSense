@@ -34,6 +34,28 @@ app.get('/recentData', async (req, res) => {
   }
 });
 
+app.get('/daily-report', async (req, res) => {
+  try {
+      const today = new Date();
+      const todayString = today.toISOString().split('T')[0];
+      console.log("TodayString :", todayString);
+      const query = `
+          SELECT timestamp, temperature, humidity
+          FROM readings
+          WHERE DATE(timestamp) = ?;
+      `;
+      const values = [todayString];
+
+      const [rows, fields] = await db.query(query, values);
+      console.log('TESTY :', rows);
+      res.json(rows);
+  } catch (err) {
+      console.error('Error fetching daily report data', err);
+      res.status(500).send('Server error');
+  }
+});
+
+
 app.get('/sensorDash', (req,res) => {
 
     res.render('sensorDash.ejs');

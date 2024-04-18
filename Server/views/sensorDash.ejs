@@ -16,10 +16,10 @@
             <div class='topsection'>
                 <div class='headerwithcountdown'>
                     <h1 id='currentsensordisplay'>Current Sensor Data</h1>
-                    <span id='statusicon'><img id = 'statusicon' src="images/bolt.png" alt="Active"></span>
+                    <span id='statusicon'><img id = statusicon src="images/bolt.png" alt="Active"></span>
                 </div>
                 <div class='timeandbolt'>
-                    <p id='timecontainer'>Time at reading: <span id="time">--</span></p>
+                    <p id='timecontainer'>Last reading: <span id="time">--</span></p>
                     <span id="countdown">10</span> 
                 </div>
             </div>
@@ -27,141 +27,226 @@
             <div class='bodysection'>
                 <p>Temperature: <span id="temperature">--</span>°C</p>
                 <p>Humidity: <span id="humidity">--</span>%</p>
+                <div id="displayVariable">Total Readings: <span id="variableValue">--</span></div>
                 <button id="switchChartType">Switch to Bar Chart</button>
                 <button id="pauseButton">Pause</button>
-                <div id="displayVariable">Total Readings: <span id="variableValue">--</span></div>
+                <button id="toggleDailyReport">Toggle Daily Report</button>
             </div>
         </div>
         <canvas id="sensorChart" width="800" height="400"></canvas>
     </div>
 
+    <div class='dailyReportSection'>
+        <div id="dailyReportContainer" style="display: none;">
+            <canvas id="dailyReportChart"></canvas>
+        </div>
+    </div>
+
     <script>
         const UPDATE_TIME = 5; // seconds
         let sensorData = { timestamps: [], temperatures: [], humidities: [] };
-        let currentChartType = 'line'; // Initially set the chart type to 'line'
-        let chart; // This will be our chart instance
-        let maxDataPoints = 100; // Default maximum data points
-        let isPaused = false; // Toggle for pause/play functionality
+        let currentChartType = 'line';
+        let chart;
+        let dailyReportChart;
+        let maxDataPoints = 100;
+        let isPaused = false;
         let totalReadings = 0;
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('sensorChart').getContext('2d');
-            const countdownElement = document.getElementById('countdown');
-            const temperatureElement = document.getElementById('temperature');
-            const humidityElement = document.getElementById('humidity');
-            const timeElement = document.getElementById('time');
-            const statusIcon = document.getElementById('statusicon');
-            const pauseButton = document.getElementById('pauseButton');
-            const readingCount = document.getElementById('variableValue');
+            const dailyReportChartCtx = document.getElementById('dailyReportChart').getContext('2d');
+            initCharts(ctx, dailyReportChartCtx);
+            setupEventListeners();
+            startCountdown();
+        });
 
-            let interval;
+        function initCharts(ctx, dailyReportChartCtx) {
+            chart = new Chart(ctx, {
+                type: currentChartType,
+                data: getChartData(),
+                options: getChartOptions()
+            });
+            dailyReportChart = new Chart(dailyReportChartCtx, {
+                type: 'line',
+                data: getChartData(),
+                options: getChartOptions()
+            });
+        }
 
-            function initChart() {
-                chart = new Chart(ctx, {
-                    type: currentChartType,
-                    data: {
-                        labels: sensorData.timestamps,
-                        datasets: [{
-                            label: 'Temperature (°C)',
-                            data: sensorData.temperatures,
-                            borderColor: 'rgb(255, 99, 132)',
-                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                            fill: false
-                        }, {
-                            label: 'Humidity (%)',
-                            data: sensorData.humidities,
-                            borderColor: 'rgb(54, 162, 235)',
-                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                            fill: false
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            x: { display: true, ticks: { color: 'white' } },
-                            y: { display: true, ticks: { color: 'white' } }
-                        },
-                        plugins: {
-                            legend: { labels: { color: 'white' } }
-                        }
+        function getChartData() {
+            return {
+                labels: sensorData.timestamps,
+                datasets: [{
+                    label: 'Temperature (°C)',
+                    data: sensorData.temperatures,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: currentChartType === 'bar' ? 'rgb(255, 99, 132)' : 'rgba(255, 99, 132, 0.5)',
+                    fill: false
+                }, {
+                    label: 'Humidity (%)',
+                    data: sensorData.humidities,
+                    borderColor: 'rgb(54, 162, 235)',
+                    backgroundColor: currentChartType === 'bar' ? 'rgb(54, 162, 235)' : 'rgba(54, 162, 235, 0.5)',
+                    fill: false
+                }]
+            };
+        }
+
+        function getChartOptions() {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                ticks: {
+                    color: 'white',
+                    font: {
+                        weight: 'bold'
                     }
-                });
+                },
+                title: {
+                    display: false,
+                    text: 'Time',
+                    color: 'white',
+                    font: {
+                        weight: 'bold',
+                        size: 16
+                    }
+                }
+            },
+            y: {
+                ticks: {
+                    color: 'white',
+                    font: {
+                        weight: 'bold'
+                    }
+                },
+                title: {
+                    display: false,
+                    text: 'Value',
+                    color: 'white',
+                    font: {
+                        size: 50
+                    }
+                }
             }
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    color: 'white',
+                    weight: 'bold',
+                    font: {
+                        weight: 'bold',
+                        size: 15
+                    }
+                }
+            }
+        }
+    };
+}
 
+        function setupEventListeners() {
+            const toggleButton = document.getElementById('toggleDailyReport');
+            const dailyReportContainer = document.getElementById('dailyReportContainer');
+            toggleButton.addEventListener('click', function() {
+                if (dailyReportContainer.style.display === 'none') {
+                    dailyReportContainer.style.display = 'block';
+                    toggleButton.textContent = 'Hide Daily Report';
+                    fetchDailyDataAndUpdateChart();
+                } else {
+                    dailyReportContainer.style.display = 'none';
+                    toggleButton.textContent = 'Show Daily Report';
+                }
+            });
+
+            const pauseButton = document.getElementById('pauseButton');
             pauseButton.addEventListener('click', function() {
-                isPaused = !isPaused; // Toggle the pause state
+                isPaused = !isPaused;
                 if (isPaused) {
                     clearInterval(interval);
-                    this.textContent = "Restart sensor";
-                    statusIcon.innerHTML = '💤'; // Set inner HTML to sleeping emoji when paused
+                    pauseButton.textContent = "Restart Sensor";
+                    document.getElementById('statusicon').innerHTML = '💤';
                 } else {
+                    pauseButton.textContent = "Pause";
+                    document.getElementById('statusicon').innerHTML = '<img id = "statusicon" src="images/bolt.png" alt="Active">';
                     startCountdown();
-                    this.textContent = "Pause";
-                    statusIcon.innerHTML = '<img id="statusicon" src="images/bolt.png" alt="Active">'; // Set inner HTML back to bolt image when active
                 }
             });
 
-            document.getElementById('switchChartType').addEventListener('click', function() {
+            const switchChartTypeButton = document.getElementById('switchChartType');
+            switchChartTypeButton.addEventListener('click', function() {
                 currentChartType = (currentChartType === 'line') ? 'bar' : 'line';
                 chart.destroy();
-                initChart();
-                this.textContent = `Switch to ${currentChartType === 'line' ? 'Bar' : 'Line'} Chart`;
+                initCharts(document.getElementById('sensorChart').getContext('2d'), document.getElementById('dailyReportChart').getContext('2d'));
+                switchChartTypeButton.textContent = `Switch to ${currentChartType === 'line' ? 'Bar' : 'Line'} Chart`;
             });
+        }
 
-            function addData(chart, label, temperature, humidity) {
-                if (chart.data.labels.length >= maxDataPoints) {
-                    chart.data.labels.shift();
-                    chart.data.datasets.forEach((dataset) => {
-                        dataset.data.shift();
-                    });
+        function fetchDailyDataAndUpdateChart() {
+            fetch('/daily-report')
+                .then(response => response.json())
+                .then(data => {
+                    dailyReportChart.data.labels = data.map(entry => new Date(entry.timestamp).toLocaleTimeString());
+                    dailyReportChart.data.datasets[0].data = data.map(entry => entry.temperature);
+                    dailyReportChart.data.datasets[1].data = data.map(entry => entry.humidity);
+                    dailyReportChart.update();
+                })
+                .catch(error => console.error('Failed to fetch daily report data:', error));
+        }
+
+        function startCountdown() {
+            let counter = UPDATE_TIME;
+            const countdownElement = document.getElementById('countdown');
+            countdownElement.textContent = `(${counter})`;
+            interval = setInterval(() => {
+                if (--counter <= 0) {
+                    fetchData();
+                    counter = UPDATE_TIME;
                 }
-                chart.data.labels.push(label);
-                chart.data.datasets[0].data.push(temperature);
-                chart.data.datasets[1].data.push(humidity);
-                chart.update();
-            }
+                countdownElement.textContent = `(${counter})`;
+            }, 1000);
+        }
+        function formatDate(timestamp) {
+    // Example timestamp: "2024-04-08T23:25:00Z"
+    let date = new Date(timestamp);
+    let month = (date.getMonth() + 1).toString().padStart(2, '0');  // Get month and pad with zero if necessary
+    let day = date.getDate().toString().padStart(2, '0');           // Get day and pad with zero if necessary
+    let hour = date.getHours();
+    let minute = date.getMinutes().toString().padStart(2, '0');     // Pad minute with zero
+    let ampm = hour >= 12 ? 'PM' : 'AM';                            // Determine AM/PM
 
-            async function fetchData() {
-                if (!isPaused) {
-                    try {
-                        const response = await fetch('/recentData');
-                        if (!response.ok) throw new Error('Network response was not ok.');
-                        const data = await response.json();
-                        let datetime = new Date(data.timestamp);
-                        let formattedTime = datetime.toLocaleDateString() + " " + datetime.toLocaleTimeString();
-                        addData(chart, formattedTime, data.temperature, data.humidity);
-                        temperatureElement.textContent = data.temperature;
-                        humidityElement.textContent = data.humidity;
-                        timeElement.textContent = formattedTime;
+    hour = hour % 12;
+    hour = hour ? hour : 12; // Convert 0 hour to 12 for 12-hour format
 
-                        totalReadings++;
-                        readingCount.textContent = totalReadings;
-                    } catch (error) {
+    // Build the custom formatted date string
+    return `${month}-${day} ${hour}:${minute} ${ampm}`;
+}
+
+        function fetchData() {
+            if (!isPaused) {
+                fetch('/recentData')
+                    .then(response => response.json())
+                    .then(data => {
+                        const formattedTime = new Date(data.timestamp).toLocaleTimeString();
+                        data.timestamp = formatDate(data.timestamp);                   
+                        chart.data.labels.push(data.timestamp);
+                        chart.data.datasets[0].data.push(data.temperature);
+                        chart.data.datasets[1].data.push(data.humidity);
+                        chart.update();
+
+                        document.getElementById('temperature').textContent = `${data.temperature}°C`;
+                        document.getElementById('humidity').textContent = `${data.humidity}%`;
+                        document.getElementById('time').textContent = formattedTime;
+                        document.getElementById('variableValue').textContent = ++totalReadings;
+                    })
+                    .catch(error => {
                         console.error('Error fetching data:', error);
-                        countdownElement.textContent = 'Paused';
+                        document.getElementById('countdown').textContent = 'Paused';
                         clearInterval(interval);
-                    }
-                }
+                    });
             }
-
-            function startCountdown() {
-                let counter = UPDATE_TIME;
-                countdownElement.textContent = '(' + counter + ')';
-                interval = setInterval(() => {
-                    counter--;
-                    countdownElement.textContent = '(' + counter + ')';
-                    if (counter <= 0) {
-                        fetchData();
-                        counter = UPDATE_TIME;
-                    }
-                }, 1000);
-            }
-
-            initChart();
-            fetchData(); // Initial data fetch
-            startCountdown(); // Start the countdown
-        });
+        }
     </script>
 </body>
 </html>

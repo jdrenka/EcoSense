@@ -88,7 +88,7 @@ p{
     width: 30%;
     height: 395px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: rgb(43, 36, 62);
+    background-color: rgb(48, 48, 109);
     color: white;
     margin-top: 0px;
     margin-left: 3%;
@@ -138,6 +138,25 @@ p{
     display:flex;
 }
 
+#toggleDailyReport {
+    background-color: #4a4746; /* Green background for a fresh look */
+    width: 150px;
+    height: 35px;   
+    border: none; /* Remove default border */
+    color: white; /* White text color */
+    margin-top: 10px;
+    border: 2px solid #030303;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    font-size: 12px; /* Larger font size for readability */
+    cursor: pointer; /* Cursor indicates clickable item */
+    border-radius: 5px; /* Rounded corners for a modern look */
+    transition: background-color 0.6s, transform 0.6s; /* Smooth transitions for hover effects */
+}
+
+#toggleDailyReport:hover {
+    background-color: #605f5b; /* Darker shade of green when hovered */ /* Slightly increase size on hover */
+}
 
 #toggleReadings{
     font-size: 50px;
@@ -199,12 +218,28 @@ p{
 .sensordisplay{
     width: 100%;  
     border-top: 2.5px solid #ffffff;
+    border-bottom: 2.5px solid #ffffff;
     padding-top: 30px;
     padding-bottom: 20px;
     display: flex;
     margin-top: 15px;
 }
 
+.dailyReportSection{
+    margin-top: 30px;
+    height: 500px;
+}
+
+#dailyReportContainer {
+    width: 2000px; /* Or a specific width like 600px */
+    max-width: 100%; /* Optional, for responsive designs */
+    height: 600px; /* Fixed height to prevent vertical resizing */
+    margin: auto; /* Center the container if needed */
+    display: none; /* Initially hidden */
+     /* Ensures the positioning is stable */
+    padding: 20px; /* Padding to avoid content touching the edges */
+    box-sizing: border-box; /* Include padding and border in the width and height */
+}
 
 #sensorChart {
     flex: 2; /* Takes twice the space of the readings panel, adjust as necessary */
@@ -218,7 +253,7 @@ p{
 }
 
 #switchChartType{
-    background-color: #3e4cb7; /* Green background for a fresh look */
+    background-color: #505050; /* Green background for a fresh look */
     width: 150px;
     height: 35px;   
     border: none; /* Remove default border */
@@ -234,6 +269,6 @@ p{
 }
 
 #switchChartType:hover {
-    background-color: #4959d3; /* Darker shade of green when hovered */
+    background-color: #3c3c3c; /* Darker shade of green when hovered */
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19); /* Larger shadow on hover */
 }
