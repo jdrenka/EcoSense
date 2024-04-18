@@ -18,20 +18,20 @@
         <div class='currentReadingsPanel'>
             <div class='topsection'>
                 <div class='headerwithcountdown'>
-                    <h1 id='currentsensordisplay'>Current Sensor Data</h1>
+                    <h1 class = 'stats' id='currentsensordisplay'>Current Sensor Data</h1>
                     <span id='statusicon'><img id = statusicon src="images/bolt.png" alt="Active"></span>
                 </div>
                 <div class='timeandbolt'>
-                    <p id='timecontainer'>Last reading: <span id="time">--</span></p>
-                    <span id="countdown">10</span> 
+                    <p class = 'stats' id='timecontainer'>Last reading: <span id="time">--</span></p>
+                    <span class = 'stats' id="countdown">10</span> 
                 </div>
             </div>
             
             <div class='bodysection'>
-                <p>Temperature: <span id="temperature">--</span></p>
+                <p class = 'stats'>Temperature: <span id="temperature">--</span></p>
                 <br>
-                <p>Humidity: <span id="humidity">--</span></p>
-                <div id="displayVariable">Total Readings: <span id="variableValue">--</span></div>
+                <p class = 'stats'>Humidity: <span id="humidity">--</span></p>
+                <div class = 'stats' id="displayVariable">Total Readings: <span id="variableValue">--</span></div>
                 <button id="switchChartType">Line/Bar</button>
                 <button id="pauseButton">Pause</button>
                 <button id="toggleDailyReport">Get Daily Report</button>

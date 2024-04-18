@@ -100,7 +100,7 @@ p{
     width: 30%;
     height: 395px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: rgb(48, 48, 109);
+    background-color: rgb(72, 72, 95);
     color: white;
     margin-top: 0px;
     margin-left: 3%;
@@ -113,6 +113,10 @@ p{
     
 }
 
+.stats{
+
+    text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
+}
 #returnTopButton{
     margin-left: 50px;
     margin-top: 17px;
