@@ -29,7 +29,7 @@ p{
 }
 
 #dashtext{
-    padding: 20px;
+    padding:2;
 }
 
 
@@ -106,8 +106,10 @@ p{
     margin-left: 3%;
     margin-right: 20px;
     border-radius: 10px;
-    border: 2.5px solid #030303;
+    border: 0.5px solid #f8f8f8;
     padding-left: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease-in-out;
     
 }
 
