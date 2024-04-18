@@ -15,14 +15,17 @@
 <div class = 'sensordisplay'>
     <div class='currentReadingsPanel'>
         <div class='topsection'>
-            <h1 id='currentsensordisplay'>Current Sensor Data</h1>
-            <p id='timecontainer'>Time: <span id="time">--</span></p>
+            <div class = 'headerwithcountdown'>
+                <h1 id='currentsensordisplay'>Current Sensor Data</h1>
+                <span id="countdown">10</span>
+            </div>
+
+            <p id='timecontainer'>Time at reading: <span id="time">--</span></p>
         </div>
         
         <div class='bodysection'>
             <p>Temperature: <span id="temperature">--</span>°C</p>
             <p>Humidity: <span id="humidity">--</span>%</p>
-            <p>Next update in: <span id="countdown">10</span> seconds</p>
         </div>
     </div>
     <canvas id="sensorChart" width="800" height="400"></canvas>
@@ -118,10 +121,10 @@
 
             function startCountdown() {
                 let counter = UPDATE_TIME;
-                countdownElement.textContent = counter; //update countdown
+                countdownElement.textContent =  '(' + counter + ')'; //update countdown
                 interval = setInterval(() => {
                     counter--;
-                    countdownElement.textContent = counter;
+                    countdownElement.textContent = '(' + counter + ')';
                     if (counter <= 0) {
                         clearInterval(interval);
                         fetchData();

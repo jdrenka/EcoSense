@@ -3,6 +3,6 @@ Content-Type: application/json
 
 {
     "time": "2023-05-06 15:54:23",
-    "temp": 22.3,
-    "hum": 15.4
+    "temp": 16.5,
+    "hum": 15.2
 }

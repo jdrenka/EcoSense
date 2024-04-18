@@ -82,28 +82,30 @@ html, body {
 .currentReadingsPanel{
 
     width: 30%;
-    height: 40%;
+    height: 395px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: rgb(58, 53, 53);
+    background-color: rgb(64, 50, 105);
     color: white;
-    margin-top: 30px;
+    margin-top: 0px;
     margin-left: 3%;
+    margin-right: 20px;
     border-radius: 5px;
     border: 2.5px solid #030303;
     padding-left: 15px;
     
 }
+.headerwithcountdown{
+    margin-bottom: 8px;
+    display: flex;  
+    gap: 40px;
 
+}
 .topsection{
     margin-right: 10px;
     border-bottom: 2.5px solid #030303;
     padding: 10px;
 }
 
-.panelandgraph {
-    display: flex;  /* Use flexbox to align items */
-    width: 100% ;
-}
 
 .bodysection{
     padding: 10px;
@@ -111,7 +113,6 @@ html, body {
 }
 
 #time{
-    margin: 0;
     padding: 0;
     font-weight: 100;
 }
@@ -126,13 +127,21 @@ html, body {
     padding: 0; 
 }
 
+#countdown{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    font-size: 25px;
+    margin-top: 5px;
+}
 
 .sensordisplay{
     width: 100%;    
     display: flex;
+    margin-top: 30px;
 }
 #sensorChart {
     flex: 2; /* Takes twice the space of the readings panel, adjust as necessary */
     max-width: 800px; /* Optional: Sets a max-width for the chart */
-    height: 400px; /* Sets a fixed height for the chart */
+    height: 400px; 
+    max-height: 400px/* Sets a fixed height for the chart */
 }
