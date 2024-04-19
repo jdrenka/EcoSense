@@ -230,9 +230,11 @@
                 if (isPaused) {
                     clearInterval(interval);
                     pauseButton.textContent = "Restart Sensor";
+                    pauseButton.style.backgroundColor = "green";
                     document.getElementById('statusicon').innerHTML = '💤';
                 } else {
                     pauseButton.textContent = "Pause";
+                    pauseButton.style.backgroundColor = "#d61c5a";
                     document.getElementById('statusicon').innerHTML = '<img id = "statusicon" src="images/bolt.png" alt="Active">';
                     startCountdown();
                 }
