@@ -4,6 +4,7 @@ html, body {
     padding: 0;
     background-color: #181934;
     overflow-y: hidden;
+
   }
 
 p{
@@ -186,8 +187,8 @@ p{
     margin-top: 10px;
     flex-direction: column;
     font-weight: bold;
-    background-color: rgb(85, 77, 77);
-    border: 1.5px solid #030303;
+    background-color: rgb(58, 58, 128);
+    border: 1px solid #ffffff;
 }
 
 #time{
@@ -218,7 +219,7 @@ p{
     border: none; /* Remove default border */
     color: white; /* White text color */
     margin-top: 10px;
-    border: 2px solid #030303;
+    border: 1.5px solid #ffffff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
     font-size: 12px; /* Larger font size for readability */
@@ -261,7 +262,7 @@ p{
     border: none; /* Remove default border */
     color: white; /* White text color */
     margin-top: 10px;
-    border: 2px solid #030303;
+    border: 1.5px solid #ffffff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
     font-size: 12px; /* Larger font size for readability */
@@ -276,7 +277,7 @@ p{
 
 #countdown{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-weight: bold;
+    font-weight: 500;
     font-size: 20px;
     margin-top: -5px;
     margin-left: 15px;
@@ -355,7 +356,7 @@ p{
     cursor: pointer; /* Cursor indicates clickable item */
     border-radius: 5px; /* Rounded corners for a modern look */
     transition: background-color 0.6s, transform 0.6s; /* Smooth transitions for hover effects */
-    border: 2px solid #030303;
+    border: 1.5px solid #ffffff;
 }
 #dailyreportheader{
     width: 20%;
