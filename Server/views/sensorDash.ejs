@@ -34,7 +34,11 @@
                 </div>
                 
                 <br>
+            <div class = 'humiditybox'>
                 <p class = 'stats'>Humidity: <span id="humidity">--</span></p>
+                <p class = 'stats'>Current Avg: <span id = 'avghumidity'>--</span></p>
+            </div>
+                
                 <div class = 'stats' id="displayVariable">Total Readings: <span id="variableValue">--</span></div>
                 <button id="switchChartType">Line/Bar</button>
                 <button id="pauseButton">Pause</button>
@@ -299,9 +303,10 @@
                         chart.update();
                         
                         let avgTemp = findAvg(chart.data.datasets[0].data); // Calculate avgTemp using helper func, From current dataset
-
+                        let avgHum = findAvg(chart.data.datasets[1].data);
                         document.getElementById('temperature').textContent = `${data.temperature}°C`;
                         document.getElementById('avgtemperature').textContent = `${avgTemp}°C`;
+                        document.getElementById('avghumidity').textContent = `${avgHum}%`; 
                         document.getElementById('humidity').textContent = `${data.humidity}%`;
                         document.getElementById('time').textContent = formattedTime;
                         document.getElementById('variableValue').textContent = ++totalReadings;
