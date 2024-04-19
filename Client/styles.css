@@ -17,7 +17,7 @@ p{
 
 .humiditybox{
     display: flex;
-    gap: 40px;
+    gap: 68px;
 }
 
 .navbar{
@@ -108,11 +108,11 @@ p{
 .currentReadingsPanel{
 
     width: 30%;
-    height: 395px;
+    height: 418px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: rgb(72, 72, 95);
     color: white;
-    margin-top: 0px;
+    margin-top: -15px;
     margin-left: 3%;
     margin-right: 20px;
     border-radius: 10px;
@@ -180,8 +180,14 @@ p{
 .bodysection{
     padding: 10px;
     display: flex;
+    margin-right: 10px;
+    margin-left: -4px;
+    border-radius: 10px;
+    margin-top: 10px;
     flex-direction: column;
     font-weight: bold;
+    background-color: rgb(85, 77, 77);
+    border: 1.5px solid #030303;
 }
 
 #time{
