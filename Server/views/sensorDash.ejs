@@ -28,7 +28,11 @@
             </div>
             
             <div class='bodysection'>
-                <p class = 'stats'>Temperature: <span id="temperature">--</span></p>
+                <div class = 'tempbox'>
+                    <p class = 'stats'>Temperature: <span id="temperature">--</span></p>
+                    <p class = 'stats'>Current Avg: <span id = 'avgtemperature'>--</span></p>
+                </div>
+                
                 <br>
                 <p class = 'stats'>Humidity: <span id="humidity">--</span></p>
                 <div class = 'stats' id="displayVariable">Total Readings: <span id="variableValue">--</span></div>
@@ -293,8 +297,11 @@
                         chart.data.datasets[0].data.push(data.temperature);
                         chart.data.datasets[1].data.push(data.humidity);
                         chart.update();
+                        
+                        let avgTemp = findAvg(chart.data.datasets[0].data); // Calculate avgTemp using helper func, From current dataset
 
                         document.getElementById('temperature').textContent = `${data.temperature}°C`;
+                        document.getElementById('avgtemperature').textContent = `${avgTemp}°C`;
                         document.getElementById('humidity').textContent = `${data.humidity}%`;
                         document.getElementById('time').textContent = formattedTime;
                         document.getElementById('variableValue').textContent = ++totalReadings;
@@ -305,6 +312,17 @@
                         clearInterval(interval);
                     });
             }
+        }
+
+
+        function findAvg(tempList){
+            let sum = 0;
+            for(let i = 0; i < tempList.length; i++){
+                sum += tempList[i]; 
+            }
+            //format 
+            let formattedAverage = (sum / tempList.length).toFixed(1); 
+            return formattedAverage;
         }
 
     </script>
