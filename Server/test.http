@@ -2,8 +2,8 @@ POST http://localhost:3000/dataBay HTTP/1.1
 Content-Type: application/json
 
 {
-    "time": "2025-06-18 23:43:00",
-    "temp": 5.9,
-    "hum": 14.6,
+    "time": "2025-06-18 23:45:00",
+    "temp": 30.9,
+    "hum": 19.6,
     "sid": 9
 }   

@@ -73,6 +73,7 @@ app.get('/', (req, res) => {
   res.redirect('/login');
 });
 
+//Retrieve List of Sensors. 
 app.get('/sensorview', async (req, res) => {
   try {
       const query = "SELECT sensor_id AS sid, sensor_name AS sname, sensor_type AS stype FROM sensors";
@@ -121,7 +122,7 @@ app.get('/daily-report', async (req, res) => {
   }
 });
 
-
+//Render sensor details page. 
 app.get('/sensorDash', (req,res) => {
   const sensorId = req.query.sensorId; // Retrieve the sensor ID from the query parameters
 
