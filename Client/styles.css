@@ -79,31 +79,10 @@ p{
 
 }
 
-.card-container {
-    display: flex;
-    margin-top: 35px;
-    margin-left: 8%;
-    justify-content: space-around;
-    width: 90%;
-    max-width: 1200px; /* Adjust based on your preference */
-}
-
-/* Card styling */
-.card {
-    background: rgb(46, 84, 128);
-    border: 2px solid #030303;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    width: 30%;
-    margin: 10px;
-    overflow: hidden; /* Ensures the content fits in the card */
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transition for hover effects */
-    cursor: pointer; /* Changes cursor to pointer on hover */
-}
-
 
 .loginpanel {
-    background: rgb(103, 103, 103);
+    background: rgb(66, 66, 66);
+    border: 2px solid #ffffff;
     margin-top: 5%;
     margin-left: 35%;
     padding: 2rem;
@@ -152,14 +131,15 @@ p{
 
 .navbuttons{
     background-color: #343c3e;
-    margin-top: 10px;
+    margin-top: 15px;
     margin-bottom: 10px;
     padding: 10px;
     width: 10%;
+    height: 60%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
     color: white;
-    border-radius: 30px;
+    border-radius: 10px;
     border: 0.5px solid #f8f8f8;
 }
 
