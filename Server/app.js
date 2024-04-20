@@ -18,6 +18,10 @@ app.get('/', (req, res) => {
   res.render('index.ejs');
 });
 
+app.get('/sensorview', (req,res) => {
+  res.render('index.ejs');
+});
+
 app.get('/recentData', async (req, res) => {
   try {
     // Query to get the latest sensor data

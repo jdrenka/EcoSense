@@ -10,6 +10,9 @@
     <div id="top-of-page"></div>
 
     <div class='navbar'>
+        <img src = 'images/logo.png' id = 'logopic'>
+        <button id = 'sensorviewbutton' href = '/sensorview' class = 'navbuttons' onclick="">View Sensors</a>
+        <button class = 'navbuttons'>Account</button>
         
     </div>
 
@@ -240,13 +243,19 @@
                 }
             });
 
+           
             const switchChartTypeButton = document.getElementById('switchChartType');
+
             switchChartTypeButton.addEventListener('click', function() {
                 currentChartType = (currentChartType === 'line') ? 'bar' : 'line';
                 chart.destroy();
                 initCharts(document.getElementById('sensorChart').getContext('2d'), document.getElementById('dailyReportChart').getContext('2d'));
                 switchChartTypeButton.textContent = `Switch to ${currentChartType === 'line' ? 'Bar' : 'Line'} Chart`;
             });
+
+            document.getElementById('sensorviewbutton').addEventListener('click', function() {
+                    window.location.href = '/';
+                });
 
 
         }
