@@ -8,40 +8,37 @@
 </head>
 
 <body>
-    <div class = 'navbar'>
-        <h1 class = 'text'>Sensor Dashboard</h1>
+    <div class='navbar'>
+        <img src = 'images/logo.png' id = 'logopic'>
+        <button id = 'sensorviewbutton' href = '/sensorview' class = 'navbuttons' onclick="">View Sensors</a>
+        <button class = 'navbuttons'>Account</button>
     </div>
+
+    <div class = 'sensorlistview'>
+        <h1 class = 'text' id = 'sensorlistmessage'>Your Sensors:</h1>
         
-    <h1 class = 'text' id = 'sensorlistmessage'>Your Active Sensors:</h1>
+        <div class = 'innerlistview'>
+            <% sensors.forEach(function(sensors) { %>
+                <div class='listrowentry'>
+                    <a href="/sensorDash?sensorId=<%= sensors.sid %>">
+                    <h1 class='rowicon'>📈</h1>
+                    <h1 class='rowentrydata'><%= sensors.sname %></h1>
+                    <h1 class='rowentrydata'><%= sensors.stype %></h1>
+                    <h1 class='rowentrydata'>Active</h1>
+                    </a>
+                </div>
 
-    <div class="card-container">
-    
-        <div class="card">
-          <a href = '/sensorDash'> 
-            <img src="/images/Greenhouse.jpg" alt="Image 1">
-            <div class="card-body">
-                <h3>Greenhouse</h3>
-                <p>Heat and Humidity of the Greenhouse</p>
-            </div>
-          </a>
+                <div class= 'whiteline'></div>
+                <% }); %>
+
+
         </div>
 
-    
-        <div class="card">
-            <img src="/images/warehouse.jpg" alt="Image 2">
-            <div class="card-body">
-                <h3>Warehouse Climate</h3>
-                <p>Warehouse temp control.</p>
-            </div>
-        </div>
-        <div class="card">
-            <img src="/images/Fridge.jpg" alt="Image 3">
-            <div class="card-body">
-                <h3>Fridge temp monitor</h3>
-                <p>Fridge temperature monitoring.</p>
-            </div>
-        </div>
+
     </div>
+    
+
+    
 
 
 

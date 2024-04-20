@@ -18,8 +18,15 @@ app.get('/', (req, res) => {
   res.render('index.ejs');
 });
 
-app.get('/sensorview', (req,res) => {
-  res.render('index.ejs');
+app.get('/sensorview', async (req, res) => {
+  try {
+      const query = "SELECT sensor_id AS sid, sensor_name AS sname, sensor_type AS stype FROM sensors";
+      const [results, fields] = await db.query(query);
+      res.render('index.ejs', { sensors: results });
+  } catch (err) {
+      console.error('Database query failed:', err);
+      res.status(500).send('Database error');
+  }
 });
 
 app.get('/recentData', async (req, res) => {
@@ -61,22 +68,28 @@ app.get('/daily-report', async (req, res) => {
 
 
 app.get('/sensorDash', (req,res) => {
+  const sensorId = req.query.sensorId; // Retrieve the sensor ID from the query parameters
 
-    res.render('sensorDash.ejs');
+    if (!sensorId) {
+        // Respond with an error if no sensor ID is provided
+        return res.status(400).send('Sensor ID is required');
+    }
+    res.render('sensorDash', { sensorId: sensorId });
 });
 
 app.post('/dataBay', async (req, res) => {
+  //Sensor ID is required to be sent in req. ESP will send this
   console.log();
   console.log('/dataBay Post Request Initialized ------');
 
-  const {time, temp, hum} = req.body; 
+  const {time, temp, hum, sid} = req.body; 
   console.log('Recieved Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum); 
 
-  const query = `INSERT INTO readings (timestamp, temperature, humidity) VALUES (?, ?, ?)`;
+  const query = `INSERT INTO readings (timestamp, temperature, humidity, sensor_id) VALUES (?, ?, ?, ?)`;
 
     try {
         // Execute the SQL query with the data received from the ESP32
-        const [result] = await db.execute(query, [time, temp, hum]);
+        const [result] = await db.execute(query, [time, temp, hum, sid]);
 
         // Respond to the client with success message and the ID of the inserted record
         res.status(201).json({ message: 'Data inserted successfully', id: result.insertId });
