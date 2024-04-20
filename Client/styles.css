@@ -361,14 +361,13 @@ p{
     font-size: 52px;
 }
 #statusicon{
-    margin-right: 0px;
+    margin-left: -15%;
     margin-bottom: -5px;
     margin-top: 0px;
     border-radius: 60px;
     font-size: 55px;
     width: 90px;
     height: 65px;
-    vertical-align: middle;
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     opacity: 1; /* Start fully visible */
     transition: opacity 0.3s ease-in-out;

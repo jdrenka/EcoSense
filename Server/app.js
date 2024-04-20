@@ -188,7 +188,7 @@ app.post('/login', async (req, res) => {
                 </style>
             </head>
             <body>
-                <h1>Invalid Password</h1>
+                <h1>Invalid Login Attempt</h1>
                 <p>You will be redirected back to the login page in 5 seconds.</p>
                 <p>If you are not redirected, <a href="/login">click here</a> to return to the login page.</p>
                 <script>
