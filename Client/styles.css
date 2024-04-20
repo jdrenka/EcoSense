@@ -66,7 +66,10 @@ p{
 
 
 #sensorlistmessage{
-    color:rgb(254, 254, 254)
+    color:rgb(254, 254, 254);
+    border-bottom: 10px groove #f8f8f8;
+    margin-right: 20px;
+
 }
 
 .card-container {
@@ -89,6 +92,55 @@ p{
     overflow: hidden; /* Ensures the content fits in the card */
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transition for hover effects */
     cursor: pointer; /* Changes cursor to pointer on hover */
+}
+
+
+.loginpanel {
+    background: rgb(103, 103, 103);
+    margin-top: 5%;
+    margin-left: 35%;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 300px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.input-group input {
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: calc(100% - 1.6rem); /* padding + border */
+}
+
+.login-button {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #004494;
 }
 
 .navbuttons{
@@ -151,6 +203,7 @@ p{
 }
 .innerlistview{
     margin-right: 30px;
+    margin-top: 40px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     width: 90%;
 }
@@ -162,6 +215,8 @@ p{
     margin-left: 4%;
     margin-right: 4%;
     border-radius: 30px;
+    border: 1px solid #ffffff;
+    
     background-color: #137e98;
     align-items: center;
     width: 100%;

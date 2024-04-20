@@ -3,7 +3,10 @@ const path = require('path');
 const app = express();
 const port = 3000;
 const db = require('./database');
+const session = require('express-session');
+const bcrypt = require('bcryptjs');
 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, '..', 'Client')));
@@ -12,10 +15,36 @@ app.set('view engine', 'ejs');
 // Define template directory
 app.set('views', 'views');
 
+//Session info 
+app.use(session({
+  secret: 'your_secret_key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+      maxAge: 3600000,
+      secure: false, // set true if using HTTPS
+      httpOnly: true
+  }
+}));
 
+function ensureAuthenticated(req, res, next) {
+  if (req.session.isLoggedIn) {
+      next();  // User is logged in, proceed to the next function in the stack
+  } else {
+      res.redirect('/login');  // User is not logged in, redirect to login page
+  }
+}
+
+app.use((req, res, next) => {
+  if (req.path === '/login') {
+      next();  // Skip middleware for login and register routes
+  } else {
+      ensureAuthenticated(req, res, next);  // Apply authentication check
+  }
+});
 
 app.get('/', (req, res) => {
-  res.render('index.ejs');
+  res.redirect('/login');
 });
 
 app.get('/sensorview', async (req, res) => {
@@ -99,6 +128,92 @@ app.post('/dataBay', async (req, res) => {
     }
 
 }); 
+
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+      const query = 'SELECT * FROM users WHERE username = ? AND password = ?';
+      const [results] = await db.query(query, [username, password]);
+
+      if (results.length > 0) {
+          req.session.isLoggedIn = true;
+          req.session.user = results[0]; // Store user data in session
+          res.redirect('/sensorview');
+      } else {
+        res.status(401).send(`
+        <html>
+            <head>
+                <title>Invalid Login</title>
+                <style>
+                    body {
+                        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                        text-align: center;
+                        padding-top: 50px;
+                        background-color: #181934;
+                        color: #white;
+                    }
+                    h1 {
+                        color: #de4d4d;
+                    }
+                    p {
+                        font-size: 16px;
+                        color: white;
+                    }
+                    a {
+                        display: inline-block;
+                        padding: 10px 15px;
+                        margin-top: 20px;
+                        border-radius: 5px;
+                        background-color: rgb(103, 103, 103);
+                        color: white;
+                        text-decoration: none;
+                        transition: background-color 0.3s;
+                    }
+                    a:hover {
+                        background-color: #0056b3;
+                    }
+                    @keyframes fadeIn {
+                        from { opacity: 0.25; }
+                        to { opacity: 1; }
+                    }
+                    body {
+                        animation: fadeIn 0.5s ease-in-out;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>Invalid Password</h1>
+                <p>You will be redirected back to the login page in 5 seconds.</p>
+                <p>If you are not redirected, <a href="/login">click here</a> to return to the login page.</p>
+                <script>
+                    setTimeout(function() {
+                        window.location.href = "/login";
+                    }, 5000);
+                </script>
+            </body>
+        </html>
+    `);
+      }
+  } catch (error) {
+      console.error('Database error:', error);
+      res.status(500).send('Database error');
+  }
+});
+
+
+// Logout route
+app.get('/logout', (req, res) => {
+  req.session.destroy(() => {
+      res.clearCookie('connect.sid'); // Assuming session ID cookie name is 'connect.sid'
+      res.redirect('/login');
+  });
+});
+
+
+app.get('/login', (req, res) => {
+  res.render('login.ejs');
+});
+
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
