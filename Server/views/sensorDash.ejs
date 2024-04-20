@@ -13,7 +13,7 @@
 
         <img src = 'images/logo.png' id = 'logopic'>
         <button id = 'sensorviewbutton' class = 'navbuttons' onclick="">View Sensors</a>
-        <button class = 'navbuttons'>Account</button>
+        <button class = 'navbuttons' id = 'logoutbutton'>Logout</button>
         
     </div>
 
@@ -86,8 +86,9 @@
             const ctx = document.getElementById('sensorChart').getContext('2d');
             const dailyReportChartCtx = document.getElementById('dailyReportChart').getContext('2d');
             initCharts(ctx, dailyReportChartCtx);
-            setupEventListeners();
             startCountdown();
+            setupEventListeners();
+           
         });
 
         function initCharts(ctx, dailyReportChartCtx) {
@@ -260,6 +261,12 @@
             document.getElementById('sensorviewbutton').addEventListener('click', function() {
                     window.location.href = '/sensorview';
                 });
+
+                const logoutButton = document.getElementById('logoutbutton');
+                logoutButton.addEventListener('click', function() {
+                    window.location.href = '/logout';
+                });
+
 
 
         }

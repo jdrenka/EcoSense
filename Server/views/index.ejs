@@ -11,7 +11,7 @@
     <div class='navbar'>
         <img src = 'images/logo.png' id = 'logopic'>
         <button id = 'sensorviewbutton' href = '/sensorview' class = 'navbuttons' onclick="">View Sensors</a>
-        <button class = 'navbuttons'>Account</button>
+        <button id = 'logoutbutton' class = 'navbuttons'>Logout</button>
     </div>
 
     <div class = 'sensorlistview'>
@@ -37,7 +37,14 @@
 
     </div>
     
-
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const logoutButton = document.getElementById('logoutbutton');
+    logoutButton.addEventListener('click', function() {
+        window.location.href = '/logout';
+    });
+});
+</script>
     
 
 

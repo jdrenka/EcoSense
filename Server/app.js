@@ -27,14 +27,40 @@ app.use(session({
   }
 }));
 
+// Data recieving from device
+app.post('/dataBay', async (req, res) => {
+  //Sensor ID is required to be sent in req. ESP will send this
+  console.log();
+  console.log('/dataBay Post Request Initialized ------');
+
+  const {time, temp, hum, sid} = req.body; 
+  console.log('Recieved Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum); 
+
+  const query = `INSERT INTO readings (timestamp, temperature, humidity, sensor_id) VALUES (?, ?, ?, ?)`;
+
+    try {
+        // Execute the SQL query with the data received from the ESP32
+        const [result] = await db.execute(query, [time, temp, hum, sid]);
+
+        // Respond to the client with success message and the ID of the inserted record
+        res.status(201).json({ message: 'Data inserted successfully', id: result.insertId });
+    } catch (err) {
+        console.error('Database error:', err);
+        res.status(500).json({ message: 'Error inserting data into database' });
+    }
+
+}); 
+
+//Check auth middleware ---
 function ensureAuthenticated(req, res, next) {
   if (req.session.isLoggedIn) {
-      next();  // User is logged in, proceed to the next function in the stack
+      next();  
   } else {
-      res.redirect('/login');  // User is not logged in, redirect to login page
+      res.redirect('/login');  
   }
 }
 
+// ALL ROUTE HANDLERS PAST THIS POINT ARE AUTH GUARDED
 app.use((req, res, next) => {
   if (req.path === '/login') {
       next();  // Skip middleware for login and register routes
@@ -106,28 +132,7 @@ app.get('/sensorDash', (req,res) => {
     res.render('sensorDash', { sensorId: sensorId });
 });
 
-app.post('/dataBay', async (req, res) => {
-  //Sensor ID is required to be sent in req. ESP will send this
-  console.log();
-  console.log('/dataBay Post Request Initialized ------');
 
-  const {time, temp, hum, sid} = req.body; 
-  console.log('Recieved Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum); 
-
-  const query = `INSERT INTO readings (timestamp, temperature, humidity, sensor_id) VALUES (?, ?, ?, ?)`;
-
-    try {
-        // Execute the SQL query with the data received from the ESP32
-        const [result] = await db.execute(query, [time, temp, hum, sid]);
-
-        // Respond to the client with success message and the ID of the inserted record
-        res.status(201).json({ message: 'Data inserted successfully', id: result.insertId });
-    } catch (err) {
-        console.error('Database error:', err);
-        res.status(500).json({ message: 'Error inserting data into database' });
-    }
-
-}); 
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -199,7 +204,6 @@ app.post('/login', async (req, res) => {
       res.status(500).send('Database error');
   }
 });
-
 
 // Logout route
 app.get('/logout', (req, res) => {
