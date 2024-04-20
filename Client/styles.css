@@ -127,7 +127,7 @@ p{
     padding-top : 10px;
     padding-left: 15px;
     font-weight: 300;
-    margin-left: -45px;
+    margin-left: -55px;
 }
 
 .currentReadingsPanel{
@@ -135,7 +135,7 @@ p{
     width: 30%;
     height: 418px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: rgb(72, 72, 95);
+    background-color: rgb(46, 46, 53);
     color: white;
     margin-top: -15px;
     margin-left: 3%;
@@ -204,7 +204,7 @@ p{
     margin-top: 10px;
     flex-direction: column;
     font-weight: bold;
-    background-color: rgb(58, 58, 128);
+    background-color: rgb(43, 43, 61);
     border: 1px solid #ffffff;
 }
 
