@@ -97,7 +97,7 @@ app.get('/recentData', async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error fetching data');
+    res.status(500).send('Error fetching dataTest');
   }
 });
 
@@ -105,16 +105,16 @@ app.get('/daily-report', async (req, res) => {
   try {
       const today = new Date();
       const todayString = today.toISOString().split('T')[0];
-      
+      console.log("DATETEST", todayString);
       const query = `
           SELECT timestamp, temperature, humidity
           FROM readings
-          WHERE DATE(timestamp) = ?;
+          WHERE DATE(timestamp) = "2024-04-28";
       `;
       const values = [todayString];
 
       const [rows, fields] = await db.query(query, values);
-      
+      console.log("test", rows);
       res.json(rows);
   } catch (err) {
       console.error('Error fetching daily report data', err);

@@ -71,6 +71,9 @@ p{
     padding:2;
 }
 
+.checks{
+    background-color: red;
+}
 
 #sensorlistmessage{
     color:rgb(254, 254, 254);
@@ -172,6 +175,31 @@ p{
     
 }
 
+.buttonsandcheck{
+    display:flex;   
+    margin: 0;
+   
+}
+
+.buttonset{
+    margin: 0;
+}
+
+.checkboxesgroup{
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    font-size: 15px;
+    margin-left: -50px;
+    
+}
+
+.checkflex{
+    display: flex;
+    align-items: center;
+    width: 150px;
+    margin-top: 10px;
+}
 #logopic{
     margin-top: 10px;
     margin-left: 30px;
@@ -341,7 +369,7 @@ p{
     font-size: 52px;
 }
 #statusicon{
-    margin-left: -15%;
+    margin-left: 0%;
     margin-bottom: -5px;
     margin-top: 0px;
     border-radius: 60px;
