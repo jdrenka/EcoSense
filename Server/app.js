@@ -93,6 +93,7 @@ app.get('/recentData', async (req, res) => {
     if (rows.length > 0) {
       res.json(rows[0]); // Send the latest row of sensor data
     } else {
+      console.log("OOGABOOGA");
       res.status(404).json({ message: "No data available" });
     }
   } catch (err) {
@@ -105,16 +106,14 @@ app.get('/daily-report', async (req, res) => {
   try {
       const today = new Date();
       const todayString = today.toISOString().split('T')[0];
-      console.log("DATETEST", todayString);
       const query = `
           SELECT timestamp, temperature, humidity
           FROM readings
-          WHERE DATE(timestamp) = "2024-04-28";
+          WHERE DATE(timestamp) = "2024-05-09";
       `;
       const values = [todayString];
 
       const [rows, fields] = await db.query(query, values);
-      console.log("test", rows);
       res.json(rows);
   } catch (err) {
       console.error('Error fetching daily report data', err);
