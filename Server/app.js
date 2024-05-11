@@ -5,6 +5,18 @@ const port = 3000;
 const db = require('./database');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
+const bodyParser = require('body-parser');
+const twilio = require('twilio');
+
+
+const accountSid = 'AC5f47c13f6d37a8f58634ef22a03fc8ff';
+const authToken = 'e998f5610837db5b647845687b82dfcf';
+const twilloClient = new twilio(accountSid, authToken);
+const twilioNumber = '+15182941286';
+const recipient = '+12507183236';
+
+const tempThreshold = 30; 
+const humidityThreshold = 50;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -36,7 +48,35 @@ app.post('/dataBay', async (req, res) => {
   const {time, temp, hum, sid} = req.body; 
   console.log('Recieved Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum); 
 
-  const query = `INSERT INTO readings (timestamp, temperature, humidity, sensor_id) VALUES (?, ?, ?, ?)`;
+  let alerts = [];
+    if (temp > tempThreshold) {
+        alerts.push(`Temperature of ${temperature}°C exceeds the threshold of ${tempThreshold}°C.`);
+    }
+    if (hum > humidityThreshold) {
+        alerts.push(`Humidity of ${humidity}% exceeds the threshold of ${humidityThreshold}%.`);
+    }
+
+    // If any thresholds are exceeded, send an SMS
+    if (alerts.length > 0) {
+        const messageBody = `Alert: ${alerts.join(' ')}`;
+        twilloClient.messages.create({
+            body: messageBody,
+            from: twilioNumber,
+            to: '+12507183236' 
+        })
+        .then(message => {
+            console.log(`Alert Message SID: ${message.sid}`);
+            res.send(`Alert sent successfully! ${messageBody}`);
+        })
+        .catch(error => {
+            console.error(error);
+            res.status(500).send('Failed to send SMS');
+        });
+    } else {
+        res.send('Sensor data received. No thresholds exceeded.');
+    }
+
+    const query = `INSERT INTO readings (timestamp, temperature, humidity, sensor_id) VALUES (?, ?, ?, ?)`;
 
     try {
         // Execute the SQL query with the data received from the ESP32
@@ -85,6 +125,26 @@ app.get('/sensorview', async (req, res) => {
   }
 });
 
+app.get('/send-test-sms', (req, res) => {
+  // Define the message
+  const message = "Toe ass u can never block me now  Love - Justin";
+
+  twilloClient.messages.create({
+      body: message,
+      from: twilioNumber,
+      to: recipient
+  })
+  .then(message => {
+      console.log(`Message SID: ${message.sid}`);
+      res.send(`Test SMS sent successfully! Message SID: ${message.sid}`);
+  })
+  .catch(error => {
+      console.error(error);
+      res.status(500).send('Failed to send SMS');
+  });
+});
+
+
 app.get('/recentData', async (req, res) => {
   try {
     // Query to get the latest sensor data
@@ -132,7 +192,30 @@ app.get('/sensorDash', (req,res) => {
     res.render('sensorDash', { sensorId: sensorId });
 });
 
+//Twillo stuff: Twillo phone number:  +15182941286, 
 
+
+app.post('/send-sms', (req, res) => {
+  const { message, to } = req.body;
+
+  if (!message || !to) {
+      return res.status(400).send('Please provide both a message and a recipient number.');
+  }
+
+  twilloClient.messages.create({
+      body: message,
+      from: twilioNumber,
+      to: to
+  })
+  .then(message => {
+      console.log(`Message SID: ${message.sid}`);
+      res.send(`SMS sent successfully to ${to}! Message SID: ${message.sid}`);
+  })
+  .catch(error => {
+      console.error(error);
+      res.status(500).send('Failed to send SMS');
+  });
+});
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
