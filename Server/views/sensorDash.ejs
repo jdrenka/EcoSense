@@ -90,6 +90,7 @@
         let maxDataPoints = 5000;
         let isPaused = false;
         let totalReadings = 0;
+        const sensorId = "<%= sensorId %>";
 
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('sensorChart').getContext('2d');
@@ -303,9 +304,10 @@
 
         function fetchData() {
             if (!isPaused) {
-                fetch('/recentData')
+                fetch(`/recentData/${sensorId}`)
                     .then(response => response.json())
                     .then(data => {
+                    if(sensorId == data.sensor_id){ //Condition check if the sensorids match
                         let timestamp = new Date(data.timestamp);
                         timestamp.setHours(timestamp.getHours() + 1); //add 1 extra hour to calibrate
                         const formattedTime = timestamp.toLocaleTimeString();
@@ -322,6 +324,7 @@
                         document.getElementById('humidity').textContent = `${data.humidity.toFixed(2)}%`;
                         document.getElementById('time').textContent = formattedTime;
                         document.getElementById('variableValue').textContent = ++totalReadings;
+                    }
                     })
                     .catch(error => {
                         console.error('Error fetching data:', error);

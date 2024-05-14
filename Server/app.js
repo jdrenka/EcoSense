@@ -163,22 +163,24 @@ app.get('/send-test-sms', (req, res) => {
 });
 
 
-app.get('/recentData', async (req, res) => {
-  try {
-    // Query to get the latest sensor data
-    const query = 'SELECT timestamp, temperature, humidity FROM readings ORDER BY timestamp DESC LIMIT 1';
-    const [rows] = await db.query(query);
-    if (rows.length > 0) {
-      res.json(rows[0]); // Send the latest row of sensor data
-    } else {
-      console.log("OOGABOOGA");
-      res.status(404).json({ message: "No data available" });
+app.get('/recentData/:sensorId', async (req, res) => {
+    const sensorId = req.params.sensorId;  // Assuming you're getting the sensorId from the route parameter
+
+    const query = 'SELECT timestamp, temperature, humidity, sensor_id FROM readings WHERE sensor_id = ? ORDER BY timestamp DESC LIMIT 1';
+    
+    try {
+        const [rows] = await db.query(query, [sensorId]); // Passing sensorId to the query
+        if (rows.length > 0) {
+            res.json(rows[0]); // Send the latest row of sensor data
+        } else {
+            res.status(404).send('No data found for this sensor');
+        }
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).send('Internal Server Error');
     }
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error fetching dataTest');
-  }
 });
+
 
 app.get('/daily-report', async (req, res) => {
   try {
