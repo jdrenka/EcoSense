@@ -46,8 +46,8 @@ let isHumAlertSent = false;
 app.post('/dataBay', async (req, res) => {
   console.log('/dataBay Post Request Initialized ------');
   const {time, temp, hum, sid} = req.body;
-  console.log('Received Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum);
-
+  console.log('Received Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum , ' SensorID: ', sid);
+    console.log("------");
   let alerts = [];
   // Check temperature threshold
   if (temp > tempThreshold && !isTempAlertSent) {
@@ -200,15 +200,32 @@ app.get('/daily-report', async (req, res) => {
 });
 
 //Render sensor details page. 
-app.get('/sensorDash', (req,res) => {
-  const sensorId = req.query.sensorId; // Retrieve the sensor ID from the query parameters
+app.get('/sensorDash', async (req, res) => {
+    const sensorId = req.query.sensorId; // Retrieve the sensor ID from the query parameters
 
     if (!sensorId) {
         // Respond with an error if no sensor ID is provided
         return res.status(400).send('Sensor ID is required');
     }
-    res.render('sensorDash', { sensorId: sensorId });
+
+    try {
+        // Assuming 'db' is your database connection object
+        // Replace 'sensor_table' with your actual table name
+        const [rows] = await db.execute('SELECT sensor_name FROM sensors WHERE sensor_id = ?', [sensorId]);
+
+        if (rows.length === 0) {
+            // No sensor found with the given ID
+            return res.status(404).send('Sensor not found');
+        }
+
+        const sensorName = rows[0].sensor_name; // assuming the column name is 'sensor_name'
+        res.render('sensorDash', { sensorId: sensorId, sensorName: sensorName });
+    } catch (err) {
+        console.error('Database error:', err);
+        res.status(500).send('Internal Server Error');
+    }
 });
+
 
 //Twillo stuff: Twillo phone number:  +15182941286, 
 
