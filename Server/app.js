@@ -39,57 +39,75 @@ app.use(session({
   }
 }));
 
+let isTempAlertSent = false;
+let isHumAlertSent = false;
+
 // Data recieving from device
 app.post('/dataBay', async (req, res) => {
-  //Sensor ID is required to be sent in req. ESP will send this
-  console.log();
   console.log('/dataBay Post Request Initialized ------');
-
-  const {time, temp, hum, sid} = req.body; 
-  console.log('Recieved Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum); 
+  const {time, temp, hum, sid} = req.body;
+  console.log('Received Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum);
 
   let alerts = [];
-    if (temp > tempThreshold) {
-        alerts.push(`Temperature of ${temperature}°C exceeds the threshold of ${tempThreshold}°C.`);
-    }
-    if (hum > humidityThreshold) {
-        alerts.push(`Humidity of ${humidity}% exceeds the threshold of ${humidityThreshold}%.`);
-    }
+  // Check temperature threshold
+  if (temp > tempThreshold && !isTempAlertSent) {
+      alerts.push(`Temperature of ${temp}°C exceeds the threshold of ${tempThreshold}°C.`);
+      isTempAlertSent = true;  // Set the flag
+  } else if (temp <= tempThreshold) {
+      isTempAlertSent = false;  // Reset the flag when condition is normal
+  }
 
-    // If any thresholds are exceeded, send an SMS
-    if (alerts.length > 0) {
-        const messageBody = `Alert: ${alerts.join(' ')}`;
-        twilloClient.messages.create({
-            body: messageBody,
-            from: twilioNumber,
-            to: '+12507183236' 
-        })
-        .then(message => {
-            console.log(`Alert Message SID: ${message.sid}`);
-            res.send(`Alert sent successfully! ${messageBody}`);
-        })
-        .catch(error => {
-            console.error(error);
-            res.status(500).send('Failed to send SMS');
-        });
-    } else {
-        res.send('Sensor data received. No thresholds exceeded.');
-    }
+  // Check humidity threshold
+  if (hum > humidityThreshold && !isHumAlertSent) {
+      alerts.push(`Humidity of ${hum}% exceeds the threshold of ${humidityThreshold}%.`);
+      isHumAlertSent = true;  // Set the flag
+  } else if (hum <= humidityThreshold) {
+      isHumAlertSent = false;  // Reset the flag when condition is normal
+  }
 
-    const query = `INSERT INTO readings (timestamp, temperature, humidity, sensor_id) VALUES (?, ?, ?, ?)`;
+  // Function to handle database insertion
+  const insertData = async () => {
+      const query = `INSERT INTO readings (timestamp, temperature, humidity, sensor_id) VALUES (?, ?, ?, ?)`;
+      try {
+          const [result] = await db.execute(query, [time, temp, hum, sid]);
+          console.log('Data inserted successfully:', result.insertId);
+          return { success: true, insertId: result.insertId };
+      } catch (err) {
+          console.error('Database error:', err);
+          return { success: false, error: err };
+      }
+  };
 
-    try {
-        // Execute the SQL query with the data received from the ESP32
-        const [result] = await db.execute(query, [time, temp, hum, sid]);
-
-        // Respond to the client with success message and the ID of the inserted record
-        res.status(201).json({ message: 'Data inserted successfully', id: result.insertId });
-    } catch (err) {
-        console.error('Database error:', err);
-        res.status(500).json({ message: 'Error inserting data into database' });
-    }
-
-}); 
+  // If any thresholds are exceeded, send an SMS and wait for it
+  if (alerts.length > 0) {
+      const messageBody = `Alert: ${alerts.join(' ')}`;
+      twilloClient.messages.create({
+          body: messageBody,
+          from: twilioNumber,
+          to: '+12507183236'
+      })
+      .then(async message => {
+          console.log(`Alert Message SID: ${message.sid}`);
+          const dbResult = await insertData();
+          if (dbResult.success) {
+              res.status(201).json({ alert: messageBody, message: 'Alert sent and data inserted successfully', id: dbResult.insertId });
+          } else {
+              res.status(500).json({ alert: messageBody, message: 'Alert sent but failed to insert data', error: dbResult.error });
+          }
+      })
+      .catch(error => {
+          console.error('Failed to send SMS:', error);
+          res.status(500).json({ message: 'Failed to send SMS', error });
+      });
+  } else {
+      const dbResult = await insertData();
+      if (dbResult.success) {
+          res.status(201).json({ message: 'Data inserted successfully', id: dbResult.insertId });
+      } else {
+          res.status(500).json({ message: 'Error inserting data into database', error: dbResult.error });
+      }
+  }
+});
 
 //Check auth middleware ---
 function ensureAuthenticated(req, res, next) {
