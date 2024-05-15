@@ -187,9 +187,9 @@ app.get('/daily-report', async (req, res) => {
       const today = new Date();
       const todayString = today.toISOString().split('T')[0];
       const query = `
-          SELECT timestamp, temperature, humidity
+          SELECT timestamp, temperature, humidity, light
           FROM readings
-          WHERE DATE(timestamp) = "2024-05-09";
+          WHERE DATE(timestamp) = "2024-05-15";
       `;
       const values = [todayString];
 
