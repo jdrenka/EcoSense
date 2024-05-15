@@ -166,7 +166,7 @@ app.get('/send-test-sms', (req, res) => {
 app.get('/recentData/:sensorId', async (req, res) => {
     const sensorId = req.params.sensorId;  // Assuming you're getting the sensorId from the route parameter
 
-    const query = 'SELECT timestamp, temperature, humidity, sensor_id FROM readings WHERE sensor_id = ? ORDER BY timestamp DESC LIMIT 1';
+    const query = 'SELECT timestamp, temperature, humidity, light, sensor_id FROM readings WHERE sensor_id = ? ORDER BY timestamp DESC LIMIT 1';
     
     try {
         const [rows] = await db.query(query, [sensorId]); // Passing sensorId to the query
