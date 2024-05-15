@@ -165,7 +165,7 @@ p{
     background-color: rgba(109, 112, 112, 0.25);
     color: white;
     margin-top: -15px;
-    margin-left: 3%;
+    margin-left: 1%;
     margin-right: 20px;
     border-radius: 10px;
     border: 0.5px solid #332f36;
@@ -299,7 +299,7 @@ p{
 
 .headerchunk{
     display: flex;
-    margin-left: 10px;
+    margin-left: 0px;
     border-bottom: 1px solid #ffffff;
 
 }
@@ -320,7 +320,7 @@ p{
     cursor: pointer;
     transition: background-color 0.3s ease;
     margin-top: 1.25%;
-    margin-left: 23%;
+    margin-left: 7%;
     height: 40%;
     font-size: 15px;
 }
