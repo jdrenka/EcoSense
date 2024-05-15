@@ -176,8 +176,8 @@ p{
 }
 
 .currentReadingsPanel{
-
-    width: 30%;
+    display: fixed;
+    width: 375px;
     height: 418px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: rgba(109, 112, 112, 0.25);
@@ -354,9 +354,9 @@ p{
 
 
 .headerwithcountdown{
-    margin-bottom: 8px;
+    margin-bottom: -2px;
     display: flex;  
-    gap: 40px;
+    gap: 0px;
 
 }
 .topsection{
@@ -430,9 +430,9 @@ p{
     font-size: 52px;
 }
 #statusicon{
-    margin-left: 0%;
+    margin-left: 7%;
     margin-bottom: -5px;
-    margin-top: 0px;
+    margin-top: 0;
     border-radius: 60px;
     font-size: 55px;
     width: 90px;
