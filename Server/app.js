@@ -45,8 +45,8 @@ let isHumAlertSent = false;
 // Data recieving from device
 app.post('/dataBay', async (req, res) => {
   console.log('/dataBay Post Request Initialized ------');
-  const {time, temp, hum, sid} = req.body;
-  console.log('Received Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum , ' SensorID: ', sid);
+  const {time, temp, hum, light, sid} = req.body;
+  console.log('Received Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum , 'Light: ', light, ' SensorID: ', sid);
     console.log("------");
   let alerts = [];
   // Check temperature threshold
@@ -67,9 +67,9 @@ app.post('/dataBay', async (req, res) => {
 
   // Function to handle database insertion
   const insertData = async () => {
-      const query = `INSERT INTO readings (timestamp, temperature, humidity, sensor_id) VALUES (?, ?, ?, ?)`;
+      const query = `INSERT INTO readings (timestamp, temperature, humidity, sensor_id, light) VALUES (?, ?, ?, ?, ?)`;
       try {
-          const [result] = await db.execute(query, [time, temp, hum, sid]);
+          const [result] = await db.execute(query, [time, temp, hum, sid, light]);
           console.log('Data inserted successfully:', result.insertId);
           return { success: true, insertId: result.insertId };
       } catch (err) {
