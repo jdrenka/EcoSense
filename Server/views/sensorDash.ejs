@@ -10,7 +10,7 @@
     <div id="top-of-page"></div>
 
     <div class='navbar'>
-        <a class = 'smallatag' href = '/sensorview'>
+        <a class='smallatag' href = '/sensorview'>
             <img href = 'sensorDash.ejs' src='images/logo.png' id='logopic'>
         </a>
         <button id='sensorviewbutton' class='navbuttons'>View Sensors</button>
@@ -18,9 +18,9 @@
         <button class='navbuttons' id='logoutbutton'>Logout</button>
     </div>
 
-    <div class = 'headerchunk'>
+    <div class='headerchunk'>
         <h1 class='text' id='sensorheader'><%= sensorName %></h1>
-        <a id = 'createthreshold_button'>Manage Sensor Thresholds</a>
+        <a id='createthreshold_button'>Manage Sensor Thresholds</a>
     </div>
     
     <div class='sensordisplay'>
@@ -54,17 +54,17 @@
                 
                 <div class='stats' id="displayVariable">Total Readings: <span id="variableValue">--</span></div>
                
-                <div class ='buttonsandcheck'>
-                    <div class ='buttonset'>
+                <div class='buttonsandcheck'>
+                    <div class='buttonset'>
                         <button id="switchChartType">Line/Bar</button>
                         <button id="toggleDailyReport">Get Daily Report</button>
                         <button id="pauseButton">Pause</button>
                     </div>
 
-                    <div class = 'checkboxesgroup'>
-                        <label class = 'checkflex'><input type="checkbox" id="showTemperature" checked> Show Temp</label>
-                        <label class = 'checkflex'><input  type="checkbox" id="showHumidity" checked> Show Hum</label>
-                        <label class = 'checkflex'><input  type="checkbox" id="showLight" checked> Show Light</label>
+                    <div class='checkboxesgroup'>
+                        <label class='checkflex'><input type="checkbox" id="showTemperature" checked> Show Temp</label>
+                        <label class='checkflex'><input type="checkbox" id="showHumidity" checked> Show Hum</label>
+                        <label class='checkflex'><input type="checkbox" id="showLight" checked> Show Light</label>
                     </div>
                 </div>
             </div>
@@ -79,8 +79,8 @@
         <div id="dailyReportContainer" style="display: none;">
             <div class='reportheaderbunch'>
                 <h1 class='text' id='dailyreportheader'> Daily Report:</h1>
-                <h1 class = 'text' id = 'readingmessage'>Total readings: </h1>
-                <h1 class = 'text' id = 'dailyreport_readingcount'>--</h1>
+                <h1 class='text' id='readingmessage'>Total readings: </h1>
+                <h1 class='text' id='dailyreport_readingcount'>--</h1>
                 <button id="returnTopButton">Return to Top</button>
             </div>
             <canvas id="dailyReportChart"></canvas>
@@ -89,7 +89,8 @@
 
     <script>
         const UPDATE_TIME = 10; // seconds
-        let sensorData = { timestamps: [], temperatures: [], humidities: [] };
+        let sensorData = { timestamps: [], temperatures: [], humidities: [], lights: [] };
+        let dailyData = { timestamps: [], temperatures: [], humidities: [], lights: [] };
         let currentChartType = 'line';
         let chart;
         let dailyReportChart;
@@ -125,6 +126,15 @@
                 hidden: !document.getElementById('showHumidity').checked  // Initially set visibility based on checkbox
             };
 
+            const datasetLight = {
+                label: 'Light (lx)',
+                data: sensorData.lights,
+                borderColor: 'rgb(255, 205, 86)',
+                backgroundColor: currentChartType === 'bar' ? 'rgb(255, 205, 86)' : 'rgba(255, 205, 86, 0.5)',
+                fill: false,
+                hidden: !document.getElementById('showLight').checked  // Initially set visibility based on checkbox
+            };
+
             if (window.myLineChart instanceof Chart) {
                 window.myLineChart.destroy();
             }
@@ -137,7 +147,7 @@
                 type: currentChartType,
                 data: {
                     labels: sensorData.timestamps,
-                    datasets: [datasetTemp, datasetHumidity]
+                    datasets: [datasetTemp, datasetHumidity, datasetLight]
                 },
                 options: getChartOptions()
             });
@@ -145,8 +155,10 @@
             dailyReportChart = new Chart(dailyReportChartCtx, {
                 type: 'line',
                 data: {
-                    labels: sensorData.timestamps,
-                    datasets: [datasetTemp, datasetHumidity]
+                    labels: dailyData.timestamps,
+                    datasets: [Object.assign({}, datasetTemp, { data: dailyData.temperatures }),
+                               Object.assign({}, datasetHumidity, { data: dailyData.humidities }),
+                               Object.assign({}, datasetLight, { data: dailyData.lights })]
                 },
                 options: getChartOptions()
             });
@@ -210,6 +222,7 @@
         function setupEventListeners() {
             const showTempCheckbox = document.getElementById('showTemperature');
             const showHumidityCheckbox = document.getElementById('showHumidity');
+            const showLightCheckbox = document.getElementById('showLight');
 
             showTempCheckbox.addEventListener('change', function() {
                 chart.data.datasets[0].hidden = !this.checked; // Toggle temperature dataset visibility
@@ -218,6 +231,11 @@
 
             showHumidityCheckbox.addEventListener('change', function() {
                 chart.data.datasets[1].hidden = !this.checked; // Toggle humidity dataset visibility
+                chart.update();
+            });
+
+            showLightCheckbox.addEventListener('change', function() {
+                chart.data.datasets[2].hidden = !this.checked; // Toggle light dataset visibility
                 chart.update();
             });
 
@@ -258,7 +276,7 @@
                 } else {
                     pauseButton.textContent = "Pause";
                     pauseButton.style.backgroundColor = "#2b2a2a";
-                    document.getElementById('statusicon').innerHTML = '<img id = "statusicon" src="images/bolt.png" alt="Active">';
+                    document.getElementById('statusicon').innerHTML = '<img id="statusicon" src="images/bolt.png" alt="Active">';
                     startCountdown();
                 }
             });
@@ -286,9 +304,14 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('dailyreport_readingcount').textContent = data.length;
-                    dailyReportChart.data.labels = data.map(entry => new Date(entry.timestamp).toLocaleTimeString());
-                    dailyReportChart.data.datasets[0].data = data.map(entry => entry.temperature);
-                    dailyReportChart.data.datasets[1].data = data.map(entry => entry.humidity);
+                    dailyData.timestamps = data.map(entry => new Date(entry.timestamp).toLocaleTimeString());
+                    dailyData.temperatures = data.map(entry => entry.temperature);
+                    dailyData.humidities = data.map(entry => entry.humidity);
+                    dailyData.lights = data.map(entry => entry.light);
+                    dailyReportChart.data.labels = dailyData.timestamps;
+                    dailyReportChart.data.datasets[0].data = dailyData.temperatures;
+                    dailyReportChart.data.datasets[1].data = dailyData.humidities;
+                    dailyReportChart.data.datasets[2].data = dailyData.lights;
                     dailyReportChart.update();
                 })
                 .catch(error => console.error('Failed to fetch daily report data:', error));
@@ -313,24 +336,28 @@
                 fetch(`/recentData/${sensorId}`)
                     .then(response => response.json())
                     .then(data => {
-                    if(sensorId == data.sensor_id){ //Condition check if the sensorids match
-                        let timestamp = new Date(data.timestamp);
-                        timestamp.setHours(timestamp.getHours() + 1); //add 1 extra hour to calibrate
-                        const formattedTime = timestamp.toLocaleTimeString();
-                        chart.data.labels.push(formattedTime);
-                        chart.data.datasets[0].data.push(data.temperature);
-                        chart.data.datasets[1].data.push(data.humidity);
-                        chart.update();
+                        if (sensorId == data.sensor_id) { //Condition check if the sensor IDs match
+                            let timestamp = new Date(data.timestamp);
+                            timestamp.setHours(timestamp.getHours() + 1); // add 1 extra hour to calibrate
+                            const formattedTime = timestamp.toLocaleTimeString();
+                            chart.data.labels.push(formattedTime);
+                            chart.data.datasets[0].data.push(data.temperature);
+                            chart.data.datasets[1].data.push(data.humidity);
+                            chart.data.datasets[2].data.push(data.light);
+                            chart.update();
 
-                        let avgTemp = findAvg(chart.data.datasets[0].data);
-                        let avgHum = findAvg(chart.data.datasets[1].data);
-                        document.getElementById('temperature').textContent = `${data.temperature.toFixed(2)}°C`;
-                        document.getElementById('avgtemperature').textContent = `${avgTemp}°C`;
-                        document.getElementById('avghumidity').textContent = `${avgHum}%`;
-                        document.getElementById('humidity').textContent = `${data.humidity.toFixed(2)}%`;
-                        document.getElementById('time').textContent = formattedTime;
-                        document.getElementById('variableValue').textContent = ++totalReadings;
-                    }
+                            let avgTemp = findAvg(chart.data.datasets[0].data);
+                            let avgHum = findAvg(chart.data.datasets[1].data);
+                            let avgLight = findAvg(chart.data.datasets[2].data);
+                            document.getElementById('temperature').textContent = `${data.temperature.toFixed(2)}°C`;
+                            document.getElementById('avgtemperature').textContent = `${avgTemp}°C`;
+                            document.getElementById('avghumidity').textContent = `${avgHum}%`;
+                            document.getElementById('avglight').textContent = `${avgLight} lx`;
+                            document.getElementById('humidity').textContent = `${data.humidity.toFixed(2)}%`;
+                            document.getElementById('light').textContent = `${data.light.toFixed(2)} lx`;
+                            document.getElementById('time').textContent = formattedTime;
+                            document.getElementById('variableValue').textContent = ++totalReadings;
+                        }
                     })
                     .catch(error => {
                         console.error('Error fetching data:', error);
@@ -341,10 +368,10 @@
         }
 
         function findAvg(dataList) {
+            if (dataList.length === 0) return 0;
             const sum = dataList.reduce((a, b) => a + b, 0);
             return (sum / dataList.length).toFixed(1);  // Calculate and format average
         }
-
     </script>
 </body>
 </html>
