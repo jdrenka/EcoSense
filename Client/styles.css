@@ -44,12 +44,26 @@ p{
 
 .tempbox{
     display: flex;
+    padding: 5px;
     gap: 40px;
+    border: 2px solid rgba(251, 11, 115, 0.5);
 }
 
+.lightbox{
+    display: flex;
+    margin: 0;
+    margin-top: 5px;
+    padding: 5px;
+    gap: 139px;
+    border: 2px solid rgba(255, 225, 0, 0.612);
+}
 .humiditybox{
     display: flex;
+    padding: 5px;
+    margin-top: 5px;
     gap: 68px;
+    border: 2px solid rgba(4, 167, 255, 0.5);
+    
 }
 
 .navbar{
@@ -360,7 +374,7 @@ p{
     border-radius: 10px;
     margin-top: 10px;
     flex-direction: column;
-    font-weight: bold;
+    font-weight: 500;
     background-color: rgba(75, 75, 75, 0.25);
     border: 1px solid #56565664;
 }
@@ -387,12 +401,12 @@ p{
 }
 
 #toggleDailyReport {
-    background-color: #137e98; /* Green background for a fresh look */
+    background-color: #2b2a2a; 
     width: 150px;
-    height: 35px;   
-    border: none; /* Remove default border */
-    color: white; /* White text color */
-    margin-top: 10px;
+    height: 25px;   
+    border: none; 
+    color: white; 
+    margin-top: 7px;
     border: 1.5px solid #5e5c5c6e;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
@@ -403,7 +417,7 @@ p{
 }
 
 #toggleDailyReport:hover {
-    background-color: #137e98; /* Darker shade of green when hovered */ /* Slightly increase size on hover */
+    background-color: #474848; /* Darker shade of green when hovered */ /* Slightly increase size on hover */
 }
 
 #toggleReadings{
@@ -424,17 +438,17 @@ p{
     width: 90px;
     height: 65px;
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    opacity: 1; /* Start fully visible */
+    opacity: 1; 
     transition: opacity 0.3s ease-in-out;
 }
 
 #pauseButton {
-    background-color: #d61c5a; /* Green background for a fresh look */
+    background-color: #2b2a2a; 
     width: 150px;
-    height: 35px;   
-    border: none; /* Remove default border */
-    color: white; /* White text color */
-    margin-top: 10px;
+    height: 25px;   
+    border: none; 
+    color: white; 
+    margin-top: 7px;
     border: 1.5px solid #5e5c5c6e;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
@@ -445,7 +459,7 @@ p{
 }
 
 #pauseButton:hover {
-    background-color: #f51761; /* Darker shade of green when hovered */ /* Slightly increase size on hover */
+    background-color: #434343; /* Darker shade of green when hovered */ /* Slightly increase size on hover */
 }
 
 #countdown{
@@ -516,16 +530,16 @@ p{
 }
 
 #displayVariable{
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 #switchChartType{
-    background-color: #137e98; /* Green background for a fresh look */
+    background-color: #2b2a2a; 
     width: 150px;
-    height: 35px;   
-    border: none; /* Remove default border */
-    color: white; /* White text color */
-    margin-top: 10px;
+    height: 25px;   
+    border: none;
+    color: white; 
+    margin-top: 7px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
     font-size: 12px; /* Larger font size for readability */
@@ -550,5 +564,5 @@ p{
     font-weight: lighter;
 }
 #switchChartType:hover {
-    background-color: #137e98; 
+    background-color: #454647; 
 }

@@ -41,10 +41,15 @@
                     <p class='stats'>Temperature: <span id="temperature">--</span></p>
                     <p class='stats'>Current Avg: <span id='avgtemperature'>--</span></p>
                 </div>
-                <br>
+                
                 <div class='humiditybox'>
                     <p class='stats'>Humidity: <span id="humidity">--</span></p>
                     <p class='stats'>Current Avg: <span id='avghumidity'>--</span></p>
+                </div>
+
+                <div class='lightbox'>
+                    <p class='stats'>Light: <span id="light">--</span></p>
+                    <p class='stats'>Current Avg: <span id='avglight'>--</span></p>
                 </div>
                 
                 <div class='stats' id="displayVariable">Total Readings: <span id="variableValue">--</span></div>
@@ -59,6 +64,7 @@
                     <div class = 'checkboxesgroup'>
                         <label class = 'checkflex'><input type="checkbox" id="showTemperature" checked> Show Temp</label>
                         <label class = 'checkflex'><input  type="checkbox" id="showHumidity" checked> Show Hum</label>
+                        <label class = 'checkflex'><input  type="checkbox" id="showLight" checked> Show Light</label>
                     </div>
                 </div>
             </div>
@@ -251,7 +257,7 @@
                     document.getElementById('statusicon').innerHTML = '💤';
                 } else {
                     pauseButton.textContent = "Pause";
-                    pauseButton.style.backgroundColor = "#d61c5a";
+                    pauseButton.style.backgroundColor = "#2b2a2a";
                     document.getElementById('statusicon').innerHTML = '<img id = "statusicon" src="images/bolt.png" alt="Active">';
                     startCountdown();
                 }
