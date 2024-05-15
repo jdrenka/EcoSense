@@ -12,6 +12,10 @@ html, body {
     animation: fadeIn 0.25s ease-in-out;
   }
 
+  #logopiclogin{
+    padding: 25px;
+    width: 20%;
+  }
 
   a {
     color: inherit;        /* Inherits the color from the parent element */
