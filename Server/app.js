@@ -17,6 +17,7 @@ const recipient = '+12507183236';
 
 const tempThreshold = 30; 
 const humidityThreshold = 50;
+const lightThreshold = 150;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -41,6 +42,7 @@ app.use(session({
 
 let isTempAlertSent = false;
 let isHumAlertSent = false;
+let isLightAlertSent = false;
 
 // Data recieving from device
 app.post('/dataBay', async (req, res) => {
@@ -64,6 +66,14 @@ app.post('/dataBay', async (req, res) => {
   } else if (hum <= humidityThreshold) {
       isHumAlertSent = false;  // Reset the flag when condition is normal
   }
+
+   // Check light threshold
+   if (light > lightThreshold && !isLightAlertSent) {
+    alerts.push(`The light is on`);
+    isLightAlertSent = true;  // Set the flag
+} else if (light <= lightThreshold) {
+    isLightAlertSent = false;  // Reset the flag when condition is normal
+}
 
   // Function to handle database insertion
   const insertData = async () => {
@@ -189,7 +199,7 @@ app.get('/daily-report', async (req, res) => {
       const query = `
           SELECT timestamp, temperature, humidity, light
           FROM readings
-          WHERE DATE(timestamp) = "2024-05-15";
+          WHERE DATE(timestamp) = '2024-05-17';
       `;
       const values = [todayString];
 
@@ -200,6 +210,27 @@ app.get('/daily-report', async (req, res) => {
       res.status(500).send('Server error');
   }
 });
+
+app.get('/range-report', async (req, res) => {
+    const { start, end } = req.query;
+    if (!start || !end) {
+      return res.status(400).send('Start and end dates are required');
+    }
+
+    try {
+      const query = `
+        SELECT timestamp, temperature, humidity, light
+        FROM readings
+        WHERE timestamp BETWEEN ? AND ?;
+      `;
+      const values = [start, end];
+      const [rows] = await db.query(query, values);
+      res.json(rows);
+    } catch (err) {
+      console.error('Error fetching range report data', err);
+      res.status(500).send('Server error');
+    }
+  });
 
 //Render sensor details page. 
 app.get('/sensorDash', async (req, res) => {
