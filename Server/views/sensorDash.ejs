@@ -436,9 +436,18 @@
                         endDateText.textContent = formattedDate;
                         endTimeText.textContent = formattedTime;
                         updateReportChart();
-                    }
+                    }   
                 }).open();
             });
+
+            document.addEventListener('click', function(event) {
+        if (startPicker && !startPicker.calendarContainer.contains(event.target) && !startButton.contains(event.target)) {
+            startPicker.close();
+        }
+        if (endPicker && !endPicker.calendarContainer.contains(event.target) && !endButton.contains(event.target)) {
+            endPicker.close();
+        }
+    });
 
             document.getElementById('downloadCSVButton').addEventListener('click', function() {
                 const startDate = document.getElementById('startDateText').textContent + " " + document.getElementById('startTimeText').textContent;
@@ -500,6 +509,7 @@
                     .then(data => {
                         if (sensorId == data.sensor_id) { //Condition check if the sensor IDs match
                             let timestamp = new Date(data.timestamp);
+                            timestamp.setHours(timestamp.getHours() + 1); // add 1 extra hour to calibrate
                             const formattedTime = timestamp.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true });
                             chart.data.labels.push(formattedTime);
                             chart.data.datasets[0].data.push(data.temperature);
