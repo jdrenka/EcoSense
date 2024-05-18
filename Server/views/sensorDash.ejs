@@ -59,7 +59,7 @@
                 <div class='buttonsandcheck'>
                     <div class='buttonset'>
                         <button id="switchChartType">Line/Bar</button>
-                        <button id="toggleDailyReport">Get Daily Report</button>
+                        <button id="toggleDailyReport">View data </button>
                         <button id="pauseButton">Pause</button>
                     </div>
 
@@ -344,7 +344,7 @@
                 const isVisible = dailyReportContainer.style.display !== 'none';
                 if (!isVisible) {
                     dailyReportContainer.style.display = 'block';
-                    toggleButton.textContent = 'Hide Daily Report';
+                    toggleButton.textContent = 'Hide Data View';
                     fetchDailyDataAndUpdateChart();
 
                     // Scroll into view and adjust the position
