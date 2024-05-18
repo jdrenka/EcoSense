@@ -16,13 +16,13 @@
             <img href='sensorDash.ejs' src='images/logo.png' id='logopic'>
         </a>
         <button id='sensorviewbutton' class='navbuttons'>View Sensors</button>
+        <button id='createthreshold_button' class = 'navbuttons'>Manage Sensor Thresholds</button>
         <button id='helpbutton' class='navbuttons'>Help</button>
         <button class='navbuttons' id='logoutbutton'>Logout</button>
     </div>
 
     <div class='headerchunk'>
         <h1 class='text' id='sensorheader'><%= sensorName %></h1>
-        <a id='createthreshold_button'>Manage Sensor Thresholds</a>
     </div>
 
     <div class='sensordisplay'>
@@ -86,7 +86,7 @@
                     </div>
 
                     <div class='daterange'>
-                        <p id='plottingtext1'>Selected data from: </p>
+                        <p id='plottingtext1'>Selected data from : </p>
 
                         <div id="startButton" class="datetime-button">
                             <span id="startDateText">Select Start Date</span>
@@ -101,8 +101,11 @@
                         </div>
                     </div>
                 </div>
-
-                <button id="returnTopButton">Return to Top</button>
+                <div class = 'returntopgroup'>
+                    <button id="returnTopButton">Return to Top</button>
+                    <button id="downloadCSVButton">Download CSV</button>
+                </div>
+                
             </div>
             <canvas id="dailyReportChart"></canvas>
         </div>
@@ -436,6 +439,26 @@
                     }
                 }).open();
             });
+
+            document.getElementById('downloadCSVButton').addEventListener('click', function() {
+                const startDate = document.getElementById('startDateText').textContent + " " + document.getElementById('startTimeText').textContent;
+                const endDate = document.getElementById('endDateText').textContent + " " + document.getElementById('endTimeText').textContent;
+
+                let startDateTime;
+                let endDateTime;
+
+                if (startDate.trim() && endDate.trim() && endDate !== 'Select End Date') {
+                    startDateTime = new Date(startDate + ' GMT-0000').toISOString();
+                    endDateTime = new Date(endDate + ' GMT-0000').toISOString();
+                } else {
+                    const today = new Date().toISOString().split('T')[0];
+                    startDateTime = `${today}T00:00:00.000Z`;
+                    endDateTime = `${today}T23:59:59.999Z`;
+                }
+
+                const csvUrl = `/download-csv?start=${encodeURIComponent(startDateTime)}&end=${encodeURIComponent(endDateTime)}`;
+                window.open(csvUrl, '_blank');
+            });
         }
 
         function fetchDailyDataAndUpdateChart() {
@@ -477,7 +500,6 @@
                     .then(data => {
                         if (sensorId == data.sensor_id) { //Condition check if the sensor IDs match
                             let timestamp = new Date(data.timestamp);
-                            timestamp.setHours(timestamp.getHours() + 1); // add 1 extra hour to calibrate
                             const formattedTime = timestamp.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true });
                             chart.data.labels.push(formattedTime);
                             chart.data.datasets[0].data.push(data.temperature);

@@ -7,6 +7,8 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const twilio = require('twilio');
+const { parse } = require('json2csv');
+const fs = require('fs');
 
 
 const accountSid = 'AC5f47c13f6d37a8f58634ef22a03fc8ff';
@@ -191,6 +193,57 @@ app.get('/recentData/:sensorId', async (req, res) => {
     }
 });
 
+app.get('/download-csv', async (req, res) => {
+    try {
+      const { start, end } = req.query;
+      let query = `
+        SELECT timestamp, temperature, humidity, light
+        FROM readings
+      `;
+      let values = [];
+  
+      // Check if the first 4 characters of both start and end are greater than or equal to 2003
+      if (start && end) {
+        const startYear = parseInt(start.substring(0, 4));
+        const endYear = parseInt(end.substring(0, 4));
+  
+        if (startYear >= 2003 && endYear >= 2003) {
+          query += `WHERE timestamp BETWEEN ? AND ?`;
+          values = [start, end];
+        } else {
+          const today = '2024-05-17';
+          query += `WHERE DATE(timestamp) = ?`;
+          values = [today];
+        }
+      } else {
+        const today = '2024-05-17';
+        query += `WHERE DATE(timestamp) = ?`;
+        values = [today];
+      }
+  
+      const [rows] = await db.query(query, values);
+  
+      if (rows.length === 0) {
+        return res.status(400).send('No data available for the selected date range.');
+      }
+  
+      const csv = parse(rows);
+      const filePath = path.join(__dirname, 'data.csv');
+      fs.writeFileSync(filePath, csv);
+  
+      res.download(filePath, 'data.csv', (err) => {
+        if (err) {
+          console.error('Error downloading the CSV file', err);
+          res.status(500).send('Error downloading the CSV file');
+        }
+        fs.unlinkSync(filePath); // Delete the file after sending it
+      });
+    } catch (err) {
+      console.error('Error generating CSV:', err);
+      res.status(500).send('Error generating CSV');
+    }
+  });
+  
 
 app.get('/daily-report', async (req, res) => {
   try {
