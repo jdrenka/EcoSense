@@ -28,13 +28,16 @@
         <button id = 'logoutbutton' class = 'navbuttons'>Logout</button>
     </div>
 
-    <h1 class = 'text' id = 'sensorlistmessage'>Your Alerts:</h1>
+    <div class='alertheader'>
+        <h1 class='text' id='sensorlistmessage'>Your Alerts:</h1>
+        <button id='createAlertButton' class='navbuttons'>Create New Alert</button>
+    </div>
     <div class = 'innerlistview'>
         <% alerts.forEach(function(alert) { %>
             <div class='listAlertRows' data-alert-id="<%= alert.alert_id %>">
                 <h1 class='rowicon'>📢</h1>
                 <h1 class='alertRowEntryData'><%= alert.sensor_name %></h1>
-                <h1 class='alertRowEntryData'><%= alert.alertName %></h1>
+                <h1 class='alertRowEntryData'><%=alert.alertName.charAt(0).toUpperCase() + alert.alertName.slice(1)%></h1>
                 <h1 class='alertRowEntryData'>
                     <%= alert.data_type.charAt(0).toUpperCase() + alert.data_type.slice(1) %> 
                     <%= alert.alertCondition === 'less_than' ? '<' : '>' %> 
@@ -59,6 +62,7 @@
         const logoutButton = document.getElementById('logoutbutton');
         const sensorViewButton = document.getElementById('sensorviewbutton');
         const alertViewButton = document.getElementById('createthreshold_button');
+        const createAlertButton = document.getElementById('createAlertButton');
         logoutButton.addEventListener('click', function() {
             window.location.href = '/logout';
         });
@@ -102,6 +106,83 @@
                         });
                     }
                 });
+            });
+        });
+
+        createAlertButton.addEventListener('click', async function() {
+            // Fetch the list of sensors
+            const response = await fetch('/sensors');
+            const sensors = await response.json();
+
+            // Build the sensor options HTML
+            const sensorOptions = sensors.map(sensor => `<option value="${sensor.sensor_id}">${sensor.sensor_name}</option>`).join('');
+
+            Swal.fire({
+                title: 'Create New Alert',
+                html: `
+                    <div>
+                        <label for="sensorSelect">Sensor:</label>
+                        <select id="sensorSelect" class="swal2-input">
+                            ${sensorOptions}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="dataType">Data Type:</label>
+                        <select id="dataType" class="swal2-input">
+                            <option value="temperature">Temperature</option>
+                            <option value="humidity">Humidity</option>
+                            <option value="light">Light</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="alertCondition">Condition:</label>
+                        <select id="alertCondition" class="swal2-input">
+                            <option value="less_than">Less Than</option>
+                            <option value="greater_than">Greater Than</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="thresholdValue">Threshold Value:</label>
+                        <input type="number" id="thresholdValue" class="swal2-input" placeholder="Enter threshold value">
+                    </div>
+                    <div>
+                        <label for="phoneNumber">Phone Number:</label>
+                        <input type="text" id="phoneNumber" class="swal2-input" placeholder="Enter phone number">
+                    </div>
+                `,
+                focusConfirm: false,
+                preConfirm: () => {
+                    const sensorId = Swal.getPopup().querySelector('#sensorSelect').value;
+                    const dataType = Swal.getPopup().querySelector('#dataType').value;
+                    const alertCondition = Swal.getPopup().querySelector('#alertCondition').value;
+                    const thresholdValue = Swal.getPopup().querySelector('#thresholdValue').value;
+                    const phoneNumber = Swal.getPopup().querySelector('#phoneNumber').value;
+                    return { sensorId, dataType, alertCondition, thresholdValue, phoneNumber };
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Create Alert'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const alertData = result.value;
+                    fetch('/create-alert', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(alertData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Success!', 'Your alert has been created.', 'success')
+                            .then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error!', 'There was a problem creating your alert.', 'error');
+                        }
+                    });
+                }
             });
         });
 

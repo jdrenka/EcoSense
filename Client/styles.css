@@ -102,11 +102,14 @@ p{
 
 #sensorlistmessage{
     color:rgb(254, 254, 254);
-    border-bottom: 10px groove #f8f8f8;
     margin-right: 20px;
+    margin-bottom: 10px;
 
 }
 
+.sensorheader{
+    border-bottom: 10px groove #f8f8f8;
+}
 
 .loginpanel {
     background: rgb(66, 66, 66);
@@ -330,6 +333,14 @@ p{
     width: 2%;
     margin-right: 1.5%;
     margin-top: 5px;
+}
+
+.alertheader{
+    display: flex;
+    gap: 10%;
+    border-bottom: 10px groove #f8f8f8;
+
+    
 }
 
 #deleteAlert:hover{
@@ -577,8 +588,12 @@ p{
     max-height: 65%;
 }
 
-#createthreshold_button{
-    
+#createAlertButton{
+    height: 50px;
+    width: 15%;
+    margin-top: 20px;
+    border-radius: 30px;
+    background-color: rgb(8, 105, 8);
 }
 #dailyReportContainer {
     width: 2000px; 

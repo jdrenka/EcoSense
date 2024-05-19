@@ -346,6 +346,7 @@ app.post('/login', async (req, res) => {
 
       if (results.length > 0) {
           req.session.isLoggedIn = true;
+          req.session.userId = results[0].user_id; 
           req.session.user = results[0]; // Store user data in session
           res.redirect('/sensorview');
       } else {
@@ -430,6 +431,41 @@ app.get('/logout', (req, res) => {
   });
 });
 
+
+app.get('/sensors', async (req, res) => {
+  try {
+      const [sensors] = await db.query('SELECT sensor_id, sensor_name FROM sensors');
+      res.json(sensors);
+  } catch (err) {
+      console.error('Error fetching sensors:', err);
+      res.status(500).json({ success: false });
+  }
+});
+
+
+app.post('/create-alert', async (req, res) => {
+  const { sensorId, dataType, alertCondition, thresholdValue, phoneNumber, alertMessage } = req.body;
+  const userId = req.session.userId; // Access user ID from session
+
+  if (!userId) {
+    return res.status(400).json({ success: false, message: 'User ID is required' });
+  }
+
+  const query = `
+    INSERT INTO UserThresholdAlerts (user_id, sensor_id, data_type, alertCondition, threshold_value, phone_number, alertName, alertMessage, time_created)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+  const alertName = `${dataType} Alert`;
+
+  try {
+    const values = [userId, sensorId, dataType, alertCondition, thresholdValue, phoneNumber, alertName, alertMessage, new Date()];
+    await db.query(query, values);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error creating alert:', err);
+    res.status(500).json({ success: false, message: 'Error creating alert' });
+  }
+});
 
 app.get('/alertView', async (req, res) => {
   try {
