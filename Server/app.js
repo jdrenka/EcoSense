@@ -49,33 +49,9 @@ let isLightAlertSent = false;
 // Data recieving from device
 app.post('/dataBay', async (req, res) => {
   console.log('/dataBay Post Request Initialized ------');
-  const {time, temp, hum, light, sid} = req.body;
-  console.log('Received Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum , 'Light: ', light, ' SensorID: ', sid);
-    console.log("------");
-  let alerts = [];
-  // Check temperature threshold
-  if (temp > tempThreshold && !isTempAlertSent) {
-      alerts.push(`Temperature of ${temp}°C exceeds the threshold of ${tempThreshold}°C.`);
-      isTempAlertSent = true;  // Set the flag
-  } else if (temp <= tempThreshold) {
-      isTempAlertSent = false;  // Reset the flag when condition is normal
-  }
-
-  // Check humidity threshold
-  if (hum > humidityThreshold && !isHumAlertSent) {
-      alerts.push(`Humidity of ${hum}% exceeds the threshold of ${humidityThreshold}%.`);
-      isHumAlertSent = true;  // Set the flag
-  } else if (hum <= humidityThreshold) {
-      isHumAlertSent = false;  // Reset the flag when condition is normal
-  }
-
-   // Check light threshold
-   if (light > lightThreshold && !isLightAlertSent) {
-    alerts.push(`The light is on`);
-    isLightAlertSent = true;  // Set the flag
-} else if (light <= lightThreshold) {
-    isLightAlertSent = false;  // Reset the flag when condition is normal
-}
+  const { time, temp, hum, light, sid } = req.body;
+  console.log('Received Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum, 'Light: ', light, ' SensorID: ', sid);
+  console.log("------");
 
   // Function to handle database insertion
   const insertData = async () => {
@@ -90,16 +66,71 @@ app.post('/dataBay', async (req, res) => {
       }
   };
 
+  // Function to reset alert_sent flags
+  const resetAlertSentFlags = async () => {
+      try {
+          const [results] = await db.query('SELECT * FROM UserAlerts WHERE sensor_id = ?', [sid]);
+
+          for (const alert of results) {
+              const thresholdValue = parseFloat(alert.threshold_value);
+              const resetCondition = (alert.alertCondition === 'less_than' && (alert.data_type === 'temperature' && temp >= thresholdValue * 1.1 || alert.data_type === 'humidity' && hum >= thresholdValue * 1.1 || alert.data_type === 'light' && light >= thresholdValue * 1.1)) ||
+                  (alert.alertCondition === 'greater_than' && (alert.data_type === 'temperature' && temp <= thresholdValue * 0.9 || alert.data_type === 'humidity' && hum <= thresholdValue * 0.9 || alert.data_type === 'light' && light <= thresholdValue * 0.9));
+
+              if (resetCondition) {
+                  await db.query('UPDATE UserAlerts SET alert_sent = FALSE WHERE alert_id = ?', [alert.alert_id]);
+              }
+          }
+      } catch (err) {
+          console.error('Database error:', err);
+      }
+  };
+
+  // Reset alert_sent flags at the beginning of the handler
+  await resetAlertSentFlags();
+
+  // Query the database for alerts corresponding to the sensor ID
+  let alerts = [];
+  let alertIdsToUpdate = [];
+  try {
+      const [results] = await db.query('SELECT * FROM UserAlerts WHERE sensor_id = ?', [sid]);
+
+      for (const alert of results) {
+          const thresholdValue = parseFloat(alert.threshold_value);
+          const conditionMet = (alert.data_type === 'temperature' && ((alert.alertCondition === 'less_than' && temp < thresholdValue) || (alert.alertCondition === 'greater_than' && temp > thresholdValue))) ||
+              (alert.data_type === 'humidity' && ((alert.alertCondition === 'less_than' && hum < thresholdValue) || (alert.alertCondition === 'greater_than' && hum > thresholdValue))) ||
+              (alert.data_type === 'light' && ((alert.alertCondition === 'less_than' && light < thresholdValue) || (alert.alertCondition === 'greater_than' && light > thresholdValue)));
+
+          if (conditionMet && !alert.alert_sent) {
+              alerts.push(alert.alertMessage);
+              alertIdsToUpdate.push(alert.alert_id);  // Collect the alert IDs to update
+          }
+      }
+  } catch (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ message: 'Error querying alert conditions', error: err });
+  }
+
   // If any thresholds are exceeded, send an SMS and wait for it
   if (alerts.length > 0) {
       const messageBody = `Alert: ${alerts.join(' ')}`;
       twilloClient.messages.create({
           body: messageBody,
           from: twilioNumber,
-          to: '+12507183236'
+          to: '+12507183236' // Hardcoded phone number for now
       })
       .then(async message => {
           console.log(`Alert Message SID: ${message.sid}`);
+
+          // Update alert_sent flag in the database
+          try {
+              if (alertIdsToUpdate.length > 0) {
+                  const query = 'UPDATE UserAlerts SET alert_sent = TRUE WHERE alert_id IN (?)';
+                  await db.query(query, [alertIdsToUpdate]);
+              }
+          } catch (err) {
+              console.error('Database error:', err);
+          }
+
           const dbResult = await insertData();
           if (dbResult.success) {
               res.status(201).json({ alert: messageBody, message: 'Alert sent and data inserted successfully', id: dbResult.insertId });
@@ -120,6 +151,8 @@ app.post('/dataBay', async (req, res) => {
       }
   }
 });
+
+
 
 //Check auth middleware ---
 function ensureAuthenticated(req, res, next) {
@@ -446,19 +479,19 @@ app.get('/sensors', async (req, res) => {
 app.post('/create-alert', async (req, res) => {
   const { sensorId, dataType, alertCondition, thresholdValue, phoneNumber, alertMessage } = req.body;
   const userId = req.session.userId; // Access user ID from session
-
+  let alert_sent = false; 
   if (!userId) {
     return res.status(400).json({ success: false, message: 'User ID is required' });
   }
 
   const query = `
-    INSERT INTO UserAlerts (user_id, sensor_id, data_type, alertCondition, threshold_value, phone_number, alertName, alertMessage, time_created)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO UserAlerts (user_id, sensor_id, data_type, alertCondition, threshold_value, phone_number, alertName, alertMessage, alert_sent, time_created)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
   const alertName = `${dataType} Alert`;
 
   try {
-    const values = [userId, sensorId, dataType, alertCondition, thresholdValue, phoneNumber, alertName, alertMessage, new Date()];
+    const values = [userId, sensorId, dataType, alertCondition, thresholdValue, phoneNumber, alertName, alertMessage, alert_sent, new Date()];
     await db.query(query, values);
     res.json({ success: true });
   } catch (err) {

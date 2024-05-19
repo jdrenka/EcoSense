@@ -35,10 +35,10 @@
     <div class = 'innerlistview'>
         <% alerts.forEach(function(alert) { %>
             <div class='listAlertRows' data-alert-id="<%= alert.alert_id %>">
-                <h1 class='rowicon'>📢</h1>
-                <h1 class='alertRowEntryData'><%= alert.sensor_name %></h1>
+                <h1 class='alertRowEntryData' id = 'alerticon'>📢</h1>
+                <h1 class='alertRowEntryData' id = 'firstalertentry'><%= alert.sensor_name %></h1>
                 <h1 class='alertRowEntryData'><%=alert.alertName.charAt(0).toUpperCase() + alert.alertName.slice(1)%></h1>
-                <h1 class='alertRowEntryData'>
+                <h1 class='alertRowEntryData' id = 'conditionalertentry'>
                     <%= alert.data_type.charAt(0).toUpperCase() + alert.data_type.slice(1) %> 
                     <%= alert.alertCondition === 'less_than' ? '<' : '>' %> 
                     <%= alert.threshold_value %>

@@ -315,13 +315,21 @@ p{
     color:rgb(255, 255, 255);
     text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.6);
 }
+#conditionalertentry{
+    width: 30%;
+}
 
+#alerticon{
+    width: 2%;
+    margin-left: 10px;
+    font-size: 25px;
+}
 .alertRowEntryData{
     margin-top: 20px;
     width: 25%;
     padding-right: 20px;
     padding-left: 0px;
-    font-size: 15px;
+    font-size: 17px;
     border-right: 2px solid #000000;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: 500;
@@ -575,6 +583,10 @@ p{
 }
 .datetime-button span {
     display: block;
+}
+
+#firstalertentry{
+    width: 30%;
 }
 
 .datetime-button:hover{
