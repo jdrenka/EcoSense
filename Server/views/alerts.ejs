@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<title>InsightDash</title>
+<link rel='stylesheet' href='/styles.css'>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+</head>
+
+<body>
+    <% function truncateMessage(message, maxLength) { %>
+        <% if (message.length > maxLength) { %>
+            <%= message.substring(0, maxLength) + '...' %>
+        <% } else { %>
+            <%= message %>
+        <% } %>
+    <% } %>
+
+    <div class='navbar'>
+        
+        <a class = 'smallatag' href = '/sensorview'>
+            <img href = 'sensorDash.ejs' src='images/logo.png' id='logopic'>
+        </a>
+        <button id = 'sensorviewbutton' class = 'navbuttons'>View Sensors</a>
+        <button id='createthreshold_button' class = 'navbuttons'>Manage Alerts</button>
+        <button id = 'helpbutton' class = 'navbuttons'>Help</button>
+        <button id = 'logoutbutton' class = 'navbuttons'>Logout</button>
+    </div>
+
+    <h1 class = 'text' id = 'sensorlistmessage'>Your Alerts:</h1>
+    <div class = 'innerlistview'>
+        <% alerts.forEach(function(alert) { %>
+            <div class='listAlertRows' data-alert-id="<%= alert.alert_id %>">
+                <h1 class='rowicon'>📢</h1>
+                <h1 class='alertRowEntryData'><%= alert.sensor_name %></h1>
+                <h1 class='alertRowEntryData'><%= alert.alertName %></h1>
+                <h1 class='alertRowEntryData'>
+                    <%= alert.data_type.charAt(0).toUpperCase() + alert.data_type.slice(1) %> 
+                    <%= alert.alertCondition === 'less_than' ? '<' : '>' %> 
+                    <%= alert.threshold_value %>
+                </h1>
+                <h1 class='alertRowEntryData'><%= alert.phone_number %></h1>
+                <h1 class='alertRowEntryData' id = 'messagerow'><%= truncateMessage(alert.alertMessage, 30) %></h1>
+                <img src='images/deleteBin.png' class='deleteIcon' alt='Delete Alert' id = 'deleteAlert'>
+            </div>
+        <% }); %>
+
+            <div class= 'whiteline'></div>
+           
+
+
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+
+        const logoutButton = document.getElementById('logoutbutton');
+        const sensorViewButton = document.getElementById('sensorviewbutton');
+        const alertViewButton = document.getElementById('createthreshold_button');
+        logoutButton.addEventListener('click', function() {
+            window.location.href = '/logout';
+        });
+
+        alertViewButton.addEventListener('click', function() {
+            window.location.href = '/alertView';
+        });
+
+        sensorViewButton.addEventListener('click', function() {
+             window.location.href = '/sensorview';
+        });
+
+        document.querySelectorAll('.deleteIcon').forEach(function(deleteIcon) {
+            deleteIcon.addEventListener('click', function() {
+                const alertRow = this.closest('.listAlertRows');
+                const alertId = alertRow.getAttribute('data-alert-id');
+                console.log('Alert ID:', alertId); 
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you want to delete this alert?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, keep it'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/delete-alert/${alertId}`, {
+                            method: 'DELETE'
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire('Deleted!', 'Your alert has been deleted.', 'success')
+                                .then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('Error!', 'There was a problem deleting your alert.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+
+    });
+    </script>
+</body>
+</html>

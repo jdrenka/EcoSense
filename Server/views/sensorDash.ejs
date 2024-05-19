@@ -16,7 +16,7 @@
             <img href='sensorDash.ejs' src='images/logo.png' id='logopic'>
         </a>
         <button id='sensorviewbutton' class='navbuttons'>View Sensors</button>
-        <button id='createthreshold_button' class = 'navbuttons'>Manage Sensor Thresholds</button>
+        <button id='createthreshold_button' class = 'navbuttons'>Manage Alerts</button>
         <button id='helpbutton' class='navbuttons'>Help</button>
         <button class='navbuttons' id='logoutbutton'>Logout</button>
     </div>
@@ -352,20 +352,20 @@
                         dailyReportContainer.scrollIntoView({ behavior: 'smooth' });
                         setTimeout(() => {
                             const headerOffset = dailyReportContainer.getBoundingClientRect().top + window.scrollY - 100; // Adjust this value as needed
-                            console.log('Header Offset:', headerOffset); // Log the offset value
+
                             window.scrollTo({ top: headerOffset, behavior: 'smooth' });
                         }, 500); // Delay to ensure the initial scroll is complete
                     }, 10);
                 } else {
                     dailyReportContainer.style.display = 'none';
-                    toggleButton.textContent = 'Get Daily Report';
+                    toggleButton.textContent = 'View Data';
                 }
             });
 
             const returnTopButton = document.getElementById('returnTopButton');
             returnTopButton.addEventListener('click', function() {
                 document.getElementById('top-of-page').scrollIntoView({ behavior: 'smooth' });
-                toggleButton.textContent = 'Get Daily Report';
+                toggleButton.textContent = 'View Data';
                 dailyReportContainer.style.display = 'none';
             });
 
@@ -400,6 +400,13 @@
             const logoutButton = document.getElementById('logoutbutton');
             logoutButton.addEventListener('click', function() {
                 window.location.href = '/logout';
+            });
+
+            const alertViewButton = document.getElementById('createthreshold_button');
+   
+
+             alertViewButton.addEventListener('click', function() {
+                window.location.href = '/alertView';
             });
 
             const startButton = document.getElementById('startButton');

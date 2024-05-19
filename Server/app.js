@@ -409,12 +409,41 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.delete('/delete-alert/:id', async (req, res) => {
+  const alertId = req.params.id;
+
+  try {
+      const query = 'DELETE FROM UserAlerts WHERE alert_id = ?';
+      await db.query(query, [alertId]);
+      res.json({ success: true });
+  } catch (err) {
+      console.error('Error deleting alert', err);
+      res.status(500).json({ success: false });
+  }
+});
+
 // Logout route
 app.get('/logout', (req, res) => {
   req.session.destroy(() => {
       res.clearCookie('connect.sid'); // Assuming session ID cookie name is 'connect.sid'
       res.redirect('/login');
   });
+});
+
+
+app.get('/alertView', async (req, res) => {
+  try {
+    const query = `
+            SELECT UserAlerts.*, sensors.sensor_name
+            FROM UserAlerts
+            JOIN sensors ON UserAlerts.sensor_id = sensors.sensor_id;
+        `;
+    const [results, fields] = await db.query(query);
+    res.render('alerts.ejs', { alerts: results });
+} catch (err) {
+    console.error('Database query failed:', err);
+    res.status(500).send('Database error');
+}
 });
 
 

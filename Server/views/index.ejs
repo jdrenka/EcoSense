@@ -14,6 +14,7 @@
             <img href = 'sensorDash.ejs' src='images/logo.png' id='logopic'>
         </a>
         <button id = 'sensorviewbutton' href = '/sensorview' class = 'navbuttons' onclick="">View Sensors</a>
+        <button id='createthreshold_button' class = 'navbuttons'>Manage Alerts</button>
         <button id = 'helpbutton' class = 'navbuttons'>Help</button>
         <button id = 'logoutbutton' class = 'navbuttons'>Logout</button>
     </div>
@@ -31,9 +32,9 @@
                     <h1 class='rowentrydata'>Active</h1>
                     </a>
                 </div>
-
-                <div class= 'whiteline'></div>
                 <% }); %>
+                <div class= 'whiteline'></div>
+                
 
 
         </div>
@@ -44,8 +45,13 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     const logoutButton = document.getElementById('logoutbutton');
+    const alertViewButton = document.getElementById('createthreshold_button');
     logoutButton.addEventListener('click', function() {
         window.location.href = '/logout';
+    });
+
+    alertViewButton.addEventListener('click', function() {
+        window.location.href = '/alertView';
     });
 });
 </script>
