@@ -452,7 +452,7 @@ app.post('/create-alert', async (req, res) => {
   }
 
   const query = `
-    INSERT INTO UserThresholdAlerts (user_id, sensor_id, data_type, alertCondition, threshold_value, phone_number, alertName, alertMessage, time_created)
+    INSERT INTO UserAlerts (user_id, sensor_id, data_type, alertCondition, threshold_value, phone_number, alertName, alertMessage, time_created)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
   const alertName = `${dataType} Alert`;
