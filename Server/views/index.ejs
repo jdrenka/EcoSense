@@ -1,66 +1,72 @@
 <!DOCTYPE html>
-
 <html>
-
 <head>
-<title>InsightDash</title>
-<link rel='stylesheet' href='/styles.css'>
+    <title>InsightDash</title>
+    <link rel='stylesheet' href='/styles.css'>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-
 <body>
     <div class='navbar'>
-        
-        <a class = 'smallatag' href = '/sensorview'>
-            <img href = 'sensorDash.ejs' src='images/logo.png' id='logopic'>
+        <a class='smallatag' href='/sensorview'>
+            <img href='sensorDash.ejs' src='images/logo.png' id='logopic'>
         </a>
-        <button id = 'sensorviewbutton' href = '/sensorview' class = 'navbuttons' onclick="">View Sensors</a>
-        <button id='createthreshold_button' class = 'navbuttons'>Manage Alerts</button>
-        <button id = 'helpbutton' class = 'navbuttons'>Help</button>
-        <button id = 'logoutbutton' class = 'navbuttons'>Logout</button>
+        <button id='sensorviewbutton' class='navbuttons'>View Sensors</button>
+        <button id='createthreshold_button' class='navbuttons'>Manage Alerts</button>
+        <button id='helpbutton' class='navbuttons'>Help</button>
+        <button id='logoutbutton' class='navbuttons'>Logout</button>
     </div>
 
-    <div class = 'sensorlistview'>
-        <div class = 'sensorheader'>
-            <h1 class = 'text' id = 'sensorlistmessage'>Your Sensors:</h1>
+    <h1 class='text' id='sensorlistmessage'>Your Sensors:</h1>
+    <div class='innerlistview'>
+        <% sensors.forEach(function(sensor) { %>
+        <div class='listrowentry' data-sensor-id="<%= sensor.sid %>">
+            <a href="/sensorDash?sensorId=<%= sensor.sid %>">
+                <h1 class='rowicon'>📈</h1>
+                <h1 class='rowentrydata'><%= sensor.sname %></h1>
+                <h1 class='rowentrydata'><%= sensor.stype %></h1>
+                <h1 class='rowentrydata' id="reading-<%= sensor.sid %>">Loading...</h1>
+            </a>
         </div>
-      
-        
-        <div class = 'innerlistview'>
-            <% sensors.forEach(function(sensors) { %>
-                <div class='listrowentry'>
-                    <a href="/sensorDash?sensorId=<%= sensors.sid %>">
-                    <h1 class='rowicon'>📈</h1>
-                    <h1 class='rowentrydata'><%= sensors.sname %></h1>
-                    <h1 class='rowentrydata'><%= sensors.stype %></h1>
-                    <h1 class='rowentrydata'>Active</h1>
-                    </a>
-                </div>
-                <% }); %>
-                <div class= 'whiteline'></div>
-                
-
-
-        </div>
-
-
+        <% }); %>
+        <div class='whiteline'></div>
     </div>
-    
-<script>
+
+    <script>
     document.addEventListener('DOMContentLoaded', function() {
-    const logoutButton = document.getElementById('logoutbutton');
-    const alertViewButton = document.getElementById('createthreshold_button');
-    logoutButton.addEventListener('click', function() {
-        window.location.href = '/logout';
+        const sensorViewButton = document.getElementById('sensorviewbutton');
+        const alertViewButton = document.getElementById('createthreshold_button');
+        const logoutButton = document.getElementById('logoutbutton');
+        
+        sensorViewButton.addEventListener('click', function() {
+            window.location.href = '/sensorview';
+        });
+        
+        alertViewButton.addEventListener('click', function() {
+            window.location.href = '/alertView';
+        });
+        
+        logoutButton.addEventListener('click', function() {
+            window.location.href = '/logout';
+        });
+        
+        const fetchLatestReadings = () => {
+            fetch('/latest-readings')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(reading => {
+                        const readingElement = document.getElementById(`reading-${reading.sensor_id}`);
+                        if (readingElement) {
+                            readingElement.textContent = `🌡️ - ${reading.temperature.toFixed(2)} °C 💧 -  ${reading.humidity.toFixed(2)} %  💡 -  ${reading.light.toFixed(2)} lx`;
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching latest readings:', error));
+        };
+
+        // Fetch the latest readings immediately and then every 10 seconds
+        fetchLatestReadings();
+        setInterval(fetchLatestReadings, 10000);
     });
-
-    alertViewButton.addEventListener('click', function() {
-        window.location.href = '/alertView';
-    });
-});
-</script>
-    
-
-
-
+    </script>
 </body>
 </html>

@@ -515,6 +515,30 @@ app.get('/alertView', async (req, res) => {
 }
 });
 
+// Endpoint to get the latest readings for each sensor
+// Endpoint to get the latest readings for each sensor
+app.get('/latest-readings', async (req, res) => {
+  try {
+      const query = `
+          SELECT r.sensor_id, r.temperature, r.humidity, r.light, s.sensor_name AS sname
+          FROM readings r
+          INNER JOIN sensors s ON r.sensor_id = s.sensor_id
+          WHERE (r.sensor_id, r.timestamp) IN (
+              SELECT sensor_id, MAX(timestamp)
+              FROM readings
+              GROUP BY sensor_id
+          )
+      `;
+      const [results] = await db.query(query);
+      res.json(results);
+  } catch (err) {
+      console.error('Error fetching latest readings:', err);
+      res.status(500).send('Server error');
+  }
+});
+
+
+
 
 app.get('/login', (req, res) => {
   res.render('login.ejs');

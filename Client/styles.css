@@ -262,7 +262,7 @@ p{
     margin-right: 4%;
     border-radius: 15px;
     border: 1px solid #686767;
-    
+    padding: 3px;
     background-color: #343c3e;
     align-items: center;
     width: 100%;
@@ -276,6 +276,7 @@ p{
     margin-left: 4%;
     margin-right: 0%;
     border-radius: 15px;
+    padding: 3px;
     border: 1px solid #686767;
     background-color: #343c3e;
     align-items: center;
@@ -284,10 +285,12 @@ p{
 }
 
 .rowicon{
-    margin-top: 15px;
+    margin-top: 20px;
     padding-right: 10px;
     padding-left: 10px;
     margin-left: 10px;
+    border-right: 1.25px solid #000000;
+    font-size: 25px;
 }
 .whiteline{
     margin-top: 2%;
@@ -307,9 +310,9 @@ p{
     margin-top: 25px;
     padding-right: 45px;
     padding-left: 45px;
-    font-size: 25px;
+    font-size: 20px;
     font-weight: 400;
-    border-right: 2px solid #000000;
+    border-right: 1.25px solid #000000;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
    
     color:rgb(255, 255, 255);
@@ -321,7 +324,8 @@ p{
 
 #alerticon{
     width: 2%;
-    margin-left: 10px;
+    margin-left: 15px;
+    margin-bottom: 20px;
     font-size: 25px;
 }
 .alertRowEntryData{
@@ -330,7 +334,7 @@ p{
     padding-right: 20px;
     padding-left: 0px;
     font-size: 17px;
-    border-right: 2px solid #000000;
+    border-right: 1.25px solid #000000;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: 500;
     color:rgb(255, 255, 255);
