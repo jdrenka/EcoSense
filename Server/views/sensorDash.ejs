@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jersey+25&family=Lobster&family=Lobster+Two:ital@1&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -13,7 +16,7 @@
 
     <div class='navbar'>
         <a class='smallatag' href='/sensorview'>
-            <img href='sensorDash.ejs' src='images/logo.png' id='logopic'>
+            <h1 class = 'jersey-25-regular'> <span class = 'withinlogo'>E</span>coSight</h1>
         </a>
         <button id='sensorviewbutton' class='navbuttons'>Sensors</button>
         <button id='createthreshold_button' class = 'navbuttons'>Alerts</button>
@@ -74,6 +77,8 @@
         <canvas id="sensorChart" width="800" height="400"></canvas>
     </div>
 
+    <div class='whiteline'></div>
+    
     <div class='dailyReportSection'>
         <div id="dailyReportContainer" style="display: none;">
             <div class='reportheaderbunch'>
@@ -107,6 +112,7 @@
                 </div>
                 
             </div>
+            
             <canvas id="dailyReportChart"></canvas>
         </div>
     </div>

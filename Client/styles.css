@@ -5,6 +5,7 @@
 
 html, body {
     height: 100%;
+    width: 100%;
     margin: 0;
     padding: 0;
     background-color: #1a1a1a;
@@ -69,7 +70,7 @@ p{
 .returntopgroup{
     display: block;
     width: 20%;
-    margin-left: 100px;
+    margin: 0;
     
 }
 
@@ -160,6 +161,24 @@ p{
     background-color: #204168;
 }
 
+
+.jersey-25-regular {
+    color: white;
+    font-family: "Jersey 25", sans-serif;
+    font-size: 60px;
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: 0px;
+    margin: 0;
+    margin-top: 5px;
+    margin-left: 37px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+
+.withinlogo{
+    color: rgb(28, 255, 28);
+}
 .navbuttons{
     background-color: #343c3e;
     margin-top: 15px;
@@ -167,7 +186,7 @@ p{
     padding: 10px;
     width: 10%;
     height: 60%;
-    font-size: 1vw;
+    font-size: 0.7vw;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
     color: white;
@@ -188,14 +207,15 @@ p{
 
 .currentReadingsPanel{
     display: fixed;
-    width: 375px;
-    height: 418px;
+    width: 1px;
+    min-width: 33vw;
+    height: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: rgba(109, 112, 112, 0.25);
     color: white;
     margin-top: -15px;
     margin-left: 1%;
-    margin-right: 20px;
+    margin-right: 1vw;
     border-radius: 10px;
     border: 0.5px solid #332f36;
     padding-left: 15px;
@@ -294,8 +314,8 @@ p{
 }
 .whiteline{
     margin-top: 2%;
-    margin-left: 3%;
-    width: 103%;
+    margin-left: 0%;
+    width: 100%;
     border-bottom: 0.1px solid #ffffff;
     
 }
@@ -305,6 +325,7 @@ p{
 }
 .smallatag{
     display: inline-block;
+    
 }
 
 .gthanlthan{
@@ -423,34 +444,34 @@ p{
     text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
 }
 #returnTopButton{
-    margin-left: 50px;
+    margin-left: 4vw;
     margin-top: 33px;
-    background-color: #292929; 
-    width: 150px;
-    height: 35px; 
+    background-color: #7c7b7b; 
+    width: 65%;
+    height: 3vw; 
     color: white;  
     border: none; 
-    border: 2px solid #727070;
+    border: 0.1vw solid #727070;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
-    font-size: 12px;
+    font-size: 1vw;
     cursor: pointer; 
     border-radius: 5px; 
     transition: background-color 0.6s, transform 0.6s; 
 }
 
 #downloadCSVButton{
-    margin-left: 50px;
-    margin-top: 10px;
-    background-color: #292929; 
-    width: 150px;
-    height: 35px; 
+    margin-left: 4vw;
+    margin-top: 0.6vw;
+    background-color: #47be40; 
+    width: 65%;
+    height: 3vw; 
     color: white;  
     border: none; 
-    border: 2px solid #727070;
+    border: 2px solid #1ea031;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
-    font-size: 12px;
+    font-size: 1vw;
     cursor: pointer; 
     border-radius: 5px; 
     transition: background-color 0.6s, transform 0.6s; 
@@ -487,6 +508,7 @@ p{
 
 .bodysection{
     padding: 10px;
+    
     display: flex;
     margin-right: 10px;
     margin-left: -4px;
@@ -495,6 +517,7 @@ p{
     flex-direction: column;
     font-weight: 500;
     background-color: rgb(49, 49, 49);
+    
     
 }
 
@@ -525,7 +548,7 @@ p{
 }
 
 #toggleDailyReport {
-    background-color: #2b2a2a; 
+    background-color: #329c1a; 
     width: 150px;
     height: 25px;   
     border: none; 
@@ -541,7 +564,7 @@ p{
 }
 
 #toggleDailyReport:hover {
-    background-color: #474848; /* Darker shade of green when hovered */ /* Slightly increase size on hover */
+    background-color: #288e4b; /* Darker shade of green when hovered */ /* Slightly increase size on hover */
 }
 
 #toggleReadings{
@@ -567,7 +590,7 @@ p{
 }
 
 #pauseButton {
-    background-color: #2b2a2a; 
+    background-color: #888686; 
     width: 150px;
     height: 25px;   
     border: none; 
@@ -583,7 +606,7 @@ p{
 }
 
 #pauseButton:hover {
-    background-color: #434343; /* Darker shade of green when hovered */ /* Slightly increase size on hover */
+    background-color: #817f7f; /* Darker shade of green when hovered */ /* Slightly increase size on hover */
 }
 
 #countdown{
@@ -627,20 +650,19 @@ p{
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 10px;
-    margin-top: -15px;
-    margin-right: 15px;
-    margin-left: 15px;
+    padding: 0vw;
+    margin-right: 0vw;
+    margin-left: 1vw;
     border: 2px solid #6d6d6d;
     border-radius: 10px;
     cursor: pointer;
-    height: 28px;
+    height: 3vw;
     width: 45%; 
     text-align: center;
-    font-size: 14px;
+    font-size: 1vw;
     font-weight: 500;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #2a2a2a;
+    background-color: #7c7b7b;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
@@ -714,7 +736,7 @@ p{
 
 #sensorChart {
     flex: 2; 
-    max-width: 800px; 
+    max-width: 65%; 
     height: 500x; 
     max-height: 500px
 }
@@ -732,7 +754,7 @@ p{
 }
 
 #switchChartType{
-    background-color: #2b2a2a; 
+    background-color: #7b7b7b; 
     width: 150px;
     height: 25px;   
     border: none;
@@ -749,19 +771,21 @@ p{
 #dailyreportheader{
     width: 20%;
     margin: 0;  
+    font-size: 2.5vw;
 }
 .readingamountanddaterange{
-    width: 50%;
+    width: 60%;
     padding: 5px;
+    margin-top: 10px;
 }
 .totalreadings{
-    font-size: 14px;
+    font-size: 0.8vw;
     display: flex;
     margin-bottom: -15px;
 }
 #dailyreport_readingcount{
     font-weight: 400;
-    margin-left: 10px;
+    margin-left: 1%;
     margin-top: 2px;
 }
 
@@ -771,13 +795,16 @@ p{
 
 #plottingtext2{
     font-weight: 400;
+    font-size: 2vw;
+    margin-left: 1vw;
 }
 
 #plottingtext1{
-    width: 100%;
+    width: 26vw;
     font-weight: 400;
-    font-size: 27px;
-    margin-right: 0%;
+    font-size: 1.6vw;
+    margin-top: 6px;
+    
 }
 .daterange{
     display: flex;
@@ -790,9 +817,9 @@ p{
 }
 
 #readingmessage{
-    margin-left: 5px;
+    margin-left: 1%;
     font-weight: 400;
 }
 #switchChartType:hover {
-    background-color: #454647; 
+    background-color: #6e6f70; 
 }
