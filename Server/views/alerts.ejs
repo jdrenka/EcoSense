@@ -6,6 +6,50 @@
 <title>InsightDash</title>
 <link rel='stylesheet' href='/styles.css'>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+<style>
+    .swal2-popup {
+        background-color: #333 !important;
+        color: white !important;
+    }
+    .swal2-input {
+        background-color: #555 !important;
+        color: white !important;
+        border: none !important;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        font-weight: 500 !important;
+    }
+    .swal2-input::placeholder {
+        color: #aaa !important;
+        font-size: 0.8em !important;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        font-weight: 500 !important;
+    }
+    .swal2-select {
+        background-color: #555 !important;
+        color: white !important;
+        border: none !important;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        font-weight: 500 !important;
+    }
+    .swal2-select::placeholder {
+        color: #aaa !important;
+        font-size: 1em !important;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        font-weight: 500 !important;
+    }
+    .button-select {
+        margin: 5px;
+        padding: 10px 20px;
+        background-color: #555;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .button-select.selected {
+        background-color: green;
+    }
+</style>
 </head>
 
 <body>
@@ -117,52 +161,63 @@
       // Build the sensor options HTML
       const sensorOptions = sensors.map(sensor => `<option value="${sensor.sensor_id}">${sensor.sensor_name}</option>`).join('');
 
+      let selectedDataType = '';
+      let selectedCondition = '';
+
       Swal.fire({
         title: 'Create New Alert',
         html: `
-          <div>
-            <label for="sensorSelect">Sensor:</label>
+          <div class = 'createalertsection' id = 'sensor_select'>
             <select id="sensorSelect" class="swal2-input">
+              <option value="" disabled selected style="font-family: 'Segoe UI'; font-weight: 500; font-size: 1em;">Select a sensor</option>
               ${sensorOptions}
             </select>
           </div>
-          <div>
-            <label for="dataType">Data Type:</label>
-            <select id="dataType" class="swal2-input">
-              <option value="temperature">Temperature</option>
-              <option value="humidity">Humidity</option>
-              <option value="light">Light</option>
-            </select>
+          <div class = 'createalertsection'>
+            
+            <div class = 'datatypeselectbuttons'>
+              <button id="tempButton" class="button-select">Temperature🌡️</button>
+              <button id="humButton" class="button-select">Humidity💧</button>
+              <button id="lightButton" class="button-select">Light💡</button>
+            </div>
+          
           </div>
-          <div>
-            <label for="alertCondition">Condition:</label>
-            <select id="alertCondition" class="swal2-input">
-              <option value="less_than">Less Than</option>
-              <option value="greater_than">Greater Than</option>
-            </select>
+          <div class = 'createalertsection' id = 'conditionalertsection'>
+            
+            <div class = 'gthanlthan'>
+              <button id="lessThanButton" class="button-select"><</button>
+              <button id="greaterThanButton" class="button-select">></button>
+            </div>
+
+            
+           
           </div>
-          <div>
-            <label for="thresholdValue">Threshold Value:</label>
+          <div class = 'createalertsection'>
+            
             <input type="number" id="thresholdValue" class="swal2-input" placeholder="Enter threshold value">
           </div>
-          <div>
-            <label for="phoneNumber">Phone Number:</label>
+          <div class = 'createalertsection'>
+            
             <input type="text" id="phoneNumber" class="swal2-input" placeholder="Enter phone number">
           </div>
-          <div>
-            <label for="alertMessage">Alert Message:</label>
+          <div class = 'createalertsection'>
+            
             <input type="text" id="alertMessage" class="swal2-input" placeholder="Enter alert message">
           </div>
         `,
         focusConfirm: false,
         preConfirm: () => {
           const sensorId = Swal.getPopup().querySelector('#sensorSelect').value;
-          const dataType = Swal.getPopup().querySelector('#dataType').value;
-          const alertCondition = Swal.getPopup().querySelector('#alertCondition').value;
           const thresholdValue = Swal.getPopup().querySelector('#thresholdValue').value;
           const phoneNumber = Swal.getPopup().querySelector('#phoneNumber').value;
           const alertMessage = Swal.getPopup().querySelector('#alertMessage').value;
-          return { sensorId, dataType, alertCondition, thresholdValue, phoneNumber, alertMessage };
+
+          if (!selectedDataType || !selectedCondition) {
+            Swal.showValidationMessage(`Please select data type and condition`);
+            return false;
+          }
+
+          return { sensorId, dataType: selectedDataType, alertCondition: selectedCondition, thresholdValue, phoneNumber, alertMessage };
         },
         showCancelButton: true,
         confirmButtonText: 'Create Alert'
@@ -189,6 +244,42 @@
           });
         }
       });
+
+      // Add event listeners for the data type buttons
+      document.getElementById('tempButton').addEventListener('click', function() {
+        selectDataType('temperature', 'tempButton');
+      });
+      document.getElementById('humButton').addEventListener('click', function() {
+        selectDataType('humidity', 'humButton');
+      });
+      document.getElementById('lightButton').addEventListener('click', function() {
+        selectDataType('light', 'lightButton');
+      });
+
+      // Add event listeners for the condition buttons
+      document.getElementById('lessThanButton').addEventListener('click', function() {
+        selectCondition('less_than', 'lessThanButton');
+      });
+      document.getElementById('greaterThanButton').addEventListener('click', function() {
+        selectCondition('greater_than', 'greaterThanButton');
+      });
+
+      function selectDataType(type, buttonId) {
+        selectedDataType = type;
+        ['tempButton', 'humButton', 'lightButton'].forEach(id => {
+          document.getElementById(id).classList.remove('selected');
+        });
+        document.getElementById(buttonId).classList.add('selected');
+      }
+
+      function selectCondition(condition, buttonId) {
+        selectedCondition = condition;
+        ['lessThanButton', 'greaterThanButton'].forEach(id => {
+          document.getElementById(id).classList.remove('selected');
+        });
+        document.getElementById(buttonId).classList.add('selected');
+      }
+
     });
 
 

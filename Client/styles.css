@@ -306,12 +306,36 @@ p{
 .smallatag{
     display: inline-block;
 }
+
+.gthanlthan{
+    display: flex;
+    margin-left: 40%;
+}
+.swal2-input{
+    margin: 0;
+    margin-left: 30%;
+    width: 40%;
+}
+
+#sensorSelect{
+    border-radius: 15px;
+}
+
+#sensor_select{
+    margin-top: 10px;
+    width: 100%;
+}
+.createalertsection{
+    margin-top:20px;
+    display: flex;
+    
+}
 .rowentrydata{
     margin-top: 25px;
     padding-right: 45px;
     padding-left: 45px;
-    font-size: 20px;
-    font-weight: 400;
+    font-size: 18px;
+    font-weight: 500;
     border-right: 1.25px solid #000000;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
    
@@ -322,6 +346,41 @@ p{
     width: 30%;
 }
 
+#lessThanButton{
+    font-weight: 700;
+    font-size: 25px;
+    padding: 5px;
+    padding-right: 10px;
+   
+}
+.swal2-confirm.swal2-styled{
+    background-color: green;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+}
+
+.swal2-cancel.swal2-styled{
+    background-color: rgb(145, 143, 143);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+}
+
+
+#greaterThanButton{
+    font-weight: 700;
+    font-size: 25px;
+    padding: 5px;
+}
+
+#conditionalertsection{
+    gap: 45px;
+    margin-top: 5px;
+    margin-bottom: -10px;
+}
+
+.sensorlistheader{
+    border-bottom: 10px groove #f8f8f8;
+}
 #alerticon{
     width: 2%;
     margin-left: 15px;
@@ -602,6 +661,38 @@ p{
     margin-left: 5%;
     max-width: 90%;
     max-height: 65%;
+}
+
+#swal2-html-container{
+    margin: 0;
+    padding: 5px;
+}
+#swal2-title{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-bottom: 5px;
+    border-bottom: 5px groove #f8f8f8;
+
+}
+
+.datatypeselectbuttons{
+    width: 100%;
+}
+#thresholdValue{
+    height: 35px;
+}
+#phoneNumber{
+    height: 35px;
+}
+#alertMessage{
+    height: 35px;
+    width: 80%;
+    margin-left: 10%;
+}
+.button-select{
+    width: 35%;
+    font-size: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 500;
 }
 
 #createAlertButton{

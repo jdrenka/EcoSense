@@ -520,7 +520,7 @@ app.get('/alertView', async (req, res) => {
 app.get('/latest-readings', async (req, res) => {
   try {
       const query = `
-          SELECT r.sensor_id, r.temperature, r.humidity, r.light, s.sensor_name AS sname
+          SELECT r.sensor_id, r.temperature, r.humidity, r.light, r.timestamp, s.sensor_name AS sname
           FROM readings r
           INNER JOIN sensors s ON r.sensor_id = s.sensor_id
           WHERE (r.sensor_id, r.timestamp) IN (
