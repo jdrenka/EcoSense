@@ -7,8 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jersey+25&family=Lobster&family=Lobster+Two:ital@1&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+25&family=Lobster&family=Lobster+Two:ital@1&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -91,7 +91,7 @@
                     </div>
 
                     <div class='daterange'>
-                        <p id='plottingtext1'>Selected data from : </p>
+                        <p id='plottingtext1'>Selected data from</p>
 
                         <div id="startButton" class="datetime-button">
                             <span id="startDateText">Select Start Date</span>
@@ -126,6 +126,7 @@
         let dailyReportChart;
         let maxDataPoints = 5000;
         let isPaused = false;
+        let isConnected = false;
         let totalReadings = 0;
         const sensorId = "<%= sensorId %>";
 
@@ -383,6 +384,7 @@
                     pauseButton.textContent = "Restart Sensor";
                     pauseButton.style.backgroundColor = "green";
                     document.getElementById('statusicon').innerHTML = '💤';
+                    document.getElementById('countdown').textContent = '⛔';
                 } else {
                     pauseButton.textContent = "Pause";
                     pauseButton.style.backgroundColor = "#2b2a2a";
@@ -511,7 +513,12 @@
                     fetchData();
                     counter = UPDATE_TIME;
                 }
-                countdownElement.textContent = `(${counter})`;
+                if (isConnected) {
+                    countdownElement.textContent = `(${counter})`;
+                } else {
+                    document.getElementById('statusicon').innerHTML = '💤';
+                    countdownElement.textContent = '⛔';
+                }
             }, 1000);
         }
 
@@ -520,11 +527,19 @@
                 fetch(`/recentData/${sensorId}`)
                     .then(response => response.json())
                     .then(data => {
-                        if (sensorId == data.sensor_id) { //Condition check if the sensor IDs match
-                            let timestamp = new Date(data.timestamp);
-                            timestamp.setHours(timestamp.getHours() + 1); // add 1 extra hour to calibrate
-                            const formattedTime = timestamp.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true });
-                            chart.data.labels.push(formattedTime);
+                        let currentTime = new Date();
+                        let dataTime = new Date(data.timestamp);
+                        dataTime.setHours(dataTime.getHours() + 1); // add 1 extra hour to calibrate
+                        let timeDifference = (currentTime - dataTime) / 1000; // convert to seconds
+
+                        if (sensorId == data.sensor_id && timeDifference < UPDATE_TIME * 2) {
+                            if (!isConnected) {
+                                isConnected = true;
+                                document.getElementById('statusicon').innerHTML = '<img id="statusicon" src="images/bolt.png" alt="Active">';
+                                document.getElementById('pauseButton').disabled = false;
+                            }
+                            let timestamp = dataTime.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true });
+                            chart.data.labels.push(timestamp);
                             chart.data.datasets[0].data.push(data.temperature);
                             chart.data.datasets[1].data.push(data.humidity);
                             chart.data.datasets[2].data.push(data.light);
@@ -539,8 +554,15 @@
                             document.getElementById('avglight').textContent = `${avgLight} lx`;
                             document.getElementById('humidity').textContent = `${data.humidity.toFixed(2)}%`;
                             document.getElementById('light').textContent = `${data.light.toFixed(2)} lx`;
-                            document.getElementById('time').textContent = formattedTime;
+                            document.getElementById('time').textContent = timestamp;
                             document.getElementById('variableValue').textContent = ++totalReadings;
+                        } else {
+                            if (isConnected) {
+                                isConnected = false;
+                                document.getElementById('statusicon').innerHTML = '💤';
+                                document.getElementById('pauseButton').disabled = true;
+                                document.getElementById('countdown').textContent = '⛔';
+                            }
                         }
                     })
                     .catch(error => {

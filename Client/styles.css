@@ -595,7 +595,7 @@ p{
     font-size: 52px;
 }
 #statusicon{
-    margin-left: 7%;
+    margin-left: 15%;
     margin-bottom: -5px;
     margin-top: 0;
     border-radius: 60px;
@@ -752,7 +752,7 @@ p{
 
 #sensorChart {
     flex: 2; 
-    max-width: 63%; 
+    max-width: 60%; 
     height: 500x; 
     max-height: 500px
 }
@@ -833,6 +833,10 @@ p{
     margin-left: 1%;
 }
 
+
+#loginnavbar{
+    height: 20%;
+}
 #readingmessage{
     margin-left: 1%;
     font-weight: 400;
