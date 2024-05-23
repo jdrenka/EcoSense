@@ -62,7 +62,7 @@
                 <div class='buttonsandcheck'>
                     <div class='buttonset'>
                         <button id="switchChartType">Line/Bar</button>
-                        <button id="toggleDailyReport">View data </button>
+                        <button id="toggleDailyReport">View Data </button>
                         <button id="pauseButton">Pause</button>
                     </div>
 
@@ -357,7 +357,7 @@
                     setTimeout(() => {
                         dailyReportContainer.scrollIntoView({ behavior: 'smooth' });
                         setTimeout(() => {
-                            const headerOffset = dailyReportContainer.getBoundingClientRect().top + window.scrollY - 100; // Adjust this value as needed
+                            const headerOffset = dailyReportContainer.getBoundingClientRect().top + window.scrollY + 300; // Adjust this value as needed
 
                             window.scrollTo({ top: headerOffset, behavior: 'smooth' });
                         }, 500); // Delay to ensure the initial scroll is complete
