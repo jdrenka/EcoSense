@@ -182,7 +182,7 @@ p{
     color: rgb(28, 255, 28);
 }
 .navbuttons{
-    background-color: #6b6b6c;
+    background-color: #4c4c4d;
     margin-top: 15px;
     margin-bottom: 10px;
     padding: 10px;
@@ -193,7 +193,7 @@ p{
     font-weight: bold;
     color: white;
     border-radius: 10px;
-    border: 0.5px solid #535252;
+    border: 1px solid #ffffff;
 }
 
 .navbuttons:hover{
@@ -468,7 +468,7 @@ p{
 #returnTopButton{
     margin-left: 4vw;
     margin-top: 33px;
-    background-color: #7c7b7b; 
+    background-color: #535252; 
     width: 65%;
     height: 3vw; 
     color: white;  
@@ -668,18 +668,19 @@ p{
     padding: 0vw;
     margin-right: 0vw;
     margin-left: 1vw;
-    border: 2px solid #6d6d6d;
-    border-radius: 10px;
+    border: 2px solid #ffffff;
+    border-radius: 20px;
     cursor: pointer;
     height: 3vw;
-    width: 45%; 
+    width: 25%; 
     text-align: center;
     font-size: 1vw;
     font-weight: 500;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #7c7b7b;
+    background-color: #464545;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    opacity: 80%;
 }
 .datetime-button span {
     display: block;
@@ -817,7 +818,7 @@ p{
 }
 
 #plottingtext1{
-    width: 26vw;
+    width: 14vw;
     font-weight: 400;
     font-size: 1.6vw;
     margin-top: 6px;
