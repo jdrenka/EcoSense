@@ -1,19 +1,16 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-
-     <!-- Standard favicon -->
-     <link rel="icon" type="image/png" sizes="32x32" href="images/Ecosense_Icon.png">
-     <link rel="icon" type="image/png" sizes="16x16" href="images/Ecosense_Icon.png">
-     
-     <!-- Apple Touch Icon for iOS -->
-     <link rel="apple-touch-icon" sizes="180x180" href="images/Ecosense_Icon.png">
-     
-     <!-- Android Chrome -->
-     <link rel="icon" type="image/png" sizes="192x192" href="images/Ecosense_Icon.png">
-     
-     <!-- Safari pinned tab icon -->
-     <link rel="mask-icon" href="images/Ecosense_icon.png" color="#5bbad5">
+    <!-- Standard favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="images/Ecosense_Icon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/Ecosense_Icon.png">
+    <!-- Apple Touch Icon for iOS -->
+    <link rel="apple-touch-icon" sizes="180x180" href="images/Ecosense_Icon.png">
+    <!-- Android Chrome -->
+    <link rel="icon" type="image/png" sizes="192x192" href="images/Ecosense_Icon.png">
+    <!-- Safari pinned tab icon -->
+    <link rel="mask-icon" href="images/Ecosense_icon.png" color="#5bbad5">
     <title>EcoSense</title>
     <link rel='stylesheet' href='/styles.css'>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -22,25 +19,217 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jersey+25&family=Lobster&family=Lobster+Two:ital@1&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <style>
+/* Custom Flatpickr theme */
+.flatpickr-calendar {
+    background-color: #2b2a2a !important;
+    border: 1px solid #fff !important;
+    padding-bottom: 10px;
+    color: white !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    box-sizing: border-box !important; /* Ensure padding does not affect size */
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month,
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg,
+.flatpickr-months .flatpickr-prev-month svg path,
+.flatpickr-months .flatpickr-next-month svg path {
+    color: white !important;
+    fill: white !important;
+}
+
+.flatpickr-months {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.flatpickr-current-month {
+    color: white !important;
+}
+
+.flatpickr-current-month .cur-month {
+    color: white !important;
+}
+
+.flatpickr-weekdays {
+    font-weight: 200;
+}
+
+.flatpickr-weekday {
+    color: white !important;
+}
+
+.flatpickr-days .dayContainer {
+    background-color: #2b2a2a !important;
+    padding: 5px !important; /* Add padding to the day container */
+    box-sizing: border-box !important; /* Ensure padding does not affect size */
+}
+
+.flatpickr-day {
+    color: white !important;
+    background-color: #2b2a2a !important;
+    border: 1px solid #fff !important;
+    margin: 0 !important;
+    display: inline-block !important;
+    width: calc(100% / 7) !important; /* Ensure each day takes up equal space */
+    box-sizing: border-box !important;
+}
+
+.flatpickr-day:hover, .flatpickr-day:focus {
+    background-color: #fff !important;
+    color: #2b2a2a !important;
+}
+
+.flatpickr-day.today {
+    border: 2px solid #007bff !important; /* Blue border for today's date */
+    background-color: #2b2a2a !important; /* Maintain the dark background */
+    color: white !important; /* Keep the text color white */
+}
+
+.flatpickr-day.selected {
+    background-color: #fff !important;
+    color: #2b2a2a !important;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    display: none !important;
+}
+
+.flatpickr-time {
+    background-color: #2b2a2a !important;
+    padding-top: 1%;
+    
+}
+
+.flatpickr-time .flatpickr-am-pm {
+    color: white !important;
+
+}
+
+.flatpickr-am-pm {
+    margin-right: 10px;
+    margin-left: 10px;
+    background-color: #686666 !important;
+    text-align: center !important;
+}
+
+.flatpickr-time-separator {
+    display: none !important;
+}
+
+.flatpickr-time input {
+    background-color: #686666 !important;
+    border-radius: 10px;
+    color: white !important;
+    padding: 5px !important;
+    margin-bottom: 5px !important;
+    width: 80px !important;
+    text-align: center !important;
+}
+
+.flatpickr-time .flatpickr-hour,
+.flatpickr-time .flatpickr-minute,
+.flatpickr-time .flatpickr-second {
+    color: white !important;
+}
+
+.flatpickr-time .flatpickr-time {
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    padding: 10px !important;
+}
+
+.flatpickr-time .flatpickr-am-pm {
+    width: 60px !important;
+    height: 30px !important;
+    border-radius: 5px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+}
+
+.flatpickr-time .flatpickr-am-pm:hover {
+    background-color: #686666 !important;
+}
+
+/* Hide increment/decrement arrows */
+.flatpickr-time input[type="number"]::-webkit-inner-spin-button,
+.flatpickr-time input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+}
+
+.flatpickr-time .numInputWrapper span.arrowUp,
+.flatpickr-time .numInputWrapper span.arrowDown,
+.flatpickr-current-month .numInputWrapper span.arrowUp,
+.flatpickr-current-month .numInputWrapper span.arrowDown {
+    display: none !important;
+}
+
+.numInputWrapper {
+    margin-left: 0px;
+    padding-left: 10px;
+    border-right: 1px solid #fff !important;
+    border-left: 1px solid #fff !important;
+    background-color: #2b2a2a !important;
+}
+
+
+/* Dark grey background for month selection dropdown */
+.flatpickr-monthDropdown-months {
+    background-color: #2b2a2a !important;
+    color: white !important;
+    border-right: 1px solid #fff !important;
+    border-left: 1px solid #fff !important;
+}
+
+/* Hide dates from previous and next months */
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    visibility: hidden;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+/* Style the dropdown month selector */
+.flatpickr-monthDropdown-months {
+    background-color: #686666 !important;
+    color: #fff !important; /* White text */
+}
+
+/* Ensure the dates remain next to each other in the last row */
+.flatpickr-day {
+    display: inline-block !important;
+    width: 14.28% !important; /* Ensure each day takes up the right amount of space */
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+
+
+    </style>
 </head>
 <body>
-
     <div id="top-of-page"></div>
-
     <div class='navbar'>
         <a class='smallatag' href='/sensorview'>
             <h1 class = 'jersey-25-regular'> <span class = 'withinlogo'>E</span>coSense</h1>
         </a>
         <button id='sensorviewbutton' class='navbuttons'>Sensors</button>
-        <button id='createthreshold_button' class = 'navbuttons'>Alerts</button>
+        <button id='createthreshold_button' class='navbuttons'>Alerts</button>
         <button id='helpbutton' class='navbuttons'>Help</button>
         <button class='navbuttons' id='logoutbutton'>Logout</button>
     </div>
-
     <div class='headerchunk'>
         <h1 class='text' id='sensorheader'><%= sensorName %></h1>
     </div>
-
     <div class='sensordisplay'>
         <div class='currentReadingsPanel'>
             <div class='topsection'>
@@ -53,32 +242,26 @@
                     <span class='stats' id="countdown">10</span>
                 </div>
             </div>
-
             <div class='bodysection'>
                 <div class='tempbox'>
                     <p class='stats'>Temperature: <span id="temperature">--</span></p>
                     <p class='stats'>Current Avg: <span id='avgtemperature'>--</span></p>
                 </div>
-
                 <div class='humiditybox'>
                     <p class='stats'>Humidity: <span id="humidity">--</span></p>
                     <p class='stats'>Current Avg: <span id='avghumidity'>--</span></p>
                 </div>
-
                 <div class='lightbox'>
                     <p class='stats'>Light: <span id="light">--</span></p>
                     <p class='stats'>Current Avg: <span id='avglight'>--</span></p>
                 </div>
-
                 <div class='stats' id="displayVariable">Total Readings: <span id="variableValue">--</span></div>
-
                 <div class='buttonsandcheck'>
                     <div class='buttonset'>
                         <button id="switchChartType">Line/Bar</button>
                         <button id="toggleDailyReport">View Data </button>
                         <button id="pauseButton">Pause</button>
                     </div>
-
                     <div class='checkboxesgroup'>
                         <label class='checkflex'><input type="checkbox" id="showTemperature" checked> Show Temp</label>
                         <label class='checkflex'><input type="checkbox" id="showHumidity" checked> Show Hum</label>
@@ -89,43 +272,34 @@
         </div>
         <canvas id="sensorChart" width="800" height="400"></canvas>
     </div>
-
     <div class='whiteline'></div>
-    
     <div class='dailyReportSection'>
         <div id="dailyReportContainer" style="display: none;">
             <div class='reportheaderbunch'>
                 <h1 class='text' id='dailyreportheader'> Data Report:</h1>
                 <div class='readingamountanddaterange'>
-
                     <div class='totalreadings'>
                         <h1 class='text' id='readingmessage'>Total readings: </h1>
                         <h1 class='text' id='dailyreport_readingcount'>--</h1>
                     </div>
-
                     <div class='daterange'>
                         <p id='plottingtext1'>Selected data from</p>
-
                         <div id="startButton" class="datetime-button">
                             <span id="startDateText">Select Start Date</span>
                             <span id="startTimeText"></span>
                         </div>
-
                         <p id='plottingtext2'> to </p>
-
                         <div id="endButton" class="datetime-button">
                             <span id="endDateText">Select End Date</span>
                             <span id="endTimeText"></span>
                         </div>
                     </div>
                 </div>
-                <div class = 'returntopgroup'>
+                <div class='returntopgroup'>
                     <button id="returnTopButton">Return to Top</button>
                     <button id="downloadCSVButton">Download CSV</button>
                 </div>
-                
             </div>
-            
             <canvas id="dailyReportChart"></canvas>
         </div>
     </div>
@@ -424,9 +598,7 @@
             });
 
             const alertViewButton = document.getElementById('createthreshold_button');
-   
-
-             alertViewButton.addEventListener('click', function() {
+            alertViewButton.addEventListener('click', function() {
                 window.location.href = '/alertView';
             });
 
@@ -438,44 +610,40 @@
             const endDateText = document.getElementById('endDateText');
             const endTimeText = document.getElementById('endTimeText');
 
-            startButton.addEventListener('click', function() {
-                flatpickr("#startButton", {
-                    enableTime: true,
-                    dateFormat: "Y-m-d H:i",
-                    onClose: function(selectedDates, dateStr, instance) {
-                        const [date, time] = dateStr.split(" ");
-                        const formattedDate = new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                        const formattedTime = new Date(dateStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-                        startDateText.textContent = formattedDate;
-                        startTimeText.textContent = formattedTime;
-                        updateReportChart();
-                    }
-                }).open();
+            const startPicker = flatpickr("#startButton", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                onClose: function(selectedDates, dateStr, instance) {
+                    const [date, time] = dateStr.split(" ");
+                    const formattedDate = new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    const formattedTime = new Date(dateStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+                    startDateText.textContent = formattedDate;
+                    startTimeText.textContent = formattedTime;
+                    updateReportChart();
+                }
             });
 
-            endButton.addEventListener('click', function() {
-                flatpickr("#endButton", {
-                    enableTime: true,
-                    dateFormat: "Y-m-d H:i",
-                    onClose: function(selectedDates, dateStr, instance) {
-                        const [date, time] = dateStr.split(" ");
-                        const formattedDate = new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                        const formattedTime = new Date(dateStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-                        endDateText.textContent = formattedDate;
-                        endTimeText.textContent = formattedTime;
-                        updateReportChart();
-                    }   
-                }).open();
+            const endPicker = flatpickr("#endButton", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                onClose: function(selectedDates, dateStr, instance) {
+                    const [date, time] = dateStr.split(" ");
+                    const formattedDate = new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    const formattedTime = new Date(dateStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+                    endDateText.textContent = formattedDate;
+                    endTimeText.textContent = formattedTime;
+                    updateReportChart();
+                }   
             });
 
             document.addEventListener('click', function(event) {
-        if (startPicker && !startPicker.calendarContainer.contains(event.target) && !startButton.contains(event.target)) {
-            startPicker.close();
-        }
-        if (endPicker && !endPicker.calendarContainer.contains(event.target) && !endButton.contains(event.target)) {
-            endPicker.close();
-        }
-    });
+                if (startPicker && !startPicker.calendarContainer.contains(event.target) && !startButton.contains(event.target)) {
+                    startPicker.close();
+                }
+                if (endPicker && !endPicker.calendarContainer.contains(event.target) && !endButton.contains(event.target)) {
+                    endPicker.close();
+                }
+            });
 
             document.getElementById('downloadCSVButton').addEventListener('click', function() {
                 const startDate = document.getElementById('startDateText').textContent + " " + document.getElementById('startTimeText').textContent;
@@ -503,7 +671,7 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('dailyreport_readingcount').textContent = data.length;
-                    dailyData.timestamps = data.map(entry => new Date(entry.timestamp).toLocaleString());  // Use toLocaleString to include date and time
+                    dailyData.timestamps = data.map(entry => new Date(entry.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }));  // Use toLocaleString to include date and time
                     dailyData.temperatures = data.map(entry => entry.temperature);
                     dailyData.humidities = data.map(entry => entry.humidity);
                     dailyData.lights = data.map(entry => entry.light);
@@ -542,7 +710,7 @@
                     .then(data => {
                         let currentTime = new Date();
                         let dataTime = new Date(data.timestamp);
-                        dataTime.setHours(dataTime.getHours() + 1); // add 1 extra hour to calibrate
+                        
                         let timeDifference = (currentTime - dataTime) / 1000; // convert to seconds
 
                         if (sensorId == data.sensor_id && timeDifference < UPDATE_TIME * 2) {
@@ -625,6 +793,5 @@
                 .catch(error => console.error('Failed to fetch range report data:', error));
         }
     </script>
-
 </body>
 </html>
