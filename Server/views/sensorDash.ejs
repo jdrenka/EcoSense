@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -81,7 +80,11 @@
     <div class='dailyReportSection'>
         <div id="dailyReportContainer" style="display: none;">
             <div class='reportheaderbunch'>
-                <h1 class='text' id='dailyreportheader'> Data Report:</h1>
+                <div class = 'dataviewheaderbunch'>
+                    <h1 class='text' id='dailyreportheader'> Data Report</h1>
+                    <h1 class='text' id = 'dataviewsensorname'><%= sensorName %></h1>
+                </div>
+                
                 <div class='readingamountanddaterange'>
                     <div class='totalreadings'>
                         <h1 class='text' id='readingmessage'>Total readings: </h1>
@@ -466,13 +469,13 @@
                     endDateTime = `${today}T23:59:59.999Z`;
                 }
 
-                const csvUrl = `/download-csv?start=${encodeURIComponent(startDateTime)}&end=${encodeURIComponent(endDateTime)}`;
+                const csvUrl = `/download-csv?start=${encodeURIComponent(startDateTime)}&end=${encodeURIComponent(endDateTime)}&sensorId=${sensorId}`;
                 window.open(csvUrl, '_blank');
             });
         }
 
         function fetchDailyDataAndUpdateChart() {
-            fetch('/daily-report')
+            fetch(`/daily-report?sensorId=${sensorId}`)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('dailyreport_readingcount').textContent = data.length;
@@ -570,7 +573,7 @@
             const endDate = document.getElementById('endDateText').textContent + " " + document.getElementById('endTimeText').textContent;
 
             if (startDate.trim() && endDate.trim() && endDate !== 'Select End Date') {
-                console.log('Fetching data for range:', startDate, endDate); // Debug log
+                console.log('Fetching data for range:', startDate, endDate, sensorId); // Debug log
 
                 // Parse the selected dates to local time before converting to ISO string
                 const startDateTime = new Date(startDate + ' GMT-0000').toISOString();
@@ -581,7 +584,7 @@
         }
 
         function fetchRangeData(startDateTime, endDateTime) {
-            fetch(`/range-report?start=${encodeURIComponent(startDateTime)}&end=${encodeURIComponent(endDateTime)}`)
+            fetch(`/range-report?start=${encodeURIComponent(startDateTime)}&end=${encodeURIComponent(endDateTime)}&sensorId=${sensorId}`)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('dailyreport_readingcount').textContent = data.length;

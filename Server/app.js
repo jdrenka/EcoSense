@@ -298,19 +298,36 @@ app.get('/daily-report', async (req, res) => {
 });
 
 app.get('/range-report', async (req, res) => {
-    const { start, end } = req.query;
+    const { start, end, sensorId } = req.query;
     if (!start || !end) {
       return res.status(400).send('Start and end dates are required');
     }
 
     try {
-      const query = `
+        
+        const query = `
         SELECT timestamp, temperature, humidity, light
         FROM readings
-        WHERE timestamp BETWEEN ? AND ?;
-      `;
-      const values = [start, end];
+        WHERE timestamp BETWEEN ? AND ?
+        AND sensor_id = ?;
+    `;
+    
+    const formatDateToUTC = (date) => {
+        const d = new Date(date);
+        const year = d.getUTCFullYear();
+        const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(d.getUTCDate()).padStart(2, '0');
+        const hours = String(d.getUTCHours()).padStart(2, '0');
+        const minutes = String(d.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(d.getUTCSeconds()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    };
+
+    const formattedStart = formatDateToUTC(start);
+    const formattedEnd = formatDateToUTC(end);
+      const values = [formattedStart, formattedEnd, sensorId];
       const [rows] = await db.query(query, values);
+      
       res.json(rows);
     } catch (err) {
       console.error('Error fetching range report data', err);
