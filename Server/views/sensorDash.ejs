@@ -18,7 +18,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jersey+25&family=Lobster&family=Lobster+Two:ital@1&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <style>
+        /* Hide the desktop date picker on mobile */
+        @media (max-width: 768px) {
+            .datetime-button {
+                display: none;
+            }
+            .flatpickr-mobile {
+                display: block !important;
+                width: 10px;
+                background-color: red;
+            }
+        }
 
+        /* Hide the mobile date picker on desktop */
+        @media (min-width: 769px) {
+            .mobile-datetime-input {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
     <div id="top-of-page"></div>
@@ -80,11 +99,10 @@
     <div class='dailyReportSection'>
         <div id="dailyReportContainer" style="display: none;">
             <div class='reportheaderbunch'>
-                <div class = 'dataviewheaderbunch'>
+                <div class='dataviewheaderbunch'>
                     <h1 class='text' id='dailyreportheader'> Data Report</h1>
-                    <h1 class='text' id = 'dataviewsensorname'><%= sensorName %></h1>
+                    <h1 class='text' id='dataviewsensorname'><%= sensorName %></h1>
                 </div>
-                
                 <div class='readingamountanddaterange'>
                     <div class='totalreadings'>
                         <h1 class='text' id='readingmessage'>Total readings: </h1>
@@ -96,11 +114,13 @@
                             <span id="startDateText">Select Start Date</span>
                             <span id="startTimeText"></span>
                         </div>
+                        <input type="datetime-local" id="startMobile" class="flatpickr-input mobile-datetime-input" placeholder="˅">
                         <p id='plottingtext2'> to </p>
                         <div id="endButton" class="datetime-button">
                             <span id="endDateText">Select End Date</span>
                             <span id="endTimeText"></span>
                         </div>
+                        <input type="datetime-local" id="endMobile" class="flatpickr-input mobile-datetime-input" placeholder="˅">
                     </div>
                 </div>
                 <div class='returntopgroup'>
@@ -131,10 +151,6 @@
             initCharts(ctx, dailyReportChartCtx);
             startCountdown();
             setupEventListeners();
-
-            // Set default date range to today
-            const today = new Date().toISOString().split('T')[0];
-            fetchRangeData(`${today}T00:00:00`, `${today}T23:59:59`);
         });
 
         function initCharts(ctx, dailyReportChartCtx) {
@@ -261,15 +277,8 @@
                     x: {
                         ticks: {
                             callback: function(value, index, values) {
-                                const date = new Date(this.getLabelForValue(value));
-                                const optionsDate = { month: 'short', day: 'numeric' };
-                                const formattedDate = date.toLocaleDateString('en-US', optionsDate);
-                                const optionsTime = { hour: 'numeric', minute: 'numeric', hour12: true };
-                                const formattedTime = date.toLocaleTimeString('en-US', optionsTime);
-                                if (index === 0 || date.getDate() !== new Date(this.getLabelForValue(values[index - 1])).getDate()) {
-                                    return `${formattedDate} ${formattedTime}`;
-                                }
-                                return formattedTime;
+                                const date = this.getLabelForValue(value);
+                                return date; // Display the date string
                             },
                             maxTicksLimit: 10,
                             color: 'white',
@@ -347,14 +356,12 @@
                 if (!isVisible) {
                     dailyReportContainer.style.display = 'block';
                     toggleButton.textContent = 'Hide Data View';
-                    fetchDailyDataAndUpdateChart();
 
                     // Scroll into view and adjust the position
                     setTimeout(() => {
                         dailyReportContainer.scrollIntoView({ behavior: 'smooth' });
                         setTimeout(() => {
                             const headerOffset = dailyReportContainer.getBoundingClientRect().top + window.scrollY + 300; // Adjust this value as needed
-
                             window.scrollTo({ top: headerOffset, behavior: 'smooth' });
                         }, 500); // Delay to ensure the initial scroll is complete
                     }, 10);
@@ -427,6 +434,7 @@
                     const formattedTime = new Date(dateStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
                     startDateText.textContent = formattedDate;
                     startTimeText.textContent = formattedTime;
+                    document.getElementById('startMobile').value = dateStr;  // Update mobile date picker value
                     updateReportChart();
                 }
             });
@@ -440,8 +448,32 @@
                     const formattedTime = new Date(dateStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
                     endDateText.textContent = formattedDate;
                     endTimeText.textContent = formattedTime;
+                    document.getElementById('endMobile').value = dateStr;  // Update mobile date picker value
                     updateReportChart();
-                }   
+                }
+            });
+
+            const startMobileInput = document.getElementById('startMobile');
+            const endMobileInput = document.getElementById('endMobile');
+
+            startMobileInput.addEventListener('change', function() {
+                const dateStr = this.value;
+                const [date, time] = dateStr.split("T");
+                const formattedDate = new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const formattedTime = new Date(dateStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+                startDateText.textContent = formattedDate;
+                startTimeText.textContent = formattedTime;
+                updateReportChart();
+            });
+
+            endMobileInput.addEventListener('change', function() {
+                const dateStr = this.value;
+                const [date, time] = dateStr.split("T");
+                const formattedDate = new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const formattedTime = new Date(dateStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+                endDateText.textContent = formattedDate;
+                endTimeText.textContent = formattedTime;
+                updateReportChart();
             });
 
             document.addEventListener('click', function(event) {
