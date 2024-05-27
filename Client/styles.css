@@ -109,8 +109,8 @@ p{
     display: flex;
     gap: 6vw;
     margin: 0;
-    padding: 0;
-    width: 100%;
+    margin-left: 1%;
+    width: 98%;
     height: 4.3em;   
     background-color: rgb(223, 223, 223);
     border-bottom: 0.5px solid #f8f8f8;
