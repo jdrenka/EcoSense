@@ -121,6 +121,10 @@ p{
     margin-top: 10px;
 }
 
+.error-container{
+    margin-left: 10%;
+}
+
 #loginerrortext{
     font-weight: 100;
     margin-top: 8px;
