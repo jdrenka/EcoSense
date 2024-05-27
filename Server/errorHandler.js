@@ -19,7 +19,7 @@ module.exports = (err, req, res, next) => {
                     align-items: center;
                     height: 100vh;
                     margin: 0;
-                    background-color: 'grey';
+                    background-color: #1a1a1a;
                 }
                 .error-container {
                     width: 80%;

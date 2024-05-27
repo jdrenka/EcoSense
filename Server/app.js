@@ -388,59 +388,7 @@ app.post('/login', async (req, res, next) => {
       req.session.user = results[0]; // Store user data in session
       res.redirect('/sensorview');
     } else {
-      res.status(401).send(`
-        <html>
-            <head>
-                <title>Invalid Login</title>
-                <style>
-                    body {
-                        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-                        text-align: center;
-                        padding-top: 50px;
-                        background-color: #181934;
-                        color: #white;
-                    }
-                    h1 {
-                        color: #de4d4d;
-                    }
-                    p {
-                        font-size: 16px;
-                        color: white;
-                    }
-                    a {
-                        display: inline-block;
-                        padding: 10px 15px;
-                        margin-top: 20px;
-                        border-radius: 5px;
-                        background-color: rgb(103, 103, 103);
-                        color: white;
-                        text-decoration: none;
-                        transition: background-color 0.3s;
-                    }
-                    a:hover {
-                        background-color: #0056b3;
-                    }
-                    @keyframes fadeIn {
-                        from { opacity: 0.25; }
-                        to { opacity: 1; }
-                    }
-                    body {
-                        animation: fadeIn 0.5s ease-in-out;
-                    }
-                </style>
-            </head>
-            <body>
-                <h1>Invalid Login Attempt</h1>
-                <p>You will be redirected back to the login page in 5 seconds.</p>
-                <p>If you are not redirected, <a href="/login">click here</a> to return to the login page.</p>
-                <script>
-                    setTimeout(function() {
-                        window.location.href = "/login";
-                    }, 5000);
-                </script>
-            </body>
-        </html>
-      `);
+        res.render('login', { error: 'Incorrect Username or Password' });
     }
   } catch (error) {
     console.error('Database error:', error);

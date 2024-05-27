@@ -15,30 +15,67 @@
      <link rel="mask-icon" href="images/Ecosense_icon.png" color="#5bbad5">
     <title>EcoSense</title>
     <link rel='stylesheet' href='/styles.css'>
+    <link rel='stylesheet' href='/loginform.css'>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jersey+25&family=Lobster&family=Lobster+Two:ital@1&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-
-    <div class='navbar' id = 'loginnavbar'>
-        <h1 class='jersey-25-regular'> <span class='withinlogo'>E</span>coSense</h1>
+    <div class='navbar'>
+        <a class='smallatag' href='/sensorview'>
+            <h1 class = 'jersey-25-regular'> <span class = 'withinlogo'>E</span>coSense</h1>
+        </a>
     </div>
 
+    <div class="container-login100">
+        <div class="wrap-login100">
+            <div class="login100-form-title" style="background-image: url(images/greenhouse.jpg);">
+                <span class="login100-form-title-1" id = "loginheadertext">
+                    Sign In
+                </span>
+            </div>
 
-    <div class='loginpanel'>
-        <form action="/login" method="POST" class="login-form">
-            <h2>Login</h2>
-            <div class="input-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="input-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit" class="login-button">Login</button>
-        </form>
+            <form class="login100-form validate-form" action="/login" method="POST">
+               
+                <div class="wrap-input100 validate-input m-b-26" data-validate="Username is required">
+                    <span class="label-input100">Username</span>
+                    <input class="input100" type="text" name="username" placeholder="Enter username" required>
+                    <span class="focus-input100"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input m-b-18" data-validate="Password is required">
+                    <span class="label-input100">Password</span>
+                    <input class="input100" type="password" name="password" placeholder="Enter password" required>
+                    <span class="focus-input100"></span>
+                </div>
+
+                <div class="flex-sb-m w-full p-b-30">
+
+                    <div class = 'beforeloginbutton'>
+
+
+                        <a href="#" class="txt1">
+                            Forgot Password?
+                        </a>
+
+                        <% if (typeof error !== 'undefined') { %>
+                            <div class="error-message" id = "loginerrortext"><%= error %></div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="container-login100-form-btn">
+                    <button class="login100-form-btn" type="submit">
+                        Login
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
+
+    <style>
+       
+    </style>
+    
 </body>
 </html>
