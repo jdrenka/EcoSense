@@ -78,7 +78,10 @@ p{
     gap: 2.3vw;
     border: 2px solid rgba(251, 11, 115, 0.5);
 }
-
+#login_navbar{
+    height: 4.75vw;
+    
+}
 .lightbox{
     display: flex;
     margin: 0;
@@ -213,6 +216,10 @@ p{
 #loginheadertext{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
+}
+
+#login_logo{
+    margin-top: -0.3em;
 }
 
 .jersey-25-regular {

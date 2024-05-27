@@ -69,8 +69,8 @@ module.exports = (err, req, res, next) => {
             <div class="error-container">
                 <div class="emoji">⚙️</div>
                 <h1>Server Error</h1>
-                <p id = "top-text" >Please try again later, or contact suppport at:</p>
-                <p>jpdrenka@gmail.com</p>
+                <p id = "top-text" >Please try again later, Check for scheduled maintenance</p>
+                <p>If issue persists contact: jpdrenka@gmail.com</p>
                 <a href="/">Go to Homepage</a>
             </div>
         </body>

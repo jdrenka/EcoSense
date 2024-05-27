@@ -39,7 +39,7 @@
 body, html {
 	height: 100%;
 	font-family: Poppins-Regular, sans-serif;
-  background-color: #1a1a1a;
+  background-color: #2a2a2a;
 }
 
 /*---------------------------------------------*/
@@ -187,6 +187,7 @@ iframe {
 
 
 .wrap-login100 {
+  margin-top: -1.5vw;
   width: 670px;
   background: #fff;
   border-radius: 10px;
