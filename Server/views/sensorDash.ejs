@@ -43,12 +43,13 @@
     <div id="top-of-page"></div>
     <div class='navbar'>
         <a class='smallatag' href='/sensorview'>
-            <h1 class = 'jersey-25-regular'> <span class = 'withinlogo'>E</span>coSense</h1>
+            <h1 class='jersey-25-regular'><span class='withinlogo'>E</span>coSense</h1>
         </a>
         <button id='sensorviewbutton' class='navbuttons'>Sensors</button>
         <button id='createthreshold_button' class='navbuttons'>Alerts</button>
         <button id='helpbutton' class='navbuttons'>Help</button>
         <button class='navbuttons' id='logoutbutton'>Logout</button>
+        <div class="triangle-cutout"></div>
     </div>
     <div class='headerchunk'>
         <h1 class='text' id='sensorheader'><%= sensorName %></h1>
@@ -537,6 +538,7 @@
                 if (isConnected) {
                     countdownElement.textContent = `(${counter})`;
                 } else {
+                    
                     document.getElementById('statusicon').innerHTML = '💤';
                     countdownElement.textContent = '⛔';
                 }

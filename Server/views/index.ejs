@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-     <!-- Standard favicon -->
-     <link rel="icon" type="image/png" sizes="32x32" href="images/Ecosense_Icon.png">
-     <link rel="icon" type="image/png" sizes="16x16" href="images/Ecosense_Icon.png">
-     
-     <!-- Apple Touch Icon for iOS -->
-     <link rel="apple-touch-icon" sizes="180x180" href="images/Ecosense_Icon.png">
-     
-     <!-- Android Chrome -->
-     <link rel="icon" type="image/png" sizes="192x192" href="images/Ecosense_Icon.png">
-     
-     <!-- Safari pinned tab icon -->
-     <link rel="mask-icon" href="images/Ecosense_icon.png" color="#5bbad5">
+    <!-- Standard favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="images/Ecosense_Icon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/Ecosense_Icon.png">
+
+    <!-- Apple Touch Icon for iOS -->
+    <link rel="apple-touch-icon" sizes="180x180" href="images/Ecosense_Icon.png">
+
+    <!-- Android Chrome -->
+    <link rel="icon" type="image/png" sizes="192x192" href="images/Ecosense_Icon.png">
+
+    <!-- Safari pinned tab icon -->
+    <link rel="mask-icon" href="images/Ecosense_icon.png" color="#5bbad5">
     <title>EcoSense</title>
     <link rel='stylesheet' href='/styles.css'>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -22,32 +22,33 @@
         }
     </style>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jersey+25&family=Lobster&family=Lobster+Two:ital@1&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+25&family=Lobster&family=Lobster+Two:ital@1&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class='navbar'>
         <a class='smallatag' href='/sensorview'>
-            <h1 class = 'jersey-25-regular'> <span class = 'withinlogo'>E</span>coSense</h1>
+            <h1 class='jersey-25-regular'><span class='withinlogo'>E</span>coSense</h1>
         </a>
         <button id='sensorviewbutton' class='navbuttons'>Sensors</button>
         <button id='createthreshold_button' class='navbuttons'>Alerts</button>
         <button id='helpbutton' class='navbuttons'>Help</button>
         <button class='navbuttons' id='logoutbutton'>Logout</button>
+        <div class="triangle-cutout"></div>
     </div>
-    <div class = 'sensorlistheader'>
+    <div class='sensorlistheader'>
         <h1 class='text' id='sensorlistmessage'>Your Sensors:</h1>
     </div>
-    
+
     <div class='innerlistview'>
         <% sensors.forEach(function(sensor) { %>
         <div class='listrowentry' data-sensor-id="<%= sensor.sid %>">
             <a href="/sensorDash?sensorId=<%= sensor.sid %>">
-                <h1 class='rowicon' id="status-<%= sensor.sid %>">⚡</h1>
+                <h1 class='rowicon' id="status-<%= sensor.sid %>">💤</h1>
                 <h1 class='rowentrydata'><%= sensor.sname %></h1>
                 <h1 class='rowentrydata'><%= sensor.stype %></h1>
-                <h1 class='rowentrydata' id="reading-<%= sensor.sid %>">Loading...</h1>
+                <h1 class='rowentrydata' id="reading-<%= sensor.sid %>">--</h1>
             </a>
         </div>
         <% }); %>
@@ -77,13 +78,24 @@
                 .then(response => response.json())
                 .then(data => {
                     const currentTime = new Date();
+                    const sensorIds = new Set(data.map(reading => reading.sensor_id));
+
+                    document.querySelectorAll('.listrowentry').forEach(entry => {
+                        const sensorId = entry.getAttribute('data-sensor-id');
+                        const readingElement = document.getElementById(`reading-${sensorId}`);
+                        const statusElement = document.getElementById(`status-${sensorId}`);
+                        
+                        if (!sensorIds.has(parseInt(sensorId))) {
+                            // Sensor is not in the latest readings, so it's offline
+                            readingElement.innerHTML = '--';
+                            statusElement.textContent = '💤';
+                        }
+                    });
+
                     data.forEach(reading => {
                         const readingElement = document.getElementById(`reading-${reading.sensor_id}`);
                         const statusElement = document.getElementById(`status-${reading.sensor_id}`);
                         let readingTime = new Date(reading.timestamp);
-
-                        // Adjust reading time by adding 1 hour
-                        readingTime.setHours(readingTime.getHours() + 1);
 
                         if (readingElement) {
                             readingElement.innerHTML = `<span>🌡️ ${reading.temperature.toFixed(2)}°C</span>
