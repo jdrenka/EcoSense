@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
 
 <head>
@@ -61,6 +60,71 @@
     .button-select.selected {
         background-color: green;
     }
+    .alert-temperature {
+        border: 1.5px solid rgb(139, 18, 18);
+    }
+    .alert-humidity {
+        border: 1.5px solid rgb(40, 40, 174);
+    }
+    .alert-light {
+        border: 1.5px solid yellow;
+    }
+    .alert-disconnect {
+        border: 1.5px dotted rgb(92, 2, 95);
+    }
+    .column-headers {
+        display: flex;
+        gap: 12vw;
+        padding: 5px;
+        font-weight: bold;
+        background-color: #444;
+        color: white;
+        margin-bottom: 10px;
+    }
+
+    #firstcolumn-header{
+      margin-left: 12vw;
+      margin-right: -4vw;
+  
+    }
+
+    #lastcolumn-header{
+
+    }
+    .innerlistview {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .listAlertRows {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        align-items: center;
+        padding: 10px;
+    }
+    .createalertsection {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+    .gthanlthan {
+        display: flex;
+        justify-content: center;
+    }
+    #thresholdValueWrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #thresholdValue {
+        width: 25%;
+        text-align: center;
+    }
+    #unit {
+        margin-left: 5px;
+        color: #ffffff;
+    }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -77,11 +141,10 @@
     <% } %>
 
     <div class='navbar'>
-        
         <a class = 'smallatag' href = '/sensorview'>
           <h1 class = 'jersey-25-regular'> <span class = 'withinlogo'>E</span>coSense</h1>
         </a>
-        <button id = 'sensorviewbutton' class = 'navbuttons'>Sensors</a>
+        <button id = 'sensorviewbutton' class = 'navbuttons'>Sensors</button>
         <button id='createthreshold_button' class = 'navbuttons'>Alerts</button>
         <button id = 'helpbutton' class = 'navbuttons'>Help</button>
         <button id = 'logoutbutton' class = 'navbuttons'>Logout</button>
@@ -92,37 +155,41 @@
         <h1 class='text' id='sensorlistmessage'>Your Alerts:</h1>
         <button id='createAlertButton' class='navbuttons'>Create New Alert</button>
     </div>
-    <div class = 'innerlistview'>
+    <div class='column-headers'>
+        <div id = 'firstcolumn-header'>Alert Name</div>
+        <div>Sensor Name</div>
+        <div>Alert Condition</div>
+        <div id = 'lastcolumn-header'>Alert Message</div>
+        <div></div>
+    </div>  
+    
+    <div class='innerlistview'>
         <% alerts.forEach(function(alert) { %>
-            <div class='listAlertRows' data-alert-id="<%= alert.alert_id %>">
-                <h1 class='alertRowEntryData' id = 'alerticon'>📢</h1>
-                <h1 class='alertRowEntryData' id = 'firstalertentry'><%= alert.sensor_name %></h1>
-                <h1 class='alertRowEntryData'><%=alert.alertName.charAt(0).toUpperCase() + alert.alertName.slice(1)%></h1>
-                <h1 class='alertRowEntryData' id = 'conditionalertentry'>
-                    <%= alert.data_type.charAt(0).toUpperCase() + alert.data_type.slice(1) %> 
-                    <%= alert.alertCondition === 'less_than' ? '<' : '>' %> 
-                    <%= alert.threshold_value %>
+            <div class='listAlertRows alert-<%= alert.data_type %>' data-alert-id="<%= alert.alert_id %>">
+                <h1 class='alertRowEntryData' id='alerticon'>📢</h1>
+                <h1 class='alertRowEntryData'><%= alert.alertName.charAt(0).toUpperCase() + alert.alertName.slice(1) %></h1>
+                <h1 class='alertRowEntryData'><%= alert.sensor_name %></h1>
+                <h1 class='alertRowEntryData'>
+                    <%= alert.data_type.charAt(0).toUpperCase() + alert.data_type.slice(1) %>
+                    <% if (alert.data_type !== 'disconnect') { %>
+                        <%= alert.alertCondition === 'less_than' ? 'Less Than' : 'Larger Than' %> 
+                        <%= alert.threshold_value %>
+                    <% } %>
                 </h1>
-                <h1 class='alertRowEntryData'><%= alert.phone_number %></h1>
-                <h1 class='alertRowEntryData' id = 'messagerow'><%= truncateMessage(alert.alertMessage, 30) %></h1>
-                <img src='images/deleteBin.png' class='deleteIcon' alt='Delete Alert' id = 'deleteAlert'>
+                <h1 class='alertRowEntryData'><%= truncateMessage(alert.alertMessage, 30) %></h1>
+                <img src='images/deleteBin.png' class='deleteIcon' alt='Delete Alert' id='deleteAlert'>
             </div>
         <% }); %>
-
-            <div class= 'whiteline'></div>
-           
-
-
+        <div class='whiteline'></div>
     </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-
-
         const logoutButton = document.getElementById('logoutbutton');
         const sensorViewButton = document.getElementById('sensorviewbutton');
         const alertViewButton = document.getElementById('createthreshold_button');
         const createAlertButton = document.getElementById('createAlertButton');
+        
         logoutButton.addEventListener('click', function() {
             window.location.href = '/logout';
         });
@@ -170,135 +237,167 @@
         });
 
         createAlertButton.addEventListener('click', async function() {
-      // Fetch the list of sensors
-      const response = await fetch('/sensors');
-      const sensors = await response.json();
+            // Fetch the list of sensors
+            const response = await fetch('/sensors');
+            const sensors = await response.json();
 
-      // Build the sensor options HTML
-      const sensorOptions = sensors.map(sensor => `<option value="${sensor.sensor_id}">${sensor.sensor_name}</option>`).join('');
+            // Build the sensor options HTML
+            const sensorOptions = sensors.map(sensor => `<option value="${sensor.sensor_id}">${sensor.sensor_name}</option>`).join('');
 
-      let selectedDataType = '';
-      let selectedCondition = '';
+            let selectedDataType = '';
+            let selectedCondition = '';
 
-      Swal.fire({
-        title: 'Create New Alert',
-        html: `
-          <div class = 'createalertsection' id = 'sensor_select'>
-            <select id="sensorSelect" class="swal2-input">
-              <option value="" disabled selected style="font-family: 'Segoe UI'; font-weight: 500; font-size: 1em;">Select a sensor</option>
-              ${sensorOptions}
-            </select>
-          </div>
-          <div class = 'createalertsection'>
-            
-            <div class = 'datatypeselectbuttons'>
-              <button id="tempButton" class="button-select">Temperature🌡️</button>
-              <button id="humButton" class="button-select">Humidity💧</button>
-              <button id="lightButton" class="button-select">Light💡</button>
-            </div>
-          
-          </div>
-          <div class = 'createalertsection' id = 'conditionalertsection'>
-            
-            <div class = 'gthanlthan'>
-              <button id="lessThanButton" class="button-select"><</button>
-              <button id="greaterThanButton" class="button-select">></button>
-            </div>
+            Swal.fire({
+                title: 'Create New Alert',
+                html: `
+                    <div class='createalertsection'>
+                        <input type="text" id="alertName" class="swal2-input" placeholder="Enter alert name">
+                    </div>
+                    <div class='createalertsection' id='sensor_select'>
+                        <select id="sensorSelect" class="swal2-input">
+                            <option value="" disabled selected style="font-family: 'Segoe UI'; font-weight: 500; font-size: 1em;">Select a sensor</option>
+                            ${sensorOptions}
+                        </select>
+                    </div>
+                    <div class='createalertsection'>
+                        <div class='datatypeselectbuttons'>
+                            <button id="tempButton" class="button-select">Temperature🌡️</button>
+                            <button id="humButton" class="button-select">Humidity💧</button>
+                            <button id="lightButton" class="button-select">Light💡</button>
+                            <button id="disconnectButton" class="button-select">Disconnect🔌</button>
+                        </div>
+                    </div>
+                    <div class='createalertsection' id='conditionalertsection'>
+                        <div class='gthanlthan'>
+                            <button id="lessThanButton" class="button-select">Less Than</button>
+                            <button id="greaterThanButton" class="button-select">Larger Than</button>
+                        </div>
+                    </div>
+                    <div class='createalertsection' id='thresholdValueWrapper'>
+                        <input type="number" id="thresholdValue" class="swal2-input" placeholder="Enter threshold value">
+                        <span id="unit"></span>
+                    </div>
+                    <div class='createalertsection'>
+                        <input type="text" id="alertMessage" class="swal2-input" placeholder="Enter alert message">
+                    </div>
+                `,
+                focusConfirm: false,
+                preConfirm: () => {
+                    const alertName = Swal.getPopup().querySelector('#alertName').value;
+                    const sensorId = Swal.getPopup().querySelector('#sensorSelect').value;
+                    const alertMessage = Swal.getPopup().querySelector('#alertMessage').value;
+                    let thresholdValue = null;
+                    if (selectedDataType !== 'disconnect') {
+                        thresholdValue = Swal.getPopup().querySelector('#thresholdValue').value;
+                    }
 
-            
-           
-          </div>
-          <div class = 'createalertsection'>
-            
-            <input type="number" id="thresholdValue" class="swal2-input" placeholder="Enter threshold value">
-          </div>
-          <div class = 'createalertsection'>
-            
-            <input type="text" id="phoneNumber" class="swal2-input" placeholder="Enter Contact Phone #">
-          </div>
-          <div class = 'createalertsection'>
-            
-            <input type="text" id="alertMessage" class="swal2-input" placeholder="Enter alert message">
-          </div>
-        `,
-        focusConfirm: false,
-        preConfirm: () => {
-          const sensorId = Swal.getPopup().querySelector('#sensorSelect').value;
-          const thresholdValue = Swal.getPopup().querySelector('#thresholdValue').value;
-          const phoneNumber = Swal.getPopup().querySelector('#phoneNumber').value;
-          const alertMessage = Swal.getPopup().querySelector('#alertMessage').value;
+                    if (!alertName || !sensorId || !selectedDataType || (selectedDataType !== 'disconnect' && (!selectedCondition || !thresholdValue))) {
+                        Swal.showValidationMessage(`Please fill in all the required fields`);
+                        return false;
+                    }
 
-          if (!selectedDataType || !selectedCondition) {
-            Swal.showValidationMessage(`Please select data type and condition`);
-            return false;
-          }
+                    return { alertName, sensorId, dataType: selectedDataType, alertCondition: selectedCondition, thresholdValue, alertMessage };
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Create Alert'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const alertData = result.value;
+                    fetch('/create-alert', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(alertData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Success!', 'Your alert has been created.', 'success')
+                            .then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error!', 'There was a problem creating your alert.', 'error');
+                        }
+                    });
+                }
+            });
 
-          return { sensorId, dataType: selectedDataType, alertCondition: selectedCondition, thresholdValue, phoneNumber, alertMessage };
-        },
-        showCancelButton: true,
-        confirmButtonText: 'Create Alert'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const alertData = result.value;
-          fetch('/create-alert', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(alertData)
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              Swal.fire('Success!', 'Your alert has been created.', 'success')
-              .then(() => {
-                location.reload();
-              });
-            } else {
-              Swal.fire('Error!', 'There was a problem creating your alert.', 'error');
+            // Add event listeners for the data type buttons
+            document.getElementById('tempButton').addEventListener('click', function() {
+                selectDataType('temperature', 'tempButton');
+            });
+            document.getElementById('humButton').addEventListener('click', function() {
+                selectDataType('humidity', 'humButton');
+            });
+            document.getElementById('lightButton').addEventListener('click', function() {
+                selectDataType('light', 'lightButton');
+            });
+            document.getElementById('disconnectButton').addEventListener('click', function() {
+                selectDataType('disconnect', 'disconnectButton');
+            });
+
+            // Add event listeners for the condition buttons
+            document.getElementById('lessThanButton').addEventListener('click', function() {
+                selectCondition('less_than', 'lessThanButton');
+            });
+            document.getElementById('greaterThanButton').addEventListener('click', function() {
+                selectCondition('greater_than', 'greaterThanButton');
+            });
+
+            function selectDataType(type, buttonId) {
+                selectedDataType = type;
+                ['tempButton', 'humButton', 'lightButton', 'disconnectButton'].forEach(id => {
+                    document.getElementById(id).classList.remove('selected');
+                });
+                document.getElementById(buttonId).classList.add('selected');
+                if (type === 'disconnect') {
+                    document.getElementById('conditionalertsection').style.display = 'none';
+                    document.getElementById('thresholdValueWrapper').style.display = 'none';
+                } else {
+                    document.getElementById('conditionalertsection').style.display = 'block';
+                    document.getElementById('thresholdValueWrapper').style.display = 'flex';
+                    const unit = document.getElementById('unit');
+                    if (type === 'temperature') {
+                        unit.textContent = '°C';
+                    } else if (type === 'humidity') {
+                        unit.textContent = '%';
+                    } else if (type === 'light') {
+                        unit.textContent = 'lx';
+                    }
+                }
             }
-          });
-        }
-      });
 
-      // Add event listeners for the data type buttons
-      document.getElementById('tempButton').addEventListener('click', function() {
-        selectDataType('temperature', 'tempButton');
-      });
-      document.getElementById('humButton').addEventListener('click', function() {
-        selectDataType('humidity', 'humButton');
-      });
-      document.getElementById('lightButton').addEventListener('click', function() {
-        selectDataType('light', 'lightButton');
-      });
-
-      // Add event listeners for the condition buttons
-      document.getElementById('lessThanButton').addEventListener('click', function() {
-        selectCondition('less_than', 'lessThanButton');
-      });
-      document.getElementById('greaterThanButton').addEventListener('click', function() {
-        selectCondition('greater_than', 'greaterThanButton');
-      });
-
-      function selectDataType(type, buttonId) {
-        selectedDataType = type;
-        ['tempButton', 'humButton', 'lightButton'].forEach(id => {
-          document.getElementById(id).classList.remove('selected');
+            function selectCondition(condition, buttonId) {
+                selectedCondition = condition;
+                ['lessThanButton', 'greaterThanButton'].forEach(id => {
+                    document.getElementById(id).classList.remove('selected');
+                });
+                document.getElementById(buttonId).classList.add('selected');
+            }
         });
-        document.getElementById(buttonId).classList.add('selected');
-      }
 
-      function selectCondition(condition, buttonId) {
-        selectedCondition = condition;
-        ['lessThanButton', 'greaterThanButton'].forEach(id => {
-          document.getElementById(id).classList.remove('selected');
+        // Apply the appropriate CSS class to each alert row based on its type
+        document.querySelectorAll('.listAlertRows').forEach(function(alertRow) {
+            const alertType = alertRow.classList[1].split('-')[1];
+            switch (alertType) {
+                case 'temperature':
+                    alertRow.classList.add('alert-temperature');
+                    break;
+                case 'humidity':
+                    alertRow.classList.add('alert-humidity');
+                    break;
+                case 'light':
+                    alertRow.classList.add('alert-light');
+                    break;
+                case 'disconnect':
+                    alertRow.classList.add('alert-disconnect');
+                    break;
+                default:
+                    break;
+            }
         });
-        document.getElementById(buttonId).classList.add('selected');
-      }
-
-    });
-
-
     });
     </script>
 </body>

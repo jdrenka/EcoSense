@@ -17,9 +17,6 @@ const twilloClient = new twilio(accountSid, authToken);
 const twilioNumber = '+15182941286';
 const recipient = '+12507183236';
 
-const tempThreshold = 30;
-const humidityThreshold = 50;
-const lightThreshold = 150;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -45,6 +42,7 @@ app.use(session({
 let isTempAlertSent = false;
 let isHumAlertSent = false;
 let isLightAlertSent = false;
+let isDisconnectAlertSent = false;
 
 // Data receiving from device
 app.post('/dataBay', async (req, res, next) => {
@@ -72,6 +70,12 @@ app.post('/dataBay', async (req, res, next) => {
       const [results] = await db.query('SELECT * FROM UserAlerts WHERE sensor_id = ?', [sid]);
 
       for (const alert of results) {
+        if (alert.data_type === 'disconnect') {
+          // If the sensor has reported data, reset the disconnect alert
+          await db.query('UPDATE UserAlerts SET alert_sent = FALSE WHERE alert_id = ?', [alert.alert_id]);
+          continue;
+        }
+
         const thresholdValue = parseFloat(alert.threshold_value);
         const resetCondition = (alert.alertCondition === 'less_than' && (alert.data_type === 'temperature' && temp >= thresholdValue * 1.1 || alert.data_type === 'humidity' && hum >= thresholdValue * 1.1 || alert.data_type === 'light' && light >= thresholdValue * 1.1)) ||
           (alert.alertCondition === 'greater_than' && (alert.data_type === 'temperature' && temp <= thresholdValue * 0.9 || alert.data_type === 'humidity' && hum <= thresholdValue * 0.9 || alert.data_type === 'light' && light <= thresholdValue * 0.9));
@@ -96,6 +100,8 @@ app.post('/dataBay', async (req, res, next) => {
     const [results] = await db.query('SELECT * FROM UserAlerts WHERE sensor_id = ?', [sid]);
 
     for (const alert of results) {
+      if (alert.data_type === 'disconnect') continue;
+
       const thresholdValue = parseFloat(alert.threshold_value);
       const conditionMet = (alert.data_type === 'temperature' && ((alert.alertCondition === 'less_than' && temp < thresholdValue) || (alert.alertCondition === 'greater_than' && temp > thresholdValue))) ||
         (alert.data_type === 'humidity' && ((alert.alertCondition === 'less_than' && hum < thresholdValue) || (alert.alertCondition === 'greater_than' && hum > thresholdValue))) ||
@@ -147,6 +153,53 @@ app.post('/dataBay', async (req, res, next) => {
     next(err); // Pass the error to the error handler
   }
 });
+
+// Function to check for disconnects
+const checkForDisconnects = async () => {
+  try {
+    const [sensors] = await db.query('SELECT sensor_id, MAX(timestamp) as last_update FROM readings GROUP BY sensor_id');
+
+    const currentTime = new Date();
+    const alertsToSend = [];
+
+    for (const sensor of sensors) {
+      const lastUpdate = new Date(sensor.last_update);
+      const timeDifference = (currentTime - lastUpdate) / 1000; // Time difference in seconds
+
+      // Assume a device is disconnected if not updated for more than 10 minutes (600 seconds)
+      if (timeDifference > 30) {
+        const [disconnectAlerts] = await db.query('SELECT * FROM UserAlerts WHERE sensor_id = ? AND data_type = "disconnect" AND alert_sent = FALSE', [sensor.sensor_id]);
+
+        for (const alert of disconnectAlerts) {
+          alertsToSend.push({ alert, sensorId: sensor.sensor_id });
+        }
+      }
+    }
+
+    for (const alertData of alertsToSend) {
+      const { alert, sensorId } = alertData;
+      const messageBody = `Alert: ${alert.alertMessage}`;
+
+      twilloClient.messages.create({
+        body: messageBody,
+        from: twilioNumber,
+        to: '+12507183236' // Hardcoded phone number for now
+      })
+        .then(async message => {
+          console.log(`Disconnect Alert Message SID: ${message.sid}`);
+
+          // Update alert_sent flag in the database
+          const query = 'UPDATE UserAlerts SET alert_sent = TRUE WHERE alert_id = ?';
+          await db.query(query, [alert.alert_id]);
+        })
+        .catch(error => {
+          console.error('Failed to send disconnect SMS:', error);
+        });
+    }
+  } catch (err) {
+    console.error('Error checking for disconnects:', err);
+  }
+};
 
 // Check auth middleware ---
 function ensureAuthenticated(req, res, next) {
@@ -428,28 +481,41 @@ app.get('/sensors', async (req, res, next) => {
 });
 
 app.post('/create-alert', async (req, res, next) => {
-  const { sensorId, dataType, alertCondition, thresholdValue, phoneNumber, alertMessage } = req.body;
-  const userId = req.session.userId; // Access user ID from session
-  let alert_sent = false;
-  if (!userId) {
-    return res.status(400).json({ success: false, message: 'User ID is required' });
-  }
-
-  const query = `
-    INSERT INTO UserAlerts (user_id, sensor_id, data_type, alertCondition, threshold_value, phone_number, alertName, alertMessage, alert_sent, time_created)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-  const alertName = `${dataType} Alert`;
-
-  try {
-    const values = [userId, sensorId, dataType, alertCondition, thresholdValue, phoneNumber, alertName, alertMessage, alert_sent, new Date()];
-    await db.query(query, values);
-    res.json({ success: true });
-  } catch (err) {
-    console.error('Error creating alert:', err);
-    next(err); // Pass the error to the error handler
-  }
-});
+    const { alertName, sensorId, dataType, alertCondition, thresholdValue, alertMessage } = req.body;
+    const userId = req.session.userId; // Access user ID from session
+    let alert_sent = false;
+  
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'User ID is required' });
+    }
+  
+    let query;
+    let values;
+  
+    if (dataType === 'disconnect') {
+      query = `
+        INSERT INTO UserAlerts (user_id, sensor_id, data_type, alertName, alertMessage, alert_sent, time_created)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `;
+      values = [userId, sensorId, dataType, alertName, alertMessage, alert_sent, new Date()];
+    } else {
+      query = `
+        INSERT INTO UserAlerts (user_id, sensor_id, data_type, alertCondition, threshold_value, alertName, alertMessage, alert_sent, time_created)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+      values = [userId, sensorId, dataType, alertCondition, thresholdValue, alertName, alertMessage, alert_sent, new Date()];
+    }
+  
+    try {
+      await db.query(query, values);
+      res.json({ success: true });
+    } catch (err) {
+      console.error('Error creating alert:', err);
+      next(err); // Pass the error to the error handler
+    }
+  });
+  
+  
 
 app.get('/alertView', async (req, res, next) => {
   try {
@@ -490,6 +556,8 @@ app.get('/latest-readings', async (req, res, next) => {
 app.get('/login', (req, res) => {
   res.render('login.ejs');
 });
+
+setInterval(checkForDisconnects, 10000); // Check every 60 seconds
 
 // Use the error handling middleware
 app.use(errorHandler);
