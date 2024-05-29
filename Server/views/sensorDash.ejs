@@ -84,7 +84,6 @@
                     <div class='buttonset'>
                         <button id="switchChartType">Line/Bar</button>
                         <button id="toggleDailyReport">View Data </button>
-                        <button id="pauseButton">Pause</button>
                     </div>
                     <div class='checkboxesgroup'>
                         <label class='checkflex'><input type="checkbox" id="showTemperature" checked> Show Temp</label>
@@ -141,7 +140,6 @@
         let chart;
         let dailyReportChart;
         let maxDataPoints = 5000;
-        let isPaused = false;
         let isConnected = false;
         let totalReadings = 0;
         const sensorId = "<%= sensorId %>";
@@ -379,23 +377,6 @@
                 dailyReportContainer.style.display = 'none';
             });
 
-            const pauseButton = document.getElementById('pauseButton');
-            pauseButton.addEventListener('click', function() {
-                isPaused = !isPaused;
-                if (isPaused) {
-                    clearInterval(interval);
-                    pauseButton.textContent = "Restart Sensor";
-                    pauseButton.style.backgroundColor = "green";
-                    document.getElementById('statusicon').innerHTML = '💤';
-                    document.getElementById('countdown').textContent = '⛔';
-                } else {
-                    pauseButton.textContent = "Pause";
-                    pauseButton.style.backgroundColor = "#2b2a2a";
-                    document.getElementById('statusicon').innerHTML = '<img id="statusicon" src="images/bolt.png" alt="Active">';
-                    startCountdown();
-                }
-            });
-
             const switchChartTypeButton = document.getElementById('switchChartType');
             switchChartTypeButton.addEventListener('click', function() {
                 currentChartType = (currentChartType === 'line') ? 'bar' : 'line';
@@ -546,54 +527,50 @@
         }
 
         function fetchData() {
-            if (!isPaused) {
-                fetch(`/recentData/${sensorId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        let currentTime = new Date();
-                        let dataTime = new Date(data.timestamp);
-                        
-                        let timeDifference = (currentTime - dataTime) / 1000; // convert to seconds
+            fetch(`/recentData/${sensorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    let currentTime = new Date();
+                    let dataTime = new Date(data.timestamp);
+                    
+                    let timeDifference = (currentTime - dataTime) / 1000; // convert to seconds
 
-                        if (sensorId == data.sensor_id && timeDifference < UPDATE_TIME * 2) {
-                            if (!isConnected) {
-                                isConnected = true;
-                                document.getElementById('statusicon').innerHTML = '<img id="statusicon" src="images/bolt.png" alt="Active">';
-                                document.getElementById('pauseButton').disabled = false;
-                            }
-                            let timestamp = dataTime.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true });
-                            chart.data.labels.push(timestamp);
-                            chart.data.datasets[0].data.push(data.temperature);
-                            chart.data.datasets[1].data.push(data.humidity);
-                            chart.data.datasets[2].data.push(data.light);
-                            chart.update();
-
-                            let avgTemp = findAvg(chart.data.datasets[0].data);
-                            let avgHum = findAvg(chart.data.datasets[1].data);
-                            let avgLight = findAvg(chart.data.datasets[2].data);
-                            document.getElementById('temperature').textContent = `${data.temperature.toFixed(2)}°C`;
-                            document.getElementById('avgtemperature').textContent = `${avgTemp}°C`;
-                            document.getElementById('avghumidity').textContent = `${avgHum}%`;
-                            document.getElementById('avglight').textContent = `${avgLight} lx`;
-                            document.getElementById('humidity').textContent = `${data.humidity.toFixed(2)}%`;
-                            document.getElementById('light').textContent = `${data.light.toFixed(2)} lx`;
-                            document.getElementById('time').textContent = timestamp;
-                            document.getElementById('variableValue').textContent = ++totalReadings;
-                        } else {
-                            if (isConnected) {
-                                isConnected = false;
-                                document.getElementById('statusicon').innerHTML = '💤';
-                                document.getElementById('pauseButton').disabled = true;
-                                document.getElementById('countdown').textContent = '⛔';
-                            }
+                    if (sensorId == data.sensor_id && timeDifference < UPDATE_TIME * 2) {
+                        if (!isConnected) {
+                            isConnected = true;
+                            document.getElementById('statusicon').innerHTML = '<img id="statusicon" src="images/bolt.png" alt="Active">';
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching data:', error);
-                        document.getElementById('countdown').textContent = 'Paused';
-                        clearInterval(interval);
-                    });
-            }
+                        let timestamp = dataTime.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true });
+                        chart.data.labels.push(timestamp);
+                        chart.data.datasets[0].data.push(data.temperature);
+                        chart.data.datasets[1].data.push(data.humidity);
+                        chart.data.datasets[2].data.push(data.light);
+                        chart.update();
+
+                        let avgTemp = findAvg(chart.data.datasets[0].data);
+                        let avgHum = findAvg(chart.data.datasets[1].data);
+                        let avgLight = findAvg(chart.data.datasets[2].data);
+                        document.getElementById('temperature').textContent = `${data.temperature.toFixed(2)}°C`;
+                        document.getElementById('avgtemperature').textContent = `${avgTemp}°C`;
+                        document.getElementById('avghumidity').textContent = `${avgHum}%`;
+                        document.getElementById('avglight').textContent = `${avgLight} lx`;
+                        document.getElementById('humidity').textContent = `${data.humidity.toFixed(2)}%`;
+                        document.getElementById('light').textContent = `${data.light.toFixed(2)} lx`;
+                        document.getElementById('time').textContent = timestamp;
+                        document.getElementById('variableValue').textContent = ++totalReadings;
+                    } else {
+                        if (isConnected) {
+                            isConnected = false;
+                            document.getElementById('statusicon').innerHTML = '💤';
+                            document.getElementById('countdown').textContent = '⛔';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('countdown').textContent = 'Paused';
+                    clearInterval(interval);
+                });
         }
 
         function findAvg(dataList) {
