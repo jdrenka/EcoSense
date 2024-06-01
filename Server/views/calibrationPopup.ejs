@@ -11,8 +11,11 @@
         }
 
         const formatCalibrationValue = (value) => {
-            const color = value >= 0 ? 'blue' : 'red';
-            const sign = value >= 0 ? '+' : '';
+            let color = value >= 0 ? '#1076eb' : '#b51827';
+            if (value == 0) {
+                color = 'grey';
+            }
+            const sign = value > 0 ? '+' : '';
             return `<span style="color: ${color};">${sign}${value}</span>`;
         };
 
@@ -100,15 +103,15 @@
             }
         });
 
-        document.getElementById('tempButton').addEventListener('click', function() {
-            toggleActive(this, 'datatypeselectbuttons');
+        // Ensure only one data type button can be selected at a time
+        const dataTypeButtons = document.querySelectorAll('#datatypeselectbuttons .button-select');
+        dataTypeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                dataTypeButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
         });
-        document.getElementById('humButton').addEventListener('click', function() {
-            toggleActive(this, 'datatypeselectbuttons');
-        });
-        document.getElementById('lightButton').addEventListener('click', function() {
-            toggleActive(this, 'datatypeselectbuttons');
-        });
+
         document.getElementById('plusButton').addEventListener('click', function() {
             toggleActive(this, 'gthanlthan');
         });
