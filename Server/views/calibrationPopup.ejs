@@ -1,0 +1,211 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    async function openCalibrationPopup() {
+        let calibrations;
+        try {
+            const response = await fetch(`/getCalibrations?sensorId=<%= sensorId %>`);
+            calibrations = await response.json();
+        } catch (error) {
+            console.error('Error fetching calibrations:', error);
+            calibrations = { temp: 0, hum: 0, light: 0 };
+        }
+
+        const formatCalibrationValue = (value) => {
+            const color = value >= 0 ? 'blue' : 'red';
+            const sign = value >= 0 ? '+' : '';
+            return `<span style="color: ${color};">${sign}${value}</span>`;
+        };
+
+        const updateCalibrationDisplay = () => {
+            const calibrationTextElement = document.querySelector('.calibrationtext');
+            if (calibrationTextElement) {
+                calibrationTextElement.innerHTML = `
+                    Temperature: ${formatCalibrationValue(calibrations.temp || 0)}<span class="delete-emoji" data-type="temp"> 🗑️</span><br>
+                    Humidity: ${formatCalibrationValue(calibrations.hum || 0)}<span class="delete-emoji" data-type="hum"> 🗑️</span><br>
+                    Light: ${formatCalibrationValue(calibrations.light || 0)}<span class="delete-emoji" data-type="light"> 🗑️</span>
+                `;
+                addDeleteEventListeners(); // Add event listeners after updating the display
+            }
+        };
+
+        Swal.fire({
+            title: 'Calibrate Sensor',
+            html: `
+                <div class='createalertsection' id='calibrationvalues'>
+                    <div class='calibrationtext' style='font-size: 1.2em; margin-bottom: 10px;'>
+                        Temperature: ${formatCalibrationValue(calibrations.temp || 0)}<span class="delete-emoji" data-type="temp"> 🗑️</span><br>
+                        Humidity: ${formatCalibrationValue(calibrations.hum || 0)}<span class="delete-emoji" data-type="hum"> 🗑️</span><br>
+                        Light: ${formatCalibrationValue(calibrations.light || 0)}<span class="delete-emoji" data-type="light"> 🗑️</span>
+                    </div>
+                    <div class='createalertsection' id='datatypeselectbuttons'>
+                        <button id="tempButton" class="button-select">Temperature🌡️</button>
+                        <button id="humButton" class="button-select">Humidity💧</button>
+                        <button id="lightButton" class="button-select">Light💡</button>
+                    </div>
+                </div>
+                <div class='createalertsection' id='calibrationSignSection'>
+                    <div class='gthanlthan'>
+                        <button id="plusButton" class="button-select">+</button>
+                        <button id="minusButton" class="button-select">-</button>
+                    </div>
+                </div>
+                <div class='createalertsection' id='calibrationValueWrapper'>
+                    <input type="number" id="calibrationValue" class="swal2-input" placeholder="Enter calibration value">
+                </div>
+            `,
+            focusConfirm: false,
+            preConfirm: () => {
+                const dataTypeElement = document.querySelector('#datatypeselectbuttons .active');
+                const calibrationSignElement = document.querySelector('.gthanlthan .active');
+                const calibrationValue = parseFloat(Swal.getPopup().querySelector('#calibrationValue').value);
+                if (!dataTypeElement || !calibrationSignElement || isNaN(calibrationValue)) {
+                    Swal.showValidationMessage(`Please fill in all the required fields`);
+                    return false;
+                }
+
+                const dataType = dataTypeElement.id.replace('Button', '');
+                const calibrationSign = calibrationSignElement.id.replace('Button', '');
+                const finalCalibrationValue = calibrationSign === 'plus' ? calibrationValue : -calibrationValue;
+
+                return { dataType, calibrationValue: finalCalibrationValue };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const { dataType, calibrationValue } = result.value;
+
+                fetch('/calibrate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ sensorId: '<%= sensorId %>', dataType, calibrationValue })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Fetch updated calibration values from the server
+                        fetch(`/getCalibrations?sensorId=<%= sensorId %>`)
+                            .then(response => response.json())
+                            .then(updatedCalibrations => {
+                                calibrations = updatedCalibrations; // Update local calibrations
+                                updateCalibrationDisplay(); // Update the UI
+                                Swal.fire('Success', 'Calibration saved successfully.', 'success');
+                            })
+                            .catch(error => console.error('Error fetching updated calibrations:', error));
+                    } else {
+                        Swal.fire('Error', 'Error saving calibration.', 'error');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        });
+
+        document.getElementById('tempButton').addEventListener('click', function() {
+            toggleActive(this, 'datatypeselectbuttons');
+        });
+        document.getElementById('humButton').addEventListener('click', function() {
+            toggleActive(this, 'datatypeselectbuttons');
+        });
+        document.getElementById('lightButton').addEventListener('click', function() {
+            toggleActive(this, 'datatypeselectbuttons');
+        });
+        document.getElementById('plusButton').addEventListener('click', function() {
+            toggleActive(this, 'gthanlthan');
+        });
+        document.getElementById('minusButton').addEventListener('click', function() {
+            toggleActive(this, 'gthanlthan');
+        });
+
+        const addDeleteEventListeners = () => {
+            document.querySelectorAll('.delete-emoji').forEach(emoji => {
+                emoji.addEventListener('click', function() {
+                    const dataType = this.getAttribute('data-type');
+                    fetch('/deleteCalibration', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ sensorId: '<%= sensorId %>', dataType })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            calibrations[dataType] = 0; // Reset the local calibration value
+                            updateCalibrationDisplay(); // Update the UI
+                            Swal.fire('Success', 'Calibration deleted successfully.', 'success');
+                        } else {
+                            Swal.fire('Error', 'Error deleting calibration.', 'error');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+        };
+
+        addDeleteEventListeners(); // Initial call to add event listeners to delete emojis
+    }
+
+    function toggleActive(element, parentClass) {
+        const buttons = document.querySelectorAll(`.${parentClass} .button-select`);
+        buttons.forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+    }
+</script>
+
+
+<style>
+    .swal2-popup {
+        background-color: #333 !important;
+        color: rgb(232, 234, 235) !important;
+        width: 80%;
+        height: 500px;
+    }
+    .button-select.active {
+        background-color: #14852a;
+        color: white;
+    }
+    .button-select {
+        border-radius: 50px;
+        height: 30px;
+        width: 40%;
+        background-color: rgb(92, 91, 91);
+        color: white;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-style: italic;
+        font-weight: 500;
+        margin: 3px;
+    }
+    .createalertsection {
+        margin-top: 20px;
+        display: block;
+    }
+    .calibrationtext {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-style: italic;
+        width: 250px;
+        font-weight: 500;
+        text-align:right;
+        margin: 0;
+    }
+    #calibrationSignSection {
+        margin-bottom: 0px;
+        margin-top: 20px;
+    }
+    #calibrationvalues {
+        margin-left: 42.5%;
+        width: 40%;
+        margin-top: 0px;
+        height: 25%;
+    }
+    #datatypeselectbuttons {
+        margin-top: 18%;
+        margin-bottom: 10%;
+    }
+    #calibrationValueWrapper {
+        margin-top: 12%;
+    }
+    .delete-emoji {
+        cursor: pointer;
+        margin-left: 10px;
+    }
+</style>

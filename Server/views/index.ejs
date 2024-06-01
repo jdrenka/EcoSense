@@ -77,7 +77,8 @@
             fetch('/latest-readings')
                 .then(response => response.json())
                 .then(data => {
-                    const currentTime = new Date();
+                    const currentTime = new Date(new Date().getTime() - (24 * 60 * 60 * 1000)); //Go back 1 day
+                    
                     const sensorIds = new Set(data.map(reading => reading.sensor_id));
 
                     document.querySelectorAll('.listrowentry').forEach(entry => {
@@ -95,26 +96,58 @@
                     data.forEach(reading => {
                         const readingElement = document.getElementById(`reading-${reading.sensor_id}`);
                         const statusElement = document.getElementById(`status-${reading.sensor_id}`);
-                        let readingTime = new Date(reading.timestamp);
+
+                        let pstOffset = 17 * 60 * 60 * 1000;
+                        let readingTime = new Date(new Date(reading.timestamp).getTime() - pstOffset);
+                        
 
                         if (readingElement) {
-                            readingElement.innerHTML = `<span>🌡️ ${reading.temperature.toFixed(2)}°C</span>
-                                                        <span>💧 ${reading.humidity.toFixed(2)}%</span>
-                                                        <span>💡 ${reading.light.toFixed(2)} lx</span>`;
-                        }
+                            const temperature = reading.temperature !== undefined ? reading.temperature.toFixed(2) : '--';
+                            const humidity = reading.humidity !== undefined ? reading.humidity.toFixed(2) : '--';
+                            const light = reading.light !== undefined ? reading.light.toFixed(2) : '--';
+
+                            readingElement.innerHTML = `<span>🌡️ ${temperature}°C</span>
+                                                        <span>💧 ${humidity}%</span>
+                                                        <span>💡 ${light} lx</span>`;
+                }
 
                         if (statusElement) {
-                            const timeDifference = (currentTime - readingTime) / 1000; // difference in seconds
-                            if (timeDifference <= 30) {
-                                statusElement.textContent = '⚡';
+                           
+                            const timeDifference = (currentTime.getTime() - readingTime) / 1000; // difference in seconds
+                            console.log(`Data Age for Sensor(s) ${reading.sensor_id}:`, timeDifference);
+
+                            if (timeDifference <= 25) {
+
+                                
+                                statusElement.textContent ='⚡'; 
+                                // Update the readingElement with sensor values
+                                if (readingElement) {
+                            const temperature = reading.temperature !== undefined ? reading.temperature.toFixed(2) : '--';
+                            const humidity = reading.humidity !== undefined ? reading.humidity.toFixed(2) : '--';
+                            const light = reading.light !== undefined ? reading.light.toFixed(2) : '--';
+
+                            readingElement.innerHTML = `<span>🌡️ ${temperature}°C</span>
+                                                        <span>💧 ${humidity}%</span>
+                                                        <span>💡 ${light} lx</span>`;
+                        }                  
                             } else {
-                                statusElement.textContent = '💤';
+                              
+                                statusElement.textContent ='💤';
+
+                                if (readingElement) {
+                                    readingElement.innerHTML = `<span>🌡️ --°C</span>
+                                                                <span>💧 --%</span>
+                                                                <span>💡 -- lx</span>`;
+                    }
+
                             }
                         }
                     });
                 })
                 .catch(error => console.error('Error fetching latest readings:', error));
         };
+
+
 
         // Fetch the latest readings immediately and then every 10 seconds
         fetchLatestReadings();

@@ -1,0 +1,1221 @@
+@keyframes fadeIn {
+    from { opacity: 0.75; }
+    to { opacity: 1; }
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #2a2a2a;
+    animation: fadeIn 0.25s ease-in-out;
+  }
+
+  #logopiclogin{
+    padding: 25px;
+    width: 20%;
+  }
+/* Hide the desktop date picker on mobile */
+@media (max-width: 768px) {
+    .datetime-button {
+        display: none;
+    }
+    .flatpickr-mobile {
+        display: block !important;
+    }
+    .mobile-datetime-input {
+        display: block !important;
+        width: 100%;
+        margin-bottom: 10px; /* Add some space between the stacked inputs */
+    }
+}
+
+.datetime-button.flatpickr-input.flatpickr-mobile{
+    margin-top: 7px;
+    margin-left: -20px;
+    width: 2px;
+    height: 2px;
+    background-color: #2852ed;
+    padding-left: 3px;
+}
+/* Hide the mobile date picker on desktop */
+@media (min-width: 769px) {
+    .mobile-datetime-input {
+        display: none;
+    }
+}
+
+
+  a {
+    color: inherit;        /* Inherits the color from the parent element */
+    text-decoration: none; /* Removes underline */
+    font-size: inherit;    /* Inherits font size from the parent element */
+    font-family: inherit;  /* Inherits font family from the parent element */
+    background-color: transparent; /* Ensures no background color */
+    outline: none;         /* Removes focus outline added by some browsers */
+    border: none;          /* Removes any borders that might be added */
+    display: flex;
+    
+}
+  button{
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  button:hover{
+    transform: scale(1.03); /* Slightly enlarge the button */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+
+p{
+   margin: 0;
+}
+
+.tempbox{
+    display: flex;
+    padding: 8px;
+    gap: 2.3vw;
+    border: 2px solid rgba(251, 11, 115, 0.5);
+}
+#login_navbar{
+    height: 5.75vw;
+    width: 8vw;
+    
+}
+.lightbox{
+    display: flex;
+    margin: 0;
+    margin-top: 7px;
+    padding: 8px;
+    gap: 7vw;
+    border: 2px solid rgba(255, 225, 0, 0.612);
+}
+.humiditybox{
+    display: flex;
+    padding: 8px;
+    margin-top: 7px;
+    gap: 4.5vw;
+    border: 2px solid rgba(4, 167, 255, 0.5);
+    
+}
+
+.returntopgroup{
+    display: block;
+    width: 20%;
+    margin: 0;
+    
+}
+#sensorviewbutton{
+    margin-left: 11%;
+}
+.navbar {
+    display: flex;
+    align-items: center;
+    gap: 6vw;
+    margin: 0;
+    margin-left: 1%;
+    width: 98%;
+    height: 4.3em;
+    background-color: rgb(223, 223, 223);
+    border-bottom: 0.5px solid #f8f8f8;
+    border-radius: 40px;
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.error-container{
+    margin-left: 10%;
+}
+
+#loginerrortext{
+    font-weight: 100;
+    margin-top: 8px;
+    font-size: 12px;
+    color:rgb(165, 13, 28);
+    font-style: italic;
+}
+
+.beforeloginbutton{
+    display: flex;
+    gap: 15px;
+}
+
+.text{
+    margin: 0;
+    padding-top: 25px;
+    margin-left: 40px;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: rgb(222, 221, 221);
+}
+
+#dashtext{
+    padding:2;
+}
+
+.checks{
+    background-color: red;
+}
+
+#sensorlistmessage{
+    color:rgb(254, 254, 254);
+    margin-right: 20px;
+    margin-bottom: 10px;
+
+}
+
+.sensorheader{
+    border-bottom: 10px groove #f8f8f8;
+    
+}
+
+
+
+.loginpanel {
+    background: rgb(66, 66, 66);
+    border: 2px solid #ffffff;
+    margin-top: 5%;
+    margin-left: 35%;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 300px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.input-group input {
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: calc(100% - 1.6rem); /* padding + border */
+}
+
+.login-button {
+    background-color: #24476d;
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #204168;
+}
+#loginheadertext{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+}
+
+#login_logo{
+    margin-top: -0.3em;
+}
+
+.jersey-25-regular {
+    color: rgb(39, 39, 39);
+    font-family: "Jersey 25", sans-serif;
+    font-size: 5vw;
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: 0px;
+    margin: 0;
+    margin-top: 3%;
+    margin-left: 20px;
+    
+  }
+
+  
+  
+
+.withinlogo{
+    color: #15af46;
+}
+.navbuttons{
+    background-color: #3f3f3f;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    padding: 10px;
+    width: 10%;
+    height: 60%;
+    font-size: 1.2vw;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    color: white;
+    border-radius: 20px;
+    border: 1px solid #ffffff;
+}
+
+.triangle-cutout {
+    width: 4%;
+    height: 0;
+    border-left: 6.4vw solid transparent;
+    border-right: 6.4vw solid transparent;
+    border-top: 70px solid #2a2a2a; /* Background color of the webpage */
+    position: absolute;
+    right: 63%;
+    top: 0%; /* Adjust as needed */
+    z-index: 0;
+}
+
+.navbuttons:hover{
+    cursor: pointer;
+}
+
+#currentDate{
+    padding-top : 10px;
+    padding-left: 15px;
+    font-weight: 300;
+    margin-left: -55px;
+}
+
+.currentReadingsPanel{
+    display: fixed;
+    min-width: 33vw;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: rgb(30, 30, 30);
+    color: white;
+    margin-top: -15px;
+    margin-left: 1%;
+    margin-right: 1vw;
+    border-radius: 10px;
+    border: 0.5px solid #332f36;
+    padding-left: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease-in-out;
+    
+}
+
+.buttonsandcheck{
+    display:flex;   
+    margin: 0;
+   
+}
+
+.buttonset{
+    margin: 0;
+    
+    font-style: italic;
+}
+
+.checkboxesgroup{
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    font-size: 1.25vw;
+    margin: 0;
+    margin-top: -7px;
+    margin-left: 10px;
+    
+}
+
+.checkflex input[type="checkbox"] {
+    width: 1.5vw;  /* Increase the width */
+    height: 1.5vw; /* Increase the height */
+    margin-right: 10px; /* Space between checkbox and text */
+}
+
+.checkflex{
+    display: flex;
+    align-items: center;
+    width: 150px;
+    margin-top: 10px;
+    font-weight: 500;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: italic;
+    color: rgb(222, 221, 221);
+    
+}
+#logopic{
+    margin-top: 15px;
+    margin-left: 35px;
+    width: 80%;
+    height: 70%;
+
+}
+
+.sensorlistview{
+    
+    margin-top: 0%;
+    margin-left: 2px;
+    height: 100%;
+    
+    width: 99.5%;
+    
+
+}
+.innerlistview{
+    margin-right: 30px;
+    margin-top: 0px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    width: 90%;
+}
+
+.listrowentry{
+    display: flex;
+    gap: 3.5%;
+    margin-top: 3%;
+    margin-left: 4%;
+    margin-right: 4%;
+    border-radius: 60px;
+    border: 1px solid #e9e6e6;
+    padding: 3px;
+    background-color: #343c3e;
+    align-items: center;
+    width: 100%;
+    height: 60px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.listrowentry:hover{
+    transform: scale(1.02); /* Slightly enlarge the button */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.listAlertRows{
+    display: flex;
+    gap: 2%;
+    margin-top: 1%;
+    margin-left: 10%;
+    margin-right: 0%;
+    border-radius: 60px;
+    padding: 3px;
+    border: 1px solid #f2f2f2;
+    background-color: #343c3e;
+    align-items: center;
+    width: 100%;
+    height: 35px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.listAlertRows:hover{
+    transform: scale(1.01); /* Slightly enlarge the button */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+.rowicon{
+    margin-top: 20px;
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-left: 10px;
+    border-right: 1.25px solid #000000;
+    font-size: 25px;
+}
+.whiteline{
+    margin-top: 2%;
+    margin-left: 0%;
+    width: 100%;
+    border-bottom: 0.1px solid #ffffff;
+    
+}
+
+#messagerow{
+    width: 30%;
+}
+.smallatag{
+    display: inline-block;
+    
+}
+
+.gthanlthan{
+    display: flex;
+    margin-left: 40%;
+}
+.swal2-input{
+    margin: 0;
+    margin-left: 30%;
+    width: 40%;
+}
+
+.swal2-popup.swal2-modal.swal2-show{
+    width: 665px;
+}
+
+#sensorSelect{
+    border-radius: 15px;
+}
+
+#sensor_select{
+    margin-top: 10px;
+    width: 100%;
+}
+.createalertsection{
+    margin-top:20px;
+    display: flex;
+    
+}
+.rowentrydata{
+    margin-top: 25px;
+    padding-right: 45px;
+    padding-left: 45px;
+    font-size: 18px;
+    font-weight: 500;
+    border-right: 1.25px solid #000000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+   
+    color:rgb(255, 255, 255);
+    text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.6);
+}
+#conditionalertentry{
+    width: 40%;
+}
+
+
+#lessThanButton{
+    font-weight: 500;
+    font-size: 15px;
+    padding: 5px;
+    margin-left: -100px;
+    padding-right: 10px;
+    width: 150px;
+    border-radius: 30px;
+    height: 80%;
+   
+}
+.swal2-confirm.swal2-styled{
+    background-color: green;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+}
+
+.swal2-cancel.swal2-styled{
+    background-color: rgb(145, 143, 143);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+}
+
+
+#greaterThanButton{
+    font-weight: 500;
+    font-size: 15px;
+    width: 150px;
+    height: 80%;
+    padding: 5px;
+    border-radius: 30px;
+}
+
+#conditionalertsection{
+    gap: 45px;
+    margin-top: 5px;
+    margin-bottom: -10px;
+}
+
+.sensorlistheader{
+    border-bottom: 10px groove #f8f8f8;
+}
+#alerticon{
+    width: 2%;
+    margin-left: 15px;
+    margin-bottom: 20px;
+    font-size: 25px;
+}
+.alertRowEntryData{
+    margin-top: 15px;
+    width: 25%;
+    padding-right: 20px;
+    padding-left: 0px;
+    font-size: 17px;
+    border-right: 1.25px solid #000000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 500;
+    color:rgb(255, 255, 255);
+    text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+#deleteAlert{
+    width: 2%;
+    margin-right: 1.5%;
+    margin-top: 5px;
+}
+
+.alertheader{
+    display: flex;
+    gap: 10%;
+    border-bottom: 10px groove #f8f8f8;
+
+    
+}
+
+#deleteAlert:hover{
+    cursor: pointer;
+}
+
+.stats{
+    font-weight: 500;
+    text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
+    color: rgb(222, 221, 221);
+}
+#returnTopButton{
+    margin-left: 4vw;
+    margin-top: 33px;
+    background-color: #535252; 
+    width: 65%;
+    height: 3vw; 
+    color: white;  
+    border: none; 
+    border: 0.1vw solid #727070;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    font-style: italic;
+    font-size: 1.2vw;
+    cursor: pointer; 
+    border-radius: 5px; 
+    transition: background-color 0.6s, transform 0.6s; 
+}
+
+#downloadCSVButton{
+    margin-left: 4vw;
+    margin-top: 0.6vw;
+    background-color: #47be40; 
+    width: 65%;
+    height: 3vw; 
+    color: white;  
+    border: none; 
+    border: 2px solid #1ea031;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    font-style: italic;
+    font-size: 1.2vw;
+    cursor: pointer; 
+    border-radius: 5px; 
+    transition: background-color 0.6s, transform 0.6s; 
+}
+#returnTopButton:hover{
+    cursor: pointer;
+    
+    
+}
+
+.headerchunk{
+    display: flex;
+    margin-left: 0px;
+    border-bottom: 1px solid #ffffff;
+
+}
+
+#createCalibrationButton{
+   
+        height: 40px;
+        width: 15%;
+        margin-top: 14px;
+        margin-left: 5.5vw;
+        border-radius: 30px;
+        background-color: rgb(8, 105, 8);
+        border: 0;
+    
+}
+.totalreadingcountdiv{
+    display: flex;
+}
+
+
+.headerwithcountdown{
+    margin-bottom: -2px;
+    display: flex;  
+    gap: 0px;
+
+}
+.topsection{
+    margin-right: 10px;
+    border-bottom: 2.5px solid #030303;
+    padding: 10px;
+}
+
+
+.bodysection{
+    padding: 10px;
+    
+    display: flex;
+    margin-right: 10px;
+    margin-left: -4px;
+    border-radius: 10px;
+    margin-top: 10px;
+    flex-direction: column;
+    font-weight: 500;
+    background-color: rgb(30, 30, 30);
+    
+    
+}
+
+#time{
+    padding: 0;
+   
+}
+
+#thresholdsbutton{
+    font-size: 12px;
+}
+    
+
+#currentsensordisplay{
+    margin: 0;
+    padding: 0;
+    font-style: italic;
+}
+
+#timecontainer{
+    
+    margin:0;
+    margin-top: 0px;
+    padding: 0; 
+}
+
+.timeandbolt{
+    display:flex;
+}
+
+#toggleDailyReport {
+    background-color: #329c1a; 
+    width: 150px;
+    height: 25px;  
+    border: none; 
+    color: white;
+    margin-top: 7px;
+    border: 1.5px solid #5e5c5c6e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    font-style: italic;
+    font-size: 15px; /* Larger font size for readability */
+    cursor: pointer; /* Cursor indicates clickable item */
+    border-radius: 5px; /* Rounded corners for a modern look */
+    transition: background-color 0.6s, transform 0.6s; /* Smooth transitions for hover effects */
+}
+
+#toggleReadings{
+    font-size: 50px;
+    transition:  font-size 0.3s ease-in-out;
+}
+
+#toggleReadings:hover{
+    cursor: pointer;
+    font-size: 52px;
+}
+#statusicon{
+    margin-left: 15%;
+    margin-bottom: -5px;
+    margin-top: 0;
+    border-radius: 60px;
+    font-size: 55px;
+    width: 90px;
+    height: 65px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    opacity: 1; 
+    transition: opacity 0.3s ease-in-out;
+}
+
+#pauseButton {
+    background-color: #888686; 
+    width: 150px;
+    height: 25px;   
+    border: none; 
+    color: white;
+    margin-top: 7px;
+    border: 1.5px solid #5e5c5c6e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    font-size: 15px; /* Larger font size for readability */
+    font-style: italic;
+    cursor: pointer; /* Cursor indicates clickable item */
+    border-radius: 5px; /* Rounded corners for a modern look */
+    transition: background-color 0.6s, transform 0.6s; /* Smooth transitions for hover effects */
+}
+
+
+#countdown{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    margin-top: -5px;
+    margin-left: 15px;
+}
+.pauseplay{
+    margin-top: 10px;
+    width: 150px;
+    height: 80px;
+    display:flex;
+   
+}
+
+#sensorheader{
+    margin-left: 25px;
+    margin-top: 5px;
+    font-weight: 650;
+    font-size: 2.1vw;
+    font-style: italic;
+    padding: 10px;
+    color:white
+}
+.sensordisplay{
+    width: 100%;  
+    padding-top: 30px;
+    padding-bottom: 20px;
+    display: flex;
+    margin-top: 0;
+}
+
+.dailyReportSection{
+    margin-top: 30px;
+    height: 500px;
+}
+
+
+.datetime-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0vw;
+    margin-right: 0vw;
+    margin-left: 1vw;
+    border: 2px solid #ffffff;
+    border-radius: 20px;
+    cursor: pointer;
+    height: 3vw;
+    width: 25%; 
+    text-align: center;
+    font-size: 1vw;
+    font-weight: 500;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #464545;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    opacity: 80%;
+}
+.datetime-button span {
+    display: block;
+}
+
+#firstalertentry{
+    width: 30%;
+}
+
+.datetime-button:hover{
+    transform: scale(1.02); 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+#dailyReportChart{
+    margin-top: 30px;
+    margin-left: 5%;
+    max-width: 90%;
+    max-height: 30vw;
+    margin-bottom: 10px;
+}
+
+#swal2-html-container{
+    margin-left: -200px;
+    padding: 5px;
+
+}
+#swal2-title{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: italic;
+    padding-bottom: 5px;
+    border-bottom: 5px groove #f8f8f8;
+
+}
+
+#endButton{
+    font-weight: 700;
+}
+
+/* Custom Flatpickr theme */
+.flatpickr-calendar {
+    background-color: #2b2a2a !important;
+    border: 1px solid #fff !important;
+    padding-bottom: 10px;
+    color: white !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    box-sizing: border-box !important; /* Ensure padding does not affect size */
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month,
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg,
+.flatpickr-months .flatpickr-prev-month svg path,
+.flatpickr-months .flatpickr-next-month svg path {
+    color: white !important;
+    fill: white !important;
+}
+
+.flatpickr-months {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.flatpickr-current-month {
+    color: white !important;
+}
+
+.flatpickr-current-month .cur-month {
+    color: white !important;
+}
+
+.flatpickr-weekdays {
+    font-weight: 200;
+}
+
+.flatpickr-weekday {
+    color: white !important;
+}
+
+.flatpickr-days .dayContainer {
+    background-color: #2b2a2a !important;
+    padding: 5px !important; /* Add padding to the day container */
+    box-sizing: border-box !important; /* Ensure padding does not affect size */
+}
+
+.flatpickr-day {
+    color: white !important;
+    background-color: #2b2a2a !important;
+    border: 1px solid #fff !important;
+    margin: 0 !important;
+    display: inline-block !important;
+    width: calc(100% / 7) !important; /* Ensure each day takes up equal space */
+    box-sizing: border-box !important;
+}
+
+.flatpickr-day:hover, .flatpickr-day:focus {
+    background-color: #fff !important;
+    color: #2b2a2a !important;
+}
+
+.flatpickr-day.today {
+    border: 2px solid #007bff !important; /* Blue border for today's date */
+    background-color: #2b2a2a !important; /* Maintain the dark background */
+    color: white !important; /* Keep the text color white */
+}
+
+.flatpickr-day.selected {
+    background-color: #fff !important;
+    color: #2b2a2a !important;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    display: none !important;
+}
+
+.flatpickr-time {
+    background-color: #2b2a2a !important;
+    padding-top: 1%;
+    
+}
+
+.flatpickr-time .flatpickr-am-pm {
+    color: white !important;
+
+}
+
+.flatpickr-am-pm {
+    margin-right: 10px;
+    margin-left: 10px;
+    background-color: #686666 !important;
+    text-align: center !important;
+}
+
+.flatpickr-time-separator {
+    display: none !important;
+}
+
+.flatpickr-time input {
+    background-color: #686666 !important;
+    border-radius: 10px;
+    color: white !important;
+    padding: 5px !important;
+    margin-bottom: 5px !important;
+    width: 80px !important;
+    text-align: center !important;
+}
+
+.flatpickr-time .flatpickr-hour,
+.flatpickr-time .flatpickr-minute,
+.flatpickr-time .flatpickr-second {
+    color: white !important;
+}
+
+.flatpickr-time .flatpickr-time {
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    padding: 10px !important;
+}
+
+.flatpickr-time .flatpickr-am-pm {
+    width: 60px !important;
+    height: 30px !important;
+    border-radius: 5px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+}
+
+.flatpickr-time .flatpickr-am-pm:hover {
+    background-color: #686666 !important;
+}
+
+/* Hide increment/decrement arrows */
+.flatpickr-time input[type="number"]::-webkit-inner-spin-button,
+.flatpickr-time input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+}
+
+.flatpickr-time .numInputWrapper span.arrowUp,
+.flatpickr-time .numInputWrapper span.arrowDown,
+.flatpickr-current-month .numInputWrapper span.arrowUp,
+.flatpickr-current-month .numInputWrapper span.arrowDown {
+    display: none !important;
+}
+
+.numInputWrapper {
+    margin-left: 0px;
+    padding-left: 10px;
+    border-right: 1px solid #fff !important;
+    border-left: 1px solid #fff !important;
+    background-color: #2b2a2a !important;
+}
+
+
+/* Dark grey background for month selection dropdown */
+.flatpickr-monthDropdown-months {
+    background-color: #2b2a2a !important;
+    color: white !important;
+    border-right: 1px solid #fff !important;
+    border-left: 1px solid #fff !important;
+}
+
+/* Hide dates from previous and next months */
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    visibility: hidden;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+/* Style the dropdown month selector */
+.flatpickr-monthDropdown-months {
+    background-color: #686666 !important;
+    color: #fff !important; /* White text */
+}
+
+.dataviewheaderbunch{
+    width: 20vw; 
+    
+}
+
+
+
+#dataviewsensorname{
+    margin: 0;
+    width: 100%;
+    font-size: 1.5vw;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: italic;
+    margin-top: -11px;
+
+}
+/* Ensure the dates remain next to each other in the last row */
+.flatpickr-day {
+    display: inline-block !important;
+    width: 14.28% !important; /* Ensure each day takes up the right amount of space */
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.datatypeselectbuttons{
+    width: 85%;
+    height: 50px;
+    margin-left: 225px;
+    margin-right: 0px;
+    display: flex;
+}
+#thresholdValue{
+    margin-top: 10px;
+    height: 35px;
+}
+
+#alertMessage.swal2-input{
+    margin-left: 25%;
+    width: 50%;
+}
+#phoneNumber{
+    height: 35px;
+}
+#alertMessage{
+    height: 35px;
+    width: 80%;
+    margin-left: 10%;
+}
+.button-select{
+    width: 35%;
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 500;
+}
+#alertName{
+    height: 40px;
+    margin-bottom: 10px;
+}
+#createAlertButton{
+    height: 40px;
+    width: 15%;
+    margin-top: 30px;
+    margin-left: 2.5vw;
+    border-radius: 30px;
+    background-color: rgb(8, 105, 8);
+    border: 0;
+}
+#dailyReportContainer {
+    width: 2000px; 
+    max-width: 100%; 
+    height: 600px; 
+    margin: auto;
+    display: none; 
+    padding: 20px; 
+    box-sizing: border-box; 
+}
+
+#sensorChart {
+    flex: 2; 
+    max-width: 60%; 
+    height: 500x; 
+    max-height: 500px
+}
+
+.reportheaderbunch{
+    border-bottom: 2.5px solid #ffffff;
+    display: flex;
+    gap: 0px;
+    margin: 0;  
+    padding: 10px;
+}
+
+#displayVariable{
+    margin-top: 10px;
+    margin-bottom: 5px;
+
+}
+
+
+
+#switchChartType{
+    background-color: #4c4c4c; 
+    width: 150px;
+    height: 25px;   
+    border: none;
+    color: white;
+    margin-top: 7px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 15px; 
+    font-weight: 600;
+    font-style: italic;
+    cursor: pointer; 
+    border-radius: 5px; 
+    transition: background-color 0.6s, transform 0.6s; 
+    border: 1.5px solid #5e5c5c6e;
+}
+#dailyreportheader{
+    width: 100%;
+    margin: 0;  
+    font-size: 2.5vw;
+    font-weight: 700;
+    font-style: italic;
+    color: rgb(222, 221, 221);
+}
+.readingamountanddaterange{
+    width: 60%;
+    padding: 5px;
+    margin-top: 10px;
+    margin-bottom: -10px;
+}
+.totalreadings{
+    font-size: 0.8vw;
+    display: flex;
+    margin-bottom: -15px;
+    font-style: italic;
+}
+#dailyreport_readingcount{
+    font-weight: 500;
+    margin-left: 1%;
+    margin-top: 2px;
+}
+
+#startDateText{
+    font-size: 1.2vw;
+}
+
+#endDateText{
+    font-size: 1.2vw;
+}
+
+#startbutton{
+    font-weight: 500;
+    margin-left: -200px;
+    
+}
+
+#startButton{
+    font-weight: 700;
+    margin-left: -3%;
+    
+}
+#plottingtext2{
+    font-weight: 500;
+    font-size: 1.5vw;
+    margin-left: 1vw;
+    margin-top: 10px;
+    color: rgb(222, 221, 221);
+}
+
+#plottingtext1{
+    width: 18vw;
+    font-weight: 500;
+    font-size: 1.6vw;
+    margin-top: 6px;
+    color: rgb(222, 221, 221);
+    
+}
+.daterange{
+    display: flex;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    width: 110%;
+    font-size: 25px;
+    color: white;
+    margin-top: 2.8%;
+    margin-left: 1%;
+    font-style: italic;
+}
+
+#loginnavbar{
+    height: 20%;
+}
+#readingmessage{
+    margin-left: 1%;
+    font-weight: 500;
+}
+

@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+require('dotenv').config();
 const app = express();
 const port = 3000;
 const db = require('./database');
@@ -21,11 +22,11 @@ const recipient = '+12507183236';
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, '..', 'Client')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'ejs');
 // Define template directory
-app.set('views', 'views');
+app.set('views', path.join(__dirname, 'views')); // Assuming 'views' is directly inside your project folder
 
 //Session info
 app.use(session({
@@ -46,116 +47,147 @@ let isDisconnectAlertSent = false;
 
 // Data receiving from device
 app.post('/dataBay', async (req, res, next) => {
-  console.log('/dataBay Post Request Initialized ------');
-  const { time, temp, hum, light, sid } = req.body;
-  console.log('Received Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum, 'Light: ', light, ' SensorID: ', sid);
-  console.log("------");
-
-  // Function to handle database insertion
-  const insertData = async () => {
-    const query = `INSERT INTO readings (timestamp, temperature, humidity, sensor_id, light) VALUES (?, ?, ?, ?, ?)`;
-    try {
-      const [result] = await db.execute(query, [time, temp, hum, sid, light]);
-      console.log('Data inserted successfully:', result.insertId);
-      return { success: true, insertId: result.insertId };
-    } catch (err) {
-      console.error('Database error:', err);
-      return { success: false, error: err };
-    }
-  };
-
-  // Function to reset alert_sent flags
-  const resetAlertSentFlags = async () => {
-    try {
-      const [results] = await db.query('SELECT * FROM UserAlerts WHERE sensor_id = ?', [sid]);
-
-      for (const alert of results) {
-        if (alert.data_type === 'disconnect') {
-          // If the sensor has reported data, reset the disconnect alert
-          await db.query('UPDATE UserAlerts SET alert_sent = FALSE WHERE alert_id = ?', [alert.alert_id]);
-          continue;
+    console.log('/dataBay Post Request Initialized ------');
+    const { time, temp, hum, light, sid } = req.body;
+    console.log('Received Data From ESP32 | Timestamp: ', time, ' Temperature: ', temp, ' Humidity: ', hum, 'Light: ', light, ' SensorID: ', sid);
+    console.log("------");
+  
+    // Function to handle database insertion
+    const insertData = async (adjustedTemp, adjustedHum, adjustedLight) => {
+      const query = `INSERT INTO readings (timestamp, temperature, humidity, sensor_id, light) VALUES (?, ?, ?, ?, ?)`;
+      try {
+        const [result] = await db.execute(query, [time, adjustedTemp, adjustedHum, sid, adjustedLight]);
+        console.log('Data inserted successfully:', result.insertId);
+        return { success: true, insertId: result.insertId };
+      } catch (err) {
+        console.error('Database error:', err);
+        return { success: false, error: err };
+      }
+    };
+  
+    // Function to reset alert_sent flags
+    const resetAlertSentFlags = async () => {
+      try {
+        const [results] = await db.query('SELECT * FROM UserAlerts WHERE sensor_id = ?', [sid]);
+  
+        for (const alert of results) {
+          if (alert.data_type === 'disconnect') {
+            // If the sensor has reported data, reset the disconnect alert
+            await db.query('UPDATE UserAlerts SET alert_sent = FALSE WHERE alert_id = ?', [alert.alert_id]);
+            continue;
+          }
+  
+          const thresholdValue = parseFloat(alert.threshold_value);
+          const resetCondition = (alert.alertCondition === 'less_than' && (alert.data_type === 'temperature' && temp >= thresholdValue * 1.1 || alert.data_type === 'humidity' && hum >= thresholdValue * 1.1 || alert.data_type === 'light' && light >= thresholdValue * 1.1)) ||
+            (alert.alertCondition === 'greater_than' && (alert.data_type === 'temperature' && temp <= thresholdValue * 0.9 || alert.data_type === 'humidity' && hum <= thresholdValue * 0.9 || alert.data_type === 'light' && light <= thresholdValue * 0.9));
+  
+          if (resetCondition) {
+            await db.query('UPDATE UserAlerts SET alert_sent = FALSE WHERE alert_id = ?', [alert.alert_id]);
+          }
         }
-
+      } catch (err) {
+        console.error('Database error:', err);
+        next(err); // Pass the error to the error handler
+      }
+    };
+  
+    // Function to apply calibrations
+    const applyCalibrations = async () => {
+      let adjustedTemp = temp;
+      let adjustedHum = hum;
+      let adjustedLight = light;
+      try {
+        const [calibrations] = await db.query('SELECT * FROM calibrations WHERE sensor_id = ?', [sid]);
+        calibrations.forEach(calibration => {
+          if (calibration.data_type === 'temp') {
+            adjustedTemp += calibration.calibration_value;
+            console.log(`Applied temperature calibration: ${calibration.calibration_value}`);
+          } else if (calibration.data_type === 'hum') {
+            adjustedHum += calibration.calibration_value;
+            console.log(`Applied humidity calibration: ${calibration.calibration_value}`);
+          } else if (calibration.data_type === 'light') {
+            adjustedLight += calibration.calibration_value;
+            console.log(`Applied light calibration: ${calibration.calibration_value}`);
+          }
+        });
+      } catch (err) {
+        console.error('Error fetching calibrations:', err);
+        next(err); // Pass the error to the error handler
+      }
+      return { adjustedTemp, adjustedHum, adjustedLight };
+    };
+  
+    try {
+      // Reset alert_sent flags at the beginning of the handler
+      await resetAlertSentFlags();
+  
+      // Apply calibrations
+      const { adjustedTemp, adjustedHum, adjustedLight } = await applyCalibrations();
+  
+      // Query the database for alerts corresponding to the sensor ID
+      let alerts = [];
+      let alertIdsToUpdate = [];
+      const [results] = await db.query('SELECT * FROM UserAlerts WHERE sensor_id = ?', [sid]);
+  
+      for (const alert of results) {
+        if (alert.data_type === 'disconnect') continue;
+  
         const thresholdValue = parseFloat(alert.threshold_value);
-        const resetCondition = (alert.alertCondition === 'less_than' && (alert.data_type === 'temperature' && temp >= thresholdValue * 1.1 || alert.data_type === 'humidity' && hum >= thresholdValue * 1.1 || alert.data_type === 'light' && light >= thresholdValue * 1.1)) ||
-          (alert.alertCondition === 'greater_than' && (alert.data_type === 'temperature' && temp <= thresholdValue * 0.9 || alert.data_type === 'humidity' && hum <= thresholdValue * 0.9 || alert.data_type === 'light' && light <= thresholdValue * 0.9));
-
-        if (resetCondition) {
-          await db.query('UPDATE UserAlerts SET alert_sent = FALSE WHERE alert_id = ?', [alert.alert_id]);
+        const conditionMet = (alert.data_type === 'temperature' && ((alert.alertCondition === 'less_than' && adjustedTemp < thresholdValue) || (alert.alertCondition === 'greater_than' && adjustedTemp > thresholdValue))) ||
+          (alert.data_type === 'humidity' && ((alert.alertCondition === 'less_than' && adjustedHum < thresholdValue) || (alert.alertCondition === 'greater_than' && adjustedHum > thresholdValue))) ||
+          (alert.data_type === 'light' && ((alert.alertCondition === 'less_than' && adjustedLight < thresholdValue) || (alert.alertCondition === 'greater_than' && adjustedLight > thresholdValue)));
+  
+        if (conditionMet && !alert.alert_sent) {
+          alerts.push(alert.alertMessage);
+          alertIdsToUpdate.push(alert.alert_id); // Collect the alert IDs to update
+        }
+      }
+  
+      // If any thresholds are exceeded, send an SMS and wait for it
+      if (alerts.length > 0) {
+        const messageBody = `Alert: ${alerts.join(' ')}`;
+        twilloClient.messages.create({
+          body: messageBody,
+          from: twilioNumber,
+          to: '+12507183236' // Hardcoded phone number for now
+        })
+          .then(async message => {
+            console.log(`Alert Message SID: ${message.sid}`);
+  
+            // Update alert_sent flag in the database
+            if (alertIdsToUpdate.length > 0) {
+              const query = 'UPDATE UserAlerts SET alert_sent = TRUE WHERE alert_id IN (?)';
+              await db.query(query, [alertIdsToUpdate]);
+            }
+  
+            const dbResult = await insertData(adjustedTemp, adjustedHum, adjustedLight);
+            if (dbResult.success) {
+              res.status(201).json({ alert: messageBody, message: 'Alert sent and data inserted successfully', id: dbResult.insertId });
+            } else {
+              next(new Error('Alert sent but failed to insert data'));
+            }
+          })
+          .catch(error => {
+            console.error('Failed to send SMS:', error);
+            next(error); // Pass the error to the error handler
+          });
+      } else {
+        const dbResult = await insertData(adjustedTemp, adjustedHum, adjustedLight);
+        if (dbResult.success) {
+          res.status(201).json({ message: 'Data inserted successfully', id: dbResult.insertId });
+        } else {
+          next(new Error('Error inserting data into database'));
         }
       }
     } catch (err) {
-      console.error('Database error:', err);
       next(err); // Pass the error to the error handler
     }
-  };
-
-  try {
-    // Reset alert_sent flags at the beginning of the handler
-    await resetAlertSentFlags();
-
-    // Query the database for alerts corresponding to the sensor ID
-    let alerts = [];
-    let alertIdsToUpdate = [];
-    const [results] = await db.query('SELECT * FROM UserAlerts WHERE sensor_id = ?', [sid]);
-
-    for (const alert of results) {
-      if (alert.data_type === 'disconnect') continue;
-
-      const thresholdValue = parseFloat(alert.threshold_value);
-      const conditionMet = (alert.data_type === 'temperature' && ((alert.alertCondition === 'less_than' && temp < thresholdValue) || (alert.alertCondition === 'greater_than' && temp > thresholdValue))) ||
-        (alert.data_type === 'humidity' && ((alert.alertCondition === 'less_than' && hum < thresholdValue) || (alert.alertCondition === 'greater_than' && hum > thresholdValue))) ||
-        (alert.data_type === 'light' && ((alert.alertCondition === 'less_than' && light < thresholdValue) || (alert.alertCondition === 'greater_than' && light > thresholdValue)));
-
-      if (conditionMet && !alert.alert_sent) {
-        alerts.push(alert.alertMessage);
-        alertIdsToUpdate.push(alert.alert_id); // Collect the alert IDs to update
-      }
-    }
-
-    // If any thresholds are exceeded, send an SMS and wait for it
-    if (alerts.length > 0) {
-      const messageBody = `Alert: ${alerts.join(' ')}`;
-      twilloClient.messages.create({
-        body: messageBody,
-        from: twilioNumber,
-        to: '+12507183236' // Hardcoded phone number for now
-      })
-        .then(async message => {
-          console.log(`Alert Message SID: ${message.sid}`);
-
-          // Update alert_sent flag in the database
-          if (alertIdsToUpdate.length > 0) {
-            const query = 'UPDATE UserAlerts SET alert_sent = TRUE WHERE alert_id IN (?)';
-            await db.query(query, [alertIdsToUpdate]);
-          }
-
-          const dbResult = await insertData();
-          if (dbResult.success) {
-            res.status(201).json({ alert: messageBody, message: 'Alert sent and data inserted successfully', id: dbResult.insertId });
-          } else {
-            next(new Error('Alert sent but failed to insert data'));
-          }
-        })
-        .catch(error => {
-          console.error('Failed to send SMS:', error);
-          next(error); // Pass the error to the error handler
-        });
-    } else {
-      const dbResult = await insertData();
-      if (dbResult.success) {
-        res.status(201).json({ message: 'Data inserted successfully', id: dbResult.insertId });
-      } else {
-        next(new Error('Error inserting data into database'));
-      }
-    }
-  } catch (err) {
-    next(err); // Pass the error to the error handler
-  }
-});
+  });
+  
 
 // Function to check for disconnects
 const checkForDisconnects = async () => {
+  
   try {
     const [sensors] = await db.query('SELECT sensor_id, MAX(timestamp) as last_update FROM readings GROUP BY sensor_id');
 
@@ -271,6 +303,31 @@ app.get('/recentData/:sensorId', async (req, res, next) => {
     next(error); // Pass the error to the error handler
   }
 });
+
+app.get('/getCalibrations', async (req, res) => {
+    const sensorId = req.query.sensorId;
+
+    try {
+        const [results] = await db.query('SELECT * FROM calibrations WHERE sensor_id = ?', [sensorId]);
+        const calibrations = { temp: 0, hum: 0, light: 0 };
+
+        results.forEach(calibration => {
+            if (calibration.data_type === 'temp') {
+                calibrations.temp = calibration.calibration_value;
+            } else if (calibration.data_type === 'hum') {
+                calibrations.hum = calibration.calibration_value;
+            } else if (calibration.data_type === 'light') {
+                calibrations.light = calibration.calibration_value;
+            }
+        });
+
+        res.json(calibrations);
+    } catch (err) {
+        console.error('Error fetching calibrations:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
 
 app.get('/download-csv', async (req, res, next) => {
   try {
@@ -429,6 +486,53 @@ app.post('/send-sms', (req, res, next) => {
     });
 });
 
+app.post('/calibrate', async (req, res) => {
+ 
+  const { sensorId, dataType, calibrationValue } = req.body;
+
+  try {
+      // Check if a calibration already exists for the sensor and data type
+      const selectQuery = 'SELECT calibration_value FROM calibrations WHERE sensor_id = ? AND data_type = ?';
+      const [results] = await db.query(selectQuery, [sensorId, dataType]);
+
+      if (results.length > 0) {
+         
+          // Calibration exists, update it
+          const currentCalibrationValue = results[0].calibration_value;
+          const newCalibrationValue = currentCalibrationValue + calibrationValue;
+
+          const updateQuery = 'UPDATE calibrations SET calibration_value = ? WHERE sensor_id = ? AND data_type = ?';
+          await db.query(updateQuery, [newCalibrationValue, sensorId, dataType]);
+          res.json({ success: true });
+      } else {
+          
+          // Calibration does not exist, insert a new one
+          const insertQuery = 'INSERT INTO calibrations (sensor_id, data_type, calibration_value) VALUES (?, ?, ?)';
+          await db.query(insertQuery, [sensorId, dataType, calibrationValue]);
+          res.json({ success: true });
+      }
+  } catch (err) {
+      console.error('Database error', err);
+      res.status(500).json({ success: false, error: 'Database error' });
+  }
+});
+
+
+app.post('/deleteCalibration', async (req, res) => {
+  const { sensorId, dataType } = req.body;
+
+  try {
+      const deleteQuery = 'DELETE FROM calibrations WHERE sensor_id = ? AND data_type = ?';
+      await db.query(deleteQuery, [sensorId, dataType]);
+      res.json({ success: true });
+  } catch (err) {
+      console.error('Error deleting calibration', err);
+      res.status(500).json({ success: false, error: 'Database error' });
+  }
+});
+
+
+
 app.post('/login', async (req, res, next) => {
   const { username, password } = req.body;
   try {
@@ -562,6 +666,7 @@ setInterval(checkForDisconnects, 10000); // Check every 60 seconds
 // Use the error handling middleware
 app.use(errorHandler);
 
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on port ${PORT}`);
 });

@@ -1,0 +1,15 @@
+runtime: nodejs18 
+entrypoint: node Server/app.js
+
+env: standard
+
+handlers:
+- url: /login
+  static_dir: Server/public
+
+- url: /(.*\.(gif|png|jpg|css|js))$
+  static_files: Server/public/\1
+  upload: Server/public/(.*\.(gif|png|jpg|css|js))$ 
+
+- url: .*
+  script: auto 

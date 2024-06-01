@@ -8,9 +8,9 @@ const pool = mysql.createPool({
   password: 'showdb',
   database: 'SensorReadings',
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 50,
   queueLimit: 0,
-  
+  connectTimeout: 10000,
 });
 
 module.exports = pool;
