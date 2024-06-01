@@ -359,7 +359,6 @@ p{
     margin-top: 0%;
     margin-left: 2px;
     height: 100%;
-    
     width: 99.5%;
     
 
@@ -396,7 +395,7 @@ p{
 .listAlertRows{
     display: flex;
     gap: 2%;
-    margin-top: 1%;
+    margin-top: 2%;
     margin-left: 10%;
     margin-right: 0%;
     border-radius: 60px;
@@ -423,9 +422,9 @@ p{
     font-size: 25px;
 }
 .whiteline{
-    margin-top: 2%;
-    margin-left: 0%;
-    width: 100%;
+    margin-top: 5%;
+    margin-left: 0.5%;
+    width: 110%;
     border-bottom: 0.1px solid #ffffff;
     
 }
@@ -469,6 +468,7 @@ p{
     margin-top: 25px;
     padding-right: 45px;
     padding-left: 45px;
+    width: 15vw;
     font-size: 18px;
     font-weight: 500;
     border-right: 1.25px solid #000000;
@@ -523,7 +523,25 @@ p{
 
 .sensorlistheader{
     border-bottom: 10px groove #f8f8f8;
+    display:flex;
+  
 }
+.column-headers {
+    display: flex;
+    gap: 12vw;
+    padding: 5px;
+    font-weight: bold;
+    background-color: #444;
+    color: white;
+    margin-bottom: 10px;
+}
+
+#firstcolumn-header{
+    margin-left: 15vw;
+    margin-right: -4vw;
+
+  }
+
 #alerticon{
     width: 2%;
     margin-left: 15px;
@@ -1083,7 +1101,7 @@ p{
 }
 #createAlertButton{
     height: 40px;
-    width: 15%;
+    width: 17%;
     margin-top: 30px;
     margin-left: 2.5vw;
     border-radius: 30px;
@@ -1164,6 +1182,31 @@ p{
     margin-left: 1%;
     margin-top: 2px;
 }
+
+#addSensorButton{
+    margin-top: 2.3%;
+    margin-left: 10.3vw;
+    border: 0;
+    width: 17%;
+    background-color: rgb(8, 105, 8);
+}
+
+#senstype{
+    width: 6vw;
+    margin-left: -2vw;
+}
+
+#sensname{
+    width: 22vw;
+}
+[id^="reading-"] {
+    margin-left: 3%;
+    margin-top: 2vw;
+    padding: 2px;
+    width: 40vw;
+    border-right: 0;
+}
+
 
 #startDateText{
     font-size: 1.2vw;
