@@ -191,12 +191,14 @@ const checkForDisconnects = async () => {
   try {
     const [sensors] = await db.query('SELECT sensor_id, MAX(timestamp) as last_update FROM readings GROUP BY sensor_id');
 
-    const currentTime = new Date();
+    const currentTime = new Date(new Date().getTime() - (24 * 60 * 60 * 1000)); //Go back 1 day
     const alertsToSend = [];
 
     for (const sensor of sensors) {
-      const lastUpdate = new Date(sensor.last_update);
-      const timeDifference = (currentTime - lastUpdate) / 1000; // Time difference in seconds
+
+      let pstOffset = 17 * 60 * 60 * 1000;
+      let lastUpdate = new Date(new Date(sensor.last_update).getTime() - pstOffset);
+      const timeDifference = (currentTime.getTime() - lastUpdate.getTime()) / 1000; // Time difference in seconds
 
       // Assume a device is disconnected if not updated for more than 10 minutes (600 seconds)
       if (timeDifference > 30) {
@@ -329,56 +331,67 @@ app.get('/getCalibrations', async (req, res) => {
 });
 
 
+
+
 app.get('/download-csv', async (req, res, next) => {
   try {
-    const { start, end } = req.query;
+    const { start, end, sensorId } = req.query;
+
+    // Query to get the sensor name based on sensorId
+    const [sensorRows] = await db.query('SELECT sensor_name FROM sensors WHERE sensor_id = ?', [sensorId]);
+    if (sensorRows.length === 0) {
+      return res.json({ success: false, message: 'Invalid sensor ID' });
+    }
+    const sensorName = sensorRows[0].sensor_name;
+
     let query = `
       SELECT timestamp, temperature, humidity, light
       FROM readings
+      WHERE sensor_id = ?
     `;
-    let values = [];
+    let values = [sensorId];
 
-    // Check if the first 4 characters of both start and end are greater than or equal to 2003
     if (start && end) {
-      const startYear = parseInt(start.substring(0, 4));
-      const endYear = parseInt(end.substring(0, 4));
-
-      if (startYear >= 2003 && endYear >= 2003) {
-        query += `WHERE timestamp BETWEEN ? AND ?`;
-        values = [start, end];
-      } else {
-        const today = '2024-05-17';
-        query += `WHERE DATE(timestamp) = ?`;
-        values = [today];
-      }
+      query += ` AND timestamp BETWEEN ? AND ?`;
+      values.push(start, end);
     } else {
-      const today = '2024-05-17';
-      query += `WHERE DATE(timestamp) = ?`;
-      values = [today];
+      const today = new Date().toISOString().split('T')[0];
+      query += ` AND DATE(timestamp) = ?`;
+      values.push(today);
     }
 
     const [rows] = await db.query(query, values);
 
     if (rows.length === 0) {
-      return res.status(400).send('No data available for the selected date range.');
+      return res.json({ success: false, message: 'No data selected for download' });
     }
 
-    const csv = parse(rows);
-    const filePath = path.join(__dirname, 'data.csv');
-    fs.writeFileSync(filePath, csv);
+    // Add the sensor name at the top of the CSV and as a column
+    const csvHeader = `Sensor Name: ${sensorName}\n`;
 
-    res.download(filePath, 'data.csv', (err) => {
-      if (err) {
-        console.error('Error downloading the CSV file', err);
-        next(err); // Pass the error to the error handler
-      }
-      fs.unlinkSync(filePath); // Delete the file after sending it
-    });
+    // Add sensorName to each row
+    const rowsWithSensorName = rows.map(row => ({
+      timestamp: row.timestamp,
+      sensor_name: sensorName,
+      temperature: row.temperature,
+      humidity: row.humidity,
+      light: row.light,
+    }));
+
+    const csv = csvHeader + parse(rowsWithSensorName);
+
+    // Set headers for CSV download
+    res.setHeader('Content-Disposition', 'attachment; filename="data.csv"');
+    res.setHeader('Content-Type', 'text/csv');
+
+    // Stream the CSV data to the response
+    res.send(csv);
   } catch (err) {
     console.error('Error generating CSV:', err);
     next(err); // Pass the error to the error handler
   }
 });
+
 
 app.get('/daily-report', async (req, res, next) => {
   try {

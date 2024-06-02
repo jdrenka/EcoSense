@@ -41,16 +41,23 @@
 </head>
 <body>
     <div id="top-of-page"></div>
-    <div class='navbar'>
+
+    <div class = 'topheader'>
+
         <a class='smallatag' href='/sensorview'>
-            <h1 class='jersey-25-regular'><span class='withinlogo'>E</span>coSense</h1>
+            <h1 class='jersey-25-regular'><span class='withinlogo'>eco</span>Sense</h1>
         </a>
-        <button id='sensorviewbutton' class='navbuttons'>Sensors</button>
-        <button id='createthreshold_button' class='navbuttons'>Alerts</button>
-        <button id='helpbutton' class='navbuttons'>Help</button>
-        <button class='navbuttons' id='logoutbutton'>Logout</button>
-        <div class="triangle-cutout"></div>
+        <div class='navbar'>
+       
+            <button id='sensorviewbutton' class='navbuttons'>Sensors</button>
+            <button id='createthreshold_button' class='navbuttons'>Alerts</button>
+            <button id='helpbutton' class='navbuttons'>Help</button>
+            <button class='navbuttons' id='logoutbutton'>Logout</button>
+            <div class="triangle-cutout"></div>
+        </div>
+
     </div>
+
     <div class='headerchunk'>
         <h1 class='text' id='sensorheader'><%= sensorName %></h1>
         <button id='createCalibrationButton' class='navbuttons' onclick="openCalibrationPopup()">Calibrate</button>
@@ -72,16 +79,16 @@
             </div>
             <div class='bodysection'>
                 <div class='tempbox'>
-                    <p class='stats'>Temperature: <span id="temperature">--</span></p>
-                    <p class='stats'>Current Avg: <span id='avgtemperature'>--</span></p>
+                    <p class='stats'>Temp: <span id="temperature">--</span></p>
+                    <p class='stats'>Current Avg: <span class = 'avgsections' id='avgtemperature'>--</span></p>
                 </div>
                 <div class='humiditybox'>
                     <p class='stats'>Humidity: <span id="humidity">--</span></p>
-                    <p class='stats'>Current Avg: <span id='avghumidity'>--</span></p>
+                    <p class='stats'>Current Avg: <span class = 'avgsections' id='avghumidity'>--</span></p>
                 </div>
                 <div class='lightbox'>
                     <p class='stats'>Light: <span id="light">--</span></p>
-                    <p class='stats'>Current Avg: <span id='avglight'>--</span></p>
+                    <p class='stats'>Current Avg: <span class = 'avgsections' id='avglight'>--</span></p>
                 </div>
                 <div class='stats' id="displayVariable">Total Readings: <span id="variableValue">--</span></div>
                 <div class='buttonsandcheck'>
@@ -480,25 +487,60 @@
                 }
             });
 
-            document.getElementById('downloadCSVButton').addEventListener('click', function() {
-                const startDate = document.getElementById('startDateText').textContent + " " + document.getElementById('startTimeText').textContent;
-                const endDate = document.getElementById('endDateText').textContent + " " + document.getElementById('endTimeText').textContent;
+            document.getElementById('downloadCSVButton').addEventListener('click', async function() {
+  const startDate = document.getElementById('startDateText').textContent + " " + document.getElementById('startTimeText').textContent;
+  const endDate = document.getElementById('endDateText').textContent + " " + document.getElementById('endTimeText').textContent;
 
-                let startDateTime;
-                let endDateTime;
+  let startDateTime;
+  let endDateTime;
 
-                if (startDate.trim() && endDate.trim() && endDate !== 'Select End Date') {
-                    startDateTime = new Date(startDate + ' GMT-0000').toISOString();
-                    endDateTime = new Date(endDate + ' GMT-0000').toISOString();
-                } else {
-                    const today = new Date().toISOString().split('T')[0];
-                    startDateTime = `${today}T00:00:00.000Z`;
-                    endDateTime = `${today}T23:59:59.999Z`;
-                }
+  if (startDate.trim() && endDate.trim() && endDate !== 'Select End Date') {
+    startDateTime = new Date(startDate + ' GMT-0000').toISOString();
+    endDateTime = new Date(endDate + ' GMT-0000').toISOString();
+  } else {
+    const today = new Date().toISOString().split('T')[0];
+    startDateTime = `${today}T00:00:00.000Z`;
+    endDateTime = `${today}T23:59:59.999Z`;
+  }
 
-                const csvUrl = `/download-csv?start=${encodeURIComponent(startDateTime)}&end=${encodeURIComponent(endDateTime)}&sensorId=${sensorId}`;
-                window.open(csvUrl, '_blank');
-            });
+  const csvUrl = `/download-csv?start=${encodeURIComponent(startDateTime)}&end=${encodeURIComponent(endDateTime)}&sensorId=${sensorId}`;
+
+  try {
+    const response = await fetch(csvUrl);
+
+    // Check if the response is JSON
+    const contentType = response.headers.get('Content-Type');
+    if (contentType && contentType.includes('application/json')) {
+      const result = await response.json();
+      if (!result.success) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No Data',
+          text: result.message,
+        });
+      }
+    } else {
+      // Handle CSV download
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'data.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An error occurred while trying to download the CSV.',
+    });
+  }
+});
+
         }
 
         function fetchDailyDataAndUpdateChart() {
