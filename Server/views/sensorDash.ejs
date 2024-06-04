@@ -662,18 +662,8 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('dailyreport_readingcount').textContent = data.length;
-                    dailyData.timestamps = data.map(entry => {
-                    let dataTime = new Date(entry.timestamp);
-                    let pstOffset = 7 * 60 * 60 * 1000; // Adjust for PDT (7 hours behind UTC)
-                    dataTime = new Date(dataTime.getTime() - pstOffset);
-                    return dataTime.toLocaleString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric', 
-                        hour: 'numeric', 
-                        minute: 'numeric', 
-                    hour12: true 
-            });
-        }); to include date and time
+                    
+                    dailyData.timestamps = data.map(entry => new Date(entry.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }));  // Use toLocaleString to include date and time
                     dailyData.temperatures = data.map(entry => entry.temperature);
                     dailyData.humidities = data.map(entry => entry.humidity);
                     dailyData.lights = data.map(entry => entry.light);
