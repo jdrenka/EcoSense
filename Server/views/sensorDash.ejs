@@ -665,8 +665,8 @@
 
                     dailyData.timestamps = data.map(entry => {
     let dataTime = new Date(entry.timestamp);
-    let offset = 17 * 60 * 60 * 1000; // Adjust for 17 hours behind UTC
-    dataTime = new Date(dataTime.getTime() - offset);
+    let offset = 7 * 60 * 60 * 1000; 
+    dataTime = new Date(dataTime.getTime() + offset);
 
     // Manually format the date
     const options = { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
