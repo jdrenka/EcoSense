@@ -40,6 +40,16 @@ app.use(session({
   }
 }));
 
+
+app.get('/', (req, res) => {
+  res.redirect('/home');
+});
+
+app.get('/home', (req, res) => {
+  res.render('home.ejs');
+});
+
+
 let isTempAlertSent = false;
 let isHumAlertSent = false;
 let isLightAlertSent = false;
@@ -251,10 +261,6 @@ app.use((req, res, next) => {
   } else {
     ensureAuthenticated(req, res, next); // Apply authentication check
   }
-});
-
-app.get('/', (req, res) => {
-  res.redirect('/login');
 });
 
 // Retrieve List of Sensors.
@@ -673,6 +679,7 @@ app.get('/latest-readings', async (req, res, next) => {
 app.get('/login', (req, res) => {
   res.render('login.ejs');
 });
+
 
 setInterval(checkForDisconnects, 10000); // Check every 60 seconds
 
