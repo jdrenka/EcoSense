@@ -32,30 +32,30 @@
         };
 
         Swal.fire({
-            title: 'Calibrate Sensor',
-            html: `
-                <div class='createalertsection' id='calibrationvalues'>
-                    <div class='calibrationtext' style='font-size: 1.2em; margin-bottom: 10px;'>
-                        Temperature: ${formatCalibrationValue(calibrations.temp || 0)}<span class="delete-emoji" data-type="temp"> 🗑️</span><br>
-                        Humidity: ${formatCalibrationValue(calibrations.hum || 0)}<span class="delete-emoji" data-type="hum"> 🗑️</span><br>
-                        Light: ${formatCalibrationValue(calibrations.light || 0)}<span class="delete-emoji" data-type="light"> 🗑️</span>
-                    </div>
-                    <div class='createalertsection' id='datatypeselectbuttons'>
-                        <button id="tempButton" class="button-select">Temperature🌡️</button>
-                        <button id="humButton" class="button-select">Humidity💧</button>
-                        <button id="lightButton" class="button-select">Light💡</button>
-                    </div>
-                </div>
-                <div class='createalertsection' id='calibrationSignSection'>
-                    <div class='gthanlthan'>
-                        <button id="plusButton" class="button-select">+</button>
-                        <button id="minusButton" class="button-select">-</button>
-                    </div>
-                </div>
-                <div class='createalertsection' id='calibrationValueWrapper'>
-                    <input type="number" id="calibrationValue" class="swal2-input" placeholder="Enter calibration value">
-                </div>
-            `,
+    title: 'Calibrate Sensor',
+    html: `
+        <div class='createalertsection' id='calibrationvalues'>
+            <div class='calibrationtext' style='font-size: 1.2em; margin-bottom: 10px;'>
+                Temperature: ${formatCalibrationValue(calibrations.temp || 0)}<span class="delete-emoji" data-type="temp"> 🗑️</span><br>
+                Humidity: ${formatCalibrationValue(calibrations.hum || 0)}<span class="delete-emoji" data-type="hum"> 🗑️</span><br>
+                Light: ${formatCalibrationValue(calibrations.light || 0)}<span class="delete-emoji" data-type="light"> 🗑️</span>
+            </div>
+        </div>
+        <div class='createalertsection' id='datatypeselectbuttons'>
+            <button id="tempButton" class="button-select">Temperature🌡️</button>
+            <button id="humButton" class="button-select">Humidity💧</button>
+            <button id="lightButton" class="button-select">Light💡</button>
+        </div>
+        <div class='createalertsection' id='calibrationSignSection'>
+            <div class='gthanlthan'>
+                <button id="plusButton" class="button-select">+</button>
+                <button id="minusButton" class="button-select">-</button>
+            </div>
+        </div>
+        <div class='createalertsection' id='calibrationValueWrapper'>
+            <input type="number" id="calibrationValue" class="swal2-input" placeholder="Enter calibration value">
+        </div>
+    `,
             focusConfirm: false,
             preConfirm: () => {
                 const dataTypeElement = document.querySelector('#datatypeselectbuttons .active');
@@ -192,7 +192,7 @@
     }
     #calibrationSignSection {
         margin-bottom: 0px;
-        margin-top: 20px;
+        margin-top: px;
     }
     #calibrationvalues {
         margin-left: 42.5%;
@@ -201,11 +201,12 @@
         height: 25%;
     }
     #datatypeselectbuttons {
-        margin-top: 18%;
-        margin-bottom: 10%;
+        margin-top: 3%;
+        margin-left: 25%;
+        margin-bottom: 0%;
     }
     #calibrationValueWrapper {
-        margin-top: 12%;
+        margin-top: 2%;
     }
     .delete-emoji {
         cursor: pointer;
