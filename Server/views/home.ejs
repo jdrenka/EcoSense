@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Landing Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/landingpageStyles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <a href="/home">EcoSense</a>
+            </div>
+            <ul class="navbar-nav">
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#contact">Order Now</a></li>
+                <li class="navbar-btn"><a href="/login">Login to Console</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Meet EcoSense</h1>
+            <p>Your ultimate solution for environmental monitoring</p>
+            <a href="#features" class="btn" id = 'learnbutton'>Watch a demo</a>
+        </div>
+        <div class="hero-image">
+            <img src="/images/whitepcb.png" alt="Product Image">
+        </div>
+    </section>
+
+
+    <section id="features" class="features">
+        <h2>Included Features</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <img src="/images/whitepcb.png" alt="Product Image">
+                <h3>Real-Time Data</h3>
+                <p>Get accurate, up-to-the-minute data on temperature, humidity, and light levels.</p>
+            </div>
+            <div class="feature-item">
+                <img src="/images/whitepcb.png" alt="Product Image">
+                <h3>Data Storage</h3>
+                <p>Store your environmental data securely and access it anytime.</p>
+            </div>
+            <div class="feature-item">
+                <img src="/images/whitepcb.png" alt="Product Image">
+                <h3>High-Quality Visualizations</h3>
+                <p>Visualize your data with customizable, dynamic charts and graphs.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="about-content">
+            <h2>About Us</h2>
+            <p>MyProduct is dedicated to providing the best environmental monitoring solutions. Our products are designed with precision and reliability in mind, ensuring that you always have the data you need at your fingertips.</p>
+        </div>
+        <div class="about-image">
+            <img src="/images/whitepcb.png" alt="Product Image">
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <h2>Contact Us</h2>
+        <p>If you have any questions or need more information, feel free to reach out to us!</p>
+        <form action="/contact" method="post">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" required></textarea>
+            <button type="submit" class="btn">Send Message</button>
+        </form>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2024 MyProduct. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -134,7 +134,21 @@ p{
 .error-container{
     margin-left: 10%;
 }
-
+.logotextinheader{
+    margin-left: 30%;
+    width: 100%;
+    font-weight: 800;
+    font-size: 2vw;
+    margin-top: 17px;
+    font-family: 'Roboto', sans-serif;
+    border-radius: 20px;
+    padding: 5%;
+    background-color: rgb(224, 224, 224);
+}
+.container-login100{
+  
+    background: #333 !important;
+}
 #loginerrortext{
     font-weight: 100;
     margin-top: 8px;
