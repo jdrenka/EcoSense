@@ -28,13 +28,18 @@ header {
 }
 
 .navbar-brand a {
-    color: #3a3a3a;
-    font-size: 1.5rem;
-    font-weight: 700;
+    color: #6f6e6e;
+    font-size: 2rem;
+    font-weight: 800;
     text-decoration: none;
 }
 .withinlogo{
-    color: rgb(29, 147, 49);
+    color: rgb(42, 155, 59);
+    font-weight: 800;
+}
+#otherpartlogo{
+    color: #cccccc;
+    font-weight: 600;
 }
 
 .navbar-nav {
@@ -223,7 +228,7 @@ header {
 }
 
 .contact button {
-    background: #007bff;
+    background: #16622b;
     color: #fff;
     padding: 0.75rem 1.5rem;
     border: none;
@@ -233,7 +238,7 @@ header {
 }
 
 .contact button:hover {
-    background: #0056b3;
+    background: #055729;
 }
 
 .footer {
