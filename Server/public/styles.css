@@ -137,8 +137,9 @@ p{
 .logotextinheader{
     margin-left: 30%;
     width: 100%;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 2vw;
+    letter-spacing: -1px;
     margin-top: 17px;
     font-family: 'Roboto', sans-serif;
     border-radius: 20px;
@@ -274,7 +275,7 @@ p{
   
 
 .withinlogo{
-    color: #15af46;
+    color: #198e3e;
 }
 .navbuttons{
     background-color: #3f3f3f;
@@ -380,6 +381,13 @@ p{
     width: 80%;
     height: 70%;
 
+}
+
+
+
+.about-img{
+
+    margin-left: -50px;
 }
 
 .sensorlistview{
@@ -1229,7 +1237,7 @@ p{
     margin-top: 14px;
     margin-left: 13.75vw;
     border-radius: 30px;
-    background-color: rgb(8, 105, 8);
+    background-color: rgb(11, 96, 11);
     border: 0;
 }
 
