@@ -125,8 +125,12 @@ header {
 }
 
 .features-grid {
-    display: flex;
-    gap: 8rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Creates 3 equal columns */
+    grid-template-rows: repeat(2, auto); /* Creates 2 rows, auto height */
+    gap: 3rem;
+    margin-left: 5%;
+    
     justify-content: center;
 }
 
