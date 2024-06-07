@@ -57,6 +57,10 @@
         </div>
     `,
             focusConfirm: false,
+            confirmButtonText: 'Confirm Calibration',
+            customClass: {
+            confirmButton: 'btn swal2-confirm',
+        },
             preConfirm: () => {
                 const dataTypeElement = document.querySelector('#datatypeselectbuttons .active');
                 const calibrationSignElement = document.querySelector('.gthanlthan .active');
@@ -164,8 +168,15 @@
         height: 500px;
     }
     .button-select.active {
-        background-color: #14852a;
+        background-color:  #1d65b2;
         color: white;
+    }
+
+    .swal2-confirm.btn {
+   
+    color: #fff !important;
+    background-color: #1d65b2;
+    border-radius: 5px ;
     }
     .button-select {
         border-radius: 50px;

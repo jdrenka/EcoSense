@@ -603,42 +603,37 @@ app.get('/sensors', async (req, res, next) => {
   }
 });
 
-app.post('/create-alert', async (req, res, next) => {
-    const { alertName, sensorId, dataType, alertCondition, thresholdValue, alertMessage } = req.body;
-    const userId = req.session.userId; // Access user ID from session
-    let alert_sent = false;
-  
-    if (!userId) {
-      return res.status(400).json({ success: false, message: 'User ID is required' });
-    }
-  
-    let query;
-    let values;
-  
-    if (dataType === 'disconnect') {
-      query = `
-        INSERT INTO UserAlerts (user_id, sensor_id, data_type, alertName, alertMessage, alert_sent, time_created)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-      `;
-      values = [userId, sensorId, dataType, alertName, alertMessage, alert_sent, new Date()];
-    } else {
-      query = `
-        INSERT INTO UserAlerts (user_id, sensor_id, data_type, alertCondition, threshold_value, alertName, alertMessage, alert_sent, time_created)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
-      values = [userId, sensorId, dataType, alertCondition, thresholdValue, alertName, alertMessage, alert_sent, new Date()];
-    }
-  
-    try {
-      await db.query(query, values);
-      res.json({ success: true });
-    } catch (err) {
-      console.error('Error creating alert:', err);
-      next(err); // Pass the error to the error handler
-    }
-  });
-  
-  
+
+app.post('/addSensor', async (req, res) => {
+  const { sensorId, sensorName, sensorType } = req.body;
+  const userId = req.session.userId;
+
+  if (!userId) {
+      return res.status(401).json({ success: false, message: 'User not authenticated' });
+  }
+
+  try {
+      // Check if the sensor ID is valid and not already registered
+      const [results] = await db.query('SELECT isRegistered FROM shippedSensors WHERE shippedSensorID = ?', [sensorId]);
+
+      if (results.length === 0) {
+          return res.status(400).json({ success: false, message: 'Invalid sensor ID' });
+      }
+
+      if (results[0].isRegistered) {
+          return res.status(400).json({ success: false, message: 'Sensor ID already registered' });
+      }
+
+      // Register the sensor
+      await db.query('UPDATE shippedSensors SET isRegistered = TRUE WHERE shippedSensorID = ?', [sensorId]);
+      await db.query('INSERT INTO sensors (sensor_id, sensor_name, sensor_type, user_id) VALUES (?, ?, ?, ?)', [sensorId, sensorName, sensorType, userId]);
+
+      res.json({ success: true, message: 'Sensor registered successfully' });
+  } catch (err) {
+      console.error('Database error:', err);
+      res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
 
 app.get('/alertView', async (req, res, next) => {
   try {

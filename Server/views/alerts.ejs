@@ -58,7 +58,7 @@
         cursor: pointer;
     }
     .button-select.selected {
-        background-color: green;
+        background-color: #1d65b2;
     }
     .alert-temperature {
         background-color: rgba(202, 79, 79, 0.289);
@@ -93,6 +93,13 @@
         flex-direction: column;
         align-items: center;
     }
+
+    .swal2-confirm.btn {
+   
+   color: #fff !important;
+   background-color: #1d65b2;
+   border-radius: 5px ;
+   }
     .listAlertRows {
         display: flex;
         justify-content: space-between;
@@ -217,6 +224,7 @@
                     showCancelButton: true,
                     confirmButtonText: 'Yes, delete it!',
                     cancelButtonText: 'No, keep it'
+
                 }).then((result) => {
                     if (result.isConfirmed) {
                         fetch(`/delete-alert/${alertId}`, {
@@ -301,7 +309,10 @@
                     return { alertName, sensorId, dataType: selectedDataType, alertCondition: selectedCondition, thresholdValue, alertMessage };
                 },
                 showCancelButton: true,
-                confirmButtonText: 'Create Alert'
+                confirmButtonText: 'Create Alert',
+                customClass: {
+                    confirmButton: 'btn swal2-confirm',
+                },
             }).then((result) => {
                 if (result.isConfirmed) {
                     const alertData = result.value;

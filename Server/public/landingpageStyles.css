@@ -171,13 +171,15 @@ header {
 }
 
 .feature-item {
-    max-width: 20vw;
+    max-width: 22vw;
     text-align: center;
 }
 
 .feature-item img {
-    max-width: 80%;
-    max-height: 50%;
+    max-width: 90%;
+    width: 90%;
+    min-height: 55%;
+    height: 55%;
     border-radius: 10px;
     margin-bottom: 1vw;
 }
