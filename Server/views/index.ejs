@@ -70,9 +70,95 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+
         const sensorViewButton = document.getElementById('sensorviewbutton');
         const alertViewButton = document.getElementById('createthreshold_button');
         const logoutButton = document.getElementById('logoutbutton');
+
+        document.getElementById('addSensorButton').addEventListener('click', function() {
+    Swal.fire({
+        title: 'Add a New Sensor',
+        html: `
+            <style>
+                .swal2-popup {
+                    background-color: #333 !important;
+                    color: rgb(232, 234, 235) !important;
+                    width: 80%;
+                    height: auto;
+                }
+                .headeraddsensor{
+                    font-family:  "Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+                    font-size: 1vw;
+                    margin-left: 30%;
+                }
+                .swal2-input {
+                    margin-top: 10px;
+                    color: white !important;
+                }
+                .swal2-title {
+                    color: #fff !important;
+                }
+                .swal2-confirm {
+                    background: #007bff !important;
+                    color: #fff !important;
+                    border-radius: 5px !important;
+                }
+                .swal2-cancel {
+                    background: #ccc !important;
+                    color: #333 !important;
+                    border-radius: 5px !important;
+                }
+            </style>
+            <h1 class = "headeraddsensor">Sensor ID is packaged with order</h1>
+            <input id="sensorId" class="swal2-input" placeholder="New sensor ID ">
+            <input id="sensorName" class="swal2-input" placeholder="Sensor Name">
+            <input id="sensorType" class="swal2-input" placeholder="Sensor Type">
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Add New Sensor',
+        cancelButtonText: 'Cancel',
+        preConfirm: () => {
+            const sensorId = document.getElementById('sensorId').value;
+            const sensorName = document.getElementById('sensorName').value;
+            const sensorType = document.getElementById('sensorType').value;
+
+            if (!sensorId || !sensorName || !sensorType) {
+                Swal.showValidationMessage('Please enter all fields');
+                return false;
+            }
+
+            return { sensorId, sensorName, sensorType };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const { sensorId, sensorName, sensorType } = result.value;
+
+            // Send data to the server to add the new sensor
+            fetch('/addSensor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ sensorId, sensorName, sensorType })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Success', 'Sensor added successfully.', 'success');
+                } else {
+                    Swal.fire('Error', data.message || 'Error adding sensor.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Error adding sensor.', 'error');
+            });
+        }
+    });
+});
+
+
+
 
         sensorViewButton.addEventListener('click', function() {
             window.location.href = '/sensorview';

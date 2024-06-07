@@ -1,7 +1,10 @@
 /* input[type="password"] {
   color: transparent;
 } */
-
+:root {
+  --button-color: #1d65b2;
+  
+}
 
 
 /*//////////////////////////////////////////////////////////////////
@@ -39,7 +42,7 @@
 body, html {
 	height: 100%;
   font-family: 'Roboto', sans-serif;
-  background-color: #2a2a2a;
+  background: #343434;
 }
 
 /*---------------------------------------------*/
@@ -59,9 +62,14 @@ a:focus {
 	outline: none !important;
 }
 
+#loginnav{
+  height: 5vw;
+  width: 88.35%;
+  margin-right: 6.25%;
+}
 a:hover {
 	text-decoration: none;
-  color: #57b846;
+  color: #585c61;
 }
 
 /*---------------------------------------------*/
@@ -173,7 +181,9 @@ iframe {
 .container-login100 {
   background-size: cover;
   width: 100%;  
-  min-height: 100vh;
+  
+  min-height: 50vh;
+  
   display: -webkit-box;
   display: -webkit-flex;
   display: -moz-box;
@@ -189,9 +199,10 @@ iframe {
 
 
 .wrap-login100 {
-  margin-top: -3.5vw;
+  
   width: 50vw;
-  height: 30vw;
+  
+  max-height: 30vw;
   background: #484848;
   border-radius: 10px;
   overflow: hidden;
@@ -320,7 +331,7 @@ iframe {
   -moz-transition: all 0.6s;
   transition: all 0.6s;
 
-  background: #57b846;
+  background: var(--button-color);
 }
 
 
@@ -411,9 +422,9 @@ input.input100 {
   justify-content: center;
   align-items: center;
   padding: 0 20px;
-  min-width: 160px;
-  height: 50px;
-  background-color: #57b846;
+  width: 5vw;
+  height: 2vw;
+  background-color: var(--button-color);
   border-radius: 25px;
 
   font-family: 'Roboto', sans-serif;
