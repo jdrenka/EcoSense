@@ -144,7 +144,7 @@
     </div>
 
     <script>
-        const UPDATE_TIME = 10; // seconds
+        const UPDATE_TIME = 60; // seconds
         let sensorData = { timestamps: [], temperatures: [], humidities: [], lights: [] };
         let dailyData = { timestamps: [], temperatures: [], humidities: [], lights: [] };
         let currentChartType = 'line';
@@ -632,7 +632,7 @@
         .catch(error => {
             console.error('Error fetching data:', error);
             document.getElementById('countdown').textContent = 'Paused';
-            clearInterval(intervalId);
+            
         });
 }
 

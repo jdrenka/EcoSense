@@ -11,9 +11,9 @@
         }
 
         const formatCalibrationValue = (value) => {
-            let color = value >= 0 ? '#1076eb' : '#b51827';
+            let color = value >= 0 ? '#1d65b2;' : '#b51827';
             if (value == 0) {
-                color = 'grey';
+                color = 'rgb(60, 60, 60)';
             }
             const sign = value > 0 ? '+' : '';
             return `<span style="color: ${color};">${sign}${value}</span>`;
@@ -162,14 +162,14 @@
 
 <style>
     .swal2-popup {
-        background-color: #333 !important;
+        background-color: #777676 !important;
         color: rgb(232, 234, 235) !important;
         width: 80%;
         height: 500px;
     }
     .button-select.active {
         background-color:  #1d65b2;
-        color: white;
+        color: rgb(192, 191, 191);
     }
 
     .swal2-confirm.btn {
@@ -182,7 +182,7 @@
         border-radius: 50px;
         height: 30px;
         width: 40%;
-        background-color: rgb(92, 91, 91);
+        background-color: rgb(60, 60, 60);
         color: white;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-style: italic;

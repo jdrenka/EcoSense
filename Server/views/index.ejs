@@ -81,7 +81,7 @@
         html: `
             <style>
                 .swal2-popup {
-                    background-color: #333 !important;
+                    background-color: #777676; !important;
                     color: rgb(232, 234, 235) !important;
                     width: 80%;
                     height: auto;
@@ -89,6 +89,7 @@
                 .headeraddsensor{
                     font-family:  "Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
                     font-size: 1vw;
+                    color: rgb(60, 60, 60);
                     margin-left: 30%;
                 }
                 .swal2-input {
@@ -144,7 +145,13 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    Swal.fire('Success', 'Sensor added successfully.', 'success');
+                    Swal.fire({
+                        title: 'Success',
+                        text: 'Sensor added successfully.',
+                        icon: 'success'
+                    }).then(() => {
+                        location.reload(); // Refresh the page
+                    });
                 } else {
                     Swal.fire('Error', data.message || 'Error adding sensor.', 'error');
                 }
@@ -215,7 +222,7 @@
                             const timeDifference = (currentTime.getTime() - readingTime) / 1000; // difference in seconds
                             
 
-                            if (timeDifference <= 25) {
+                            if (timeDifference <= 100) {  // Align this with UPDATE_TIME
 
                                 
                                 statusElement.textContent ='⚡'; 

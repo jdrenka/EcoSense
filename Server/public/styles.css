@@ -161,7 +161,7 @@ p{
     
 }
 .container-login100{
-  
+    
     background: #333 !important;
 }
 #loginerrortext{
@@ -1228,7 +1228,9 @@ p{
 }
 
 #senstype{
-    width: 6vw;
+    width: 8vw;
+    font-size: 0.75vw;
+    margin-top: 1.75%;
     margin-left: 0vw;
 }
 

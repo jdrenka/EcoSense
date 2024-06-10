@@ -50,6 +50,29 @@ app.get('/home', (req, res) => {
 });
 
 
+
+app.post('/createAccount', async (req, res) => {
+  const { username, email, password, phonenumber, sensorId } = req.body;
+    
+  try {
+      // Check if the sensor ID is valid (but do not register it)
+      const [sensorResults] = await db.query('SELECT isRegistered FROM shippedSensors WHERE shippedSensorID = ?', [sensorId]);
+
+      if (sensorResults.length === 0) {
+          return res.status(400).json({ success: false, message: 'Invalid sensor ID' });
+      }
+     
+      // Create the user account
+      await db.query('INSERT INTO users (username, email, password, phonenumber) VALUES (?, ?, ?, ?)', [username, email, password, phonenumber]);
+
+      
+      res.json({ success: true, message: 'Account created successfully' });
+  } catch (err) {
+      console.error('Database error:', err);
+      res.status(500).json({ success: false, message: 'Database error' });
+  }
+});
+
 let isTempAlertSent = false;
 let isHumAlertSent = false;
 let isLightAlertSent = false;
@@ -152,14 +175,31 @@ app.post('/dataBay', async (req, res, next) => {
           alertIdsToUpdate.push(alert.alert_id); // Collect the alert IDs to update
         }
       }
-  
+
+      const [userIDResults] = await db.query('SELECT user_id FROM sensors WHERE sensor_id = ?', [sid]);
+
+        if (userIDResults.length === 0) {
+            return res.status(404).json({ success: false, message: 'Sensor not found' });
+        }
+
+        const userID = userIDResults[0].user_id;
+
+        // Fetch the user's phone number from the users table using the user ID
+        const [userResults] = await db.query('SELECT phonenumber FROM users WHERE user_id = ?', [userID]);
+
+        if (userResults.length === 0) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+      const userPhoneNumber = userResults[0].phonenumber;
+      console.log('BEEP: ', '+1' + userPhoneNumber);
       // If any thresholds are exceeded, send an SMS and wait for it
       if (alerts.length > 0) {
         const messageBody = `Alert: ${alerts.join(' ')}`;
         twilloClient.messages.create({
           body: messageBody,
           from: twilioNumber,
-          to: '+12507183236' // Hardcoded phone number for now
+          to: '+1' + userPhoneNumber // Hardcoded phone number for now
         })
           .then(async message => {
             console.log(`Alert Message SID: ${message.sid}`);
@@ -266,8 +306,15 @@ app.use((req, res, next) => {
 // Retrieve List of Sensors.
 app.get('/sensorview', async (req, res, next) => {
   try {
-    const query = "SELECT sensor_id AS sid, sensor_name AS sname, sensor_type AS stype FROM sensors";
-    const [results, fields] = await db.query(query);
+    const userId = req.session.userId;
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'User not authenticated' });
+    }
+
+    const query = "SELECT sensor_id AS sid, sensor_name AS sname, sensor_type AS stype FROM sensors WHERE user_id = ?";
+    const [results, fields] = await db.query(query, [userId]);
+
     res.render('index.ejs', { sensors: results });
   } catch (err) {
     console.error('Database query failed:', err);
@@ -275,24 +322,7 @@ app.get('/sensorview', async (req, res, next) => {
   }
 });
 
-app.get('/send-test-sms', (req, res, next) => {
-  // Define the message
-  const message = "Toe ass u can never block me now  Love - Justin";
 
-  twilloClient.messages.create({
-    body: message,
-    from: twilioNumber,
-    to: recipient
-  })
-    .then(message => {
-      console.log(`Message SID: ${message.sid}`);
-      res.send(`Test SMS sent successfully! Message SID: ${message.sid}`);
-    })
-    .catch(error => {
-      console.error(error);
-      next(error); // Pass the error to the error handler
-    });
-});
 
 app.get('/recentData/:sensorId', async (req, res, next) => {
   const sensorId = req.params.sensorId; // Assuming you're getting the sensorId from the route parameter
@@ -335,6 +365,42 @@ app.get('/getCalibrations', async (req, res) => {
         res.status(500).json({ error: 'Database error' });
     }
 });
+
+app.post('/create-alert', async (req, res, next) => {
+  const { alertName, sensorId, dataType, alertCondition, thresholdValue, alertMessage } = req.body;
+  const userId = req.session.userId; // Access user ID from session
+  let alert_sent = false;
+
+  if (!userId) {
+    return res.status(400).json({ success: false, message: 'User ID is required' });
+  }
+
+  let query;
+  let values;
+
+  if (dataType === 'disconnect') {
+    query = `
+      INSERT INTO UserAlerts (user_id, sensor_id, data_type, alertName, alertMessage, alert_sent, time_created)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+    values = [userId, sensorId, dataType, alertName, alertMessage, alert_sent, new Date()];
+  } else {
+    query = `
+      INSERT INTO UserAlerts (user_id, sensor_id, data_type, alertCondition, threshold_value, alertName, alertMessage, alert_sent, time_created)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    values = [userId, sensorId, dataType, alertCondition, thresholdValue, alertName, alertMessage, alert_sent, new Date()];
+  }
+
+  try {
+    await db.query(query, values);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error creating alert:', err);
+    next(err); // Pass the error to the error handler
+  }
+});
+
 
 
 
@@ -594,8 +660,10 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/sensors', async (req, res, next) => {
+  const userId = req.session.userId;
   try {
-    const [sensors] = await db.query('SELECT sensor_id, sensor_name FROM sensors');
+    const [sensors] = await db.query('SELECT sensor_id, sensor_name FROM sensors WHERE user_id = ?', [userId]);
+
     res.json(sensors);
   } catch (err) {
     console.error('Error fetching sensors:', err);
@@ -636,13 +704,14 @@ app.post('/addSensor', async (req, res) => {
 });
 
 app.get('/alertView', async (req, res, next) => {
+  const userId = req.session.userId;
   try {
     const query = `
             SELECT UserAlerts.*, sensors.sensor_name
             FROM UserAlerts
-            JOIN sensors ON UserAlerts.sensor_id = sensors.sensor_id;
+            JOIN sensors ON UserAlerts.sensor_id = sensors.sensor_id WHERE sensors.user_id = ?;
         `;
-    const [results, fields] = await db.query(query);
+    const [results, fields] = await db.query(query, [userId]);
     res.render('alerts.ejs', { alerts: results });
   } catch (err) {
     console.error('Database query failed:', err);
@@ -676,7 +745,7 @@ app.get('/login', (req, res) => {
 });
 
 
-setInterval(checkForDisconnects, 10000); // Check every 60 seconds
+setInterval(checkForDisconnects, 100000); // Check every 60 seconds
 
 // Use the error handling middleware
 app.use(errorHandler);
