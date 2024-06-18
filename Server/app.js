@@ -52,7 +52,7 @@ app.get('/home', (req, res) => {
 
 
 app.post('/createAccount', async (req, res) => {
-  const { username, email, password, phonenumber, sensorId } = req.body;
+  const { username, password, phonenumber, sensorId } = req.body;
     
   try {
       // Check if the sensor ID is valid (but do not register it)
@@ -63,7 +63,7 @@ app.post('/createAccount', async (req, res) => {
       }
      
       // Create the user account
-      await db.query('INSERT INTO users (username, email, password, phonenumber) VALUES (?, ?, ?, ?)', [username, email, password, phonenumber]);
+      await db.query('INSERT INTO users (username, password, phonenumber) VALUES (?, ?, ?)', [username, password, phonenumber]);
 
       
       res.json({ success: true, message: 'Account created successfully' });
@@ -77,6 +77,7 @@ let isTempAlertSent = false;
 let isHumAlertSent = false;
 let isLightAlertSent = false;
 let isDisconnectAlertSent = false;
+let userId;
 
 // Data receiving from device
 app.post('/dataBay', async (req, res, next) => {
@@ -192,14 +193,14 @@ app.post('/dataBay', async (req, res, next) => {
         }
 
       const userPhoneNumber = userResults[0].phonenumber;
-      console.log('BEEP: ', '+1' + userPhoneNumber);
+      
       // If any thresholds are exceeded, send an SMS and wait for it
       if (alerts.length > 0) {
-        const messageBody = `Alert: ${alerts.join(' ')}`;
+        const messageBody = `EcoSense Alert: ${alerts.join(' ')}`;
         twilloClient.messages.create({
           body: messageBody,
           from: twilioNumber,
-          to: '+1' + userPhoneNumber // Hardcoded phone number for now
+          to: '+1' + userPhoneNumber 
         })
           .then(async message => {
             console.log(`Alert Message SID: ${message.sid}`);
@@ -237,6 +238,8 @@ app.post('/dataBay', async (req, res, next) => {
 
 // Function to check for disconnects
 const checkForDisconnects = async () => {
+
+  
   
   try {
     const [sensors] = await db.query('SELECT sensor_id, MAX(timestamp) as last_update FROM readings GROUP BY sensor_id');
@@ -251,7 +254,7 @@ const checkForDisconnects = async () => {
       const timeDifference = (currentTime.getTime() - lastUpdate.getTime()) / 1000; // Time difference in seconds
 
       // Assume a device is disconnected if not updated for more than 10 minutes (600 seconds)
-      if (timeDifference > 30) {
+      if (timeDifference > 10) { // Disconnect Notify Time. 
         const [disconnectAlerts] = await db.query('SELECT * FROM UserAlerts WHERE sensor_id = ? AND data_type = "disconnect" AND alert_sent = FALSE', [sensor.sensor_id]);
 
         for (const alert of disconnectAlerts) {
@@ -260,14 +263,24 @@ const checkForDisconnects = async () => {
       }
     }
 
+    
+
+    const [userResults] = await db.query('SELECT phonenumber FROM users WHERE user_id = ?', [userId]);
+
+        if (userResults.length === 0) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+    const userPhoneNumber = userResults[0].phonenumber;
+
     for (const alertData of alertsToSend) {
       const { alert, sensorId } = alertData;
-      const messageBody = `Alert: ${alert.alertMessage}`;
-
+      const messageBody = `EcoSense Alert: ${alert.alertMessage}`;
+      console.log("bigtest", userPhoneNumber);
       twilloClient.messages.create({
         body: messageBody,
         from: twilioNumber,
-        to: '+12507183236' // Hardcoded phone number for now
+        to: '+1' + userPhoneNumber 
       })
         .then(async message => {
           console.log(`Disconnect Alert Message SID: ${message.sid}`);
@@ -306,7 +319,7 @@ app.use((req, res, next) => {
 // Retrieve List of Sensors.
 app.get('/sensorview', async (req, res, next) => {
   try {
-    const userId = req.session.userId;
+     userId = req.session.userId;
 
     if (!userId) {
       return res.status(401).json({ success: false, message: 'User not authenticated' });
@@ -745,7 +758,9 @@ app.get('/login', (req, res) => {
 });
 
 
-setInterval(checkForDisconnects, 100000); // Check every 60 seconds
+setInterval(() => {
+  checkForDisconnects();
+}, 10000); // Check every 100 seconds
 
 // Use the error handling middleware
 app.use(errorHandler);

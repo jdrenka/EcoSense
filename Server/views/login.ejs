@@ -43,10 +43,11 @@
                     Sign In
                 </span>
             </div>
-
+            <br>
+            <br>
             <form class="login100-form validate-form" action="/login" method="POST">
                
-                <h1 class = 'loginformtext'>* Demo Login: (Username: demo, Password: demo)</h1>
+              
                 <div class="wrap-input100 validate-input m-b-26" data-validate="Username is required">
                     <span class="label-input100">Username</span>
                     <input class="input100" type="text" name="username" placeholder="Enter username" required>
@@ -111,20 +112,21 @@
         html: `
             <style>
                 .swal2-popup {
-                    background-color: grey !important;
+                    background-color: #242424 !important;
                     color: var(--text-color) !important;
                     width: 80%;
                     height: auto;
                 }
                 .swal2-input {
-                    color: var(--input-text-color) !important;
+                    color: #ccc !important;
+                    margin-bottom: 20px;
                 }
                 .swal2-title {
-                    color: var(--text-color) !important;
+                    color: #ccc !important;
                 }
                 .swal2-confirm {
-                    background: var(--primary-color) !important;
-                    color: #fff !important;
+                    background: #ccc !important;
+                    color: var(--input-text-color) !important;
                     border-radius: 5px !important;
                 }
                 .swal2-cancel {
@@ -134,7 +136,6 @@
                 }
             </style>
             <input id="username" class="swal2-input" placeholder="Username">
-            <input id="email" class="swal2-input" placeholder="Email" type="email">
             <input id="password" class="swal2-input" placeholder="Password" type="password">
             <input id="phonenumber" class="swal2-input" placeholder="Phone Number" type="tel">
             <input id="sensorId" class="swal2-input" placeholder="Sensor ID">
@@ -144,21 +145,20 @@
         cancelButtonText: 'Cancel',
         preConfirm: () => {
             const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const phonenumber = document.getElementById('phonenumber').value;
             const sensorId = document.getElementById('sensorId').value;
 
-            if (!username || !email || !password || !sensorId || !phonenumber) {
+            if (!username || !password || !sensorId || !phonenumber) {
                 Swal.showValidationMessage('Please enter all fields');
                 return false;
             }
 
-            return { username, email, password, phonenumber, sensorId };
+            return { username,  password, phonenumber, sensorId };
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            const { username, email, password, phonenumber, sensorId } = result.value;
+            const { username,  password, phonenumber, sensorId } = result.value;
             
             
 
@@ -168,7 +168,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username, email, password, phonenumber, sensorId })
+                body: JSON.stringify({ username, password, phonenumber, sensorId })
             })
             .then(response => {
                 if (!response.ok) {
