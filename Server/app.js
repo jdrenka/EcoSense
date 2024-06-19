@@ -40,6 +40,8 @@ app.use(session({
   }
 }));
 
+const userSessions = new Map();
+
 
 app.get('/', (req, res) => {
   res.redirect('/home');
@@ -77,7 +79,6 @@ let isTempAlertSent = false;
 let isHumAlertSent = false;
 let isLightAlertSent = false;
 let isDisconnectAlertSent = false;
-let userId;
 
 // Data receiving from device
 app.post('/dataBay', async (req, res, next) => {
@@ -238,60 +239,61 @@ app.post('/dataBay', async (req, res, next) => {
 
 // Function to check for disconnects
 const checkForDisconnects = async () => {
-
-  
-  
   try {
-    const [sensors] = await db.query('SELECT sensor_id, MAX(timestamp) as last_update FROM readings GROUP BY sensor_id');
+    for (let [sessionID, userId] of userSessions.entries()) {
+      console.log("USERID in DISconnect Check: ", userId);
+      const [sensors] = await db.query('SELECT sensor_id, MAX(timestamp) as last_update FROM readings GROUP BY sensor_id');
 
-    const currentTime = new Date(new Date().getTime() - (24 * 60 * 60 * 1000)); //Go back 1 day
-    const alertsToSend = [];
+      const currentTime = new Date(new Date().getTime() - (24 * 60 * 60 * 1000)); // Go back 1 day
+      const alertsToSend = [];
 
-    for (const sensor of sensors) {
+      for (const sensor of sensors) {
+        let pstOffset = 17 * 60 * 60 * 1000;
+        let lastUpdate = new Date(new Date(sensor.last_update).getTime() - pstOffset);
+        const timeDifference = (currentTime.getTime() - lastUpdate.getTime()) / 1000; // Time difference in seconds
+        console.log("TIMEDIFF: ", timeDifference);
 
-      let pstOffset = 17 * 60 * 60 * 1000;
-      let lastUpdate = new Date(new Date(sensor.last_update).getTime() - pstOffset);
-      const timeDifference = (currentTime.getTime() - lastUpdate.getTime()) / 1000; // Time difference in seconds
+        // Assume a device is disconnected if not updated for more than 10 minutes (600 seconds)
+        if (timeDifference > 30) { // Disconnect Notify Time
+          const [disconnectAlerts] = await db.query('SELECT * FROM UserAlerts WHERE sensor_id = ? AND data_type = "disconnect" AND alert_sent = FALSE', [sensor.sensor_id]);
 
-      // Assume a device is disconnected if not updated for more than 10 minutes (600 seconds)
-      if (timeDifference > 10) { // Disconnect Notify Time. 
-        const [disconnectAlerts] = await db.query('SELECT * FROM UserAlerts WHERE sensor_id = ? AND data_type = "disconnect" AND alert_sent = FALSE', [sensor.sensor_id]);
+          for (const alert of disconnectAlerts) {
+            alertsToSend.push({ alert, sensorId: sensor.sensor_id });
+          }
 
-        for (const alert of disconnectAlerts) {
-          alertsToSend.push({ alert, sensorId: sensor.sensor_id });
+          const [userResults] = await db.query('SELECT phonenumber FROM users WHERE user_id = ?', [userId]);
+
+      if (userResults.length === 0) {
+        console.error('User not found');
+        return;
+      }
+
+      const userPhoneNumber = userResults[0].phonenumber;
+
+      for (const alertData of alertsToSend) {
+        const { alert, sensorId } = alertData;
+        const messageBody = `EcoSense Alert: ${alert.alertMessage}`;
+        console.log("bigtest", userPhoneNumber);
+        twilloClient.messages.create({
+          body: messageBody,
+          from: twilioNumber,
+          to: '+1' + userPhoneNumber
+        })
+          .then(async message => {
+            console.log(`Disconnect Alert Message SID: ${message.sid}`);
+
+            // Update alert_sent flag in the database
+            const query = 'UPDATE UserAlerts SET alert_sent = TRUE WHERE alert_id = ?';
+            await db.query(query, [alert.alert_id]);
+          })
+          .catch(error => {
+            console.error('Failed to send disconnect SMS:', error);
+          });
+      }
         }
       }
-    }
 
-    
-
-    const [userResults] = await db.query('SELECT phonenumber FROM users WHERE user_id = ?', [userId]);
-
-        if (userResults.length === 0) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
-
-    const userPhoneNumber = userResults[0].phonenumber;
-
-    for (const alertData of alertsToSend) {
-      const { alert, sensorId } = alertData;
-      const messageBody = `EcoSense Alert: ${alert.alertMessage}`;
-      console.log("bigtest", userPhoneNumber);
-      twilloClient.messages.create({
-        body: messageBody,
-        from: twilioNumber,
-        to: '+1' + userPhoneNumber 
-      })
-        .then(async message => {
-          console.log(`Disconnect Alert Message SID: ${message.sid}`);
-
-          // Update alert_sent flag in the database
-          const query = 'UPDATE UserAlerts SET alert_sent = TRUE WHERE alert_id = ?';
-          await db.query(query, [alert.alert_id]);
-        })
-        .catch(error => {
-          console.error('Failed to send disconnect SMS:', error);
-        });
+      
     }
   } catch (err) {
     console.error('Error checking for disconnects:', err);
@@ -319,8 +321,9 @@ app.use((req, res, next) => {
 // Retrieve List of Sensors.
 app.get('/sensorview', async (req, res, next) => {
   try {
-     userId = req.session.userId;
-
+      const userId = req.session.userId;
+      userSessions.set(req.sessionID, userId); // Store userId with session ID as the key
+      console.log("USERID", userId);
     if (!userId) {
       return res.status(401).json({ success: false, message: 'User not authenticated' });
     }
