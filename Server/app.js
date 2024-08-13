@@ -1,3 +1,12 @@
+
+
+// ECOSENSE SERVER CODE @ Justin Drenka 
+// This file facilitates periodic data retrieval from the ECOSENSE IOT DEVICE through /dataBay 
+// Using Twilio, text message alerts are sent to the user based on their created thresholds and alerts. 
+// Account Creation, Sign in, Session handling are handled in this file. 
+// Historical data CSV download is handled here.
+// Note this was intended for personal use. 
+
 const express = require('express');
 const path = require('path');
 require('dotenv').config();
