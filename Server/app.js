@@ -21,8 +21,6 @@ const { parse } = require('json2csv');
 const fs = require('fs');
 const errorHandler = require('./errorHandler'); // Import the error handler
 
-const accountSid = 'AC5f47c13f6d37a8f58634ef22a03fc8ff';
-const authToken = 'e998f5610837db5b647845687b82dfcf';
 const twilloClient = new twilio(accountSid, authToken);
 const twilioNumber = '+15182941286';
 const recipient = '+12507183236';
