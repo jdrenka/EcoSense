@@ -8,6 +8,7 @@ https://ecosense-view.com
 
 #### Web App developed using: 
 -  Express.js
+-  EJS
 -  MySQL
 -  Google Cloud Platform
 -  HTML/CSS
