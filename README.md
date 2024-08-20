@@ -13,6 +13,7 @@ https://ecosense-view.com
 -  Google Cloud Platform
 -  HTML/CSS
 -  Postman
+-  Twilio API for SMS messages
 
 ### Photos: 
 
