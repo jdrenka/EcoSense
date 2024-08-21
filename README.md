@@ -1,5 +1,8 @@
 ## EcoSense - Realtime Environmental Data Montioring Web App
-https://ecosense-view.com
+https://ecosense-view.com  
+#### To Demo App: 
+- Username: doug
+- Password: doug 
 
 #### Firmware developed using: 
 - PlatformIO
